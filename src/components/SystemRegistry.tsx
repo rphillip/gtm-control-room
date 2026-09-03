@@ -9,6 +9,13 @@ function aggregate(snapshot: PublicClaySnapshot | undefined, key: string) {
   return typeof value === 'number' ? value.toLocaleString() : 'Unavailable'
 }
 
+function campaignStatus(snapshot: PublicClaySnapshot | undefined) {
+  const campaigns = snapshot?.aggregates?.campaigns
+  if (campaigns === 0) return '0 observed — activation not shipped'
+  if (typeof campaigns === 'number') return `${campaigns.toLocaleString()} observed`
+  return 'Campaigns: Unavailable'
+}
+
 function topologyText(workflow: ClaySnapshot['workflows'][number]) {
   const outgoing = workflow.nodes.map((_, index) => workflow.edges.filter(([from]) => from === index).map(([, to]) => to))
   const branchAt = outgoing.findIndex((targets) => targets.length > 1)
@@ -54,7 +61,7 @@ export function SystemRegistry({ snapshot }: { snapshot?: PublicClaySnapshot }) 
         </div>}
         {selected === 'Workflows' && <div className="registry-workflows">
           {workflows.length ? workflows.map((workflow) => <article key={workflow.name}><p className="eyebrow">{workflow.nodes.length}-node observed topology</p><h3>{workflow.name}</h3><p className="registry-workflows__topology">{topologyText(workflow)}</p><ol>{workflow.nodes.map((node, index) => <li key={`${workflow.name}-${node.name}`}><span>{String(index + 1).padStart(2, '0')}</span>{node.name}<small>{node.type}</small></li>)}</ol></article>) : <p>Workflow topology unavailable.</p>}
-          <p className="registry-campaigns">0 campaigns in this workspace · activation output prepared, campaign execution not yet shipped.</p>
+          <p className="registry-campaigns">{campaignStatus(snapshot)}</p>
         </div>}
       </div>
     </section>

@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { afterEach, describe, expect, it } from 'vitest'
 import { SystemRegistry } from './SystemRegistry'
 import type { ClaySnapshot } from '../content/types'
+import { normalizePublicSnapshot } from '../content/publicSnapshot'
 
 afterEach(cleanup)
 
@@ -45,7 +46,7 @@ describe('SystemRegistry', () => {
 
     expect(screen.getByText(/Conditional branch: Has company identifier\?/i)).toBeInTheDocument()
     expect(screen.getByText(/Linear sequence: Segment → Research → Write → Save/i)).toBeInTheDocument()
-    expect(screen.getByText(/0 campaigns in this workspace · activation output prepared, campaign execution not yet shipped/i)).toBeInTheDocument()
+    expect(screen.getByText(/0 observed — activation not shipped/i)).toBeInTheDocument()
   })
 
   it('uses native pressed view selectors that work with the keyboard', async () => {
@@ -60,5 +61,19 @@ describe('SystemRegistry', () => {
 
     expect(workflows).toHaveAttribute('aria-pressed', 'true')
     expect(screen.getByText(/Conditional branch/i)).toBeInTheDocument()
+  })
+
+  it.each([
+    ['an undefined snapshot', undefined],
+    ['malformed workflow and campaign fields', normalizePublicSnapshot({ workflows: 'not a list', aggregates: { campaigns: 'zero' } })],
+  ])('shows campaigns as unavailable for %s', async (_label, malformedSnapshot) => {
+    const user = userEvent.setup()
+    render(<SystemRegistry snapshot={malformedSnapshot} />)
+
+    await user.click(screen.getByRole('button', { name: 'Workflows' }))
+
+    expect(screen.getByText(/^Campaigns: Unavailable$/i)).toBeInTheDocument()
+    expect(screen.queryByText(/0 observed — activation not shipped/i)).not.toBeInTheDocument()
+    expect(screen.getByText(/Workflow topology unavailable/i)).toBeInTheDocument()
   })
 })
