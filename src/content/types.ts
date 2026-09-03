@@ -9,6 +9,7 @@ export interface Metric {
 export interface CaseStudyContent {
   slug: string
   title: string
+  problem: string
   summary: string
   metrics: Metric[]
   stages: string[]

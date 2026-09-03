@@ -1,7 +1,9 @@
 import claySnapshot from './data/clay-snapshot.json'
 import { ControlRoom } from './components/ControlRoom'
+import { CaseStudy } from './components/CaseStudy'
 import { MetricStrip } from './components/MetricStrip'
 import { SiteHeader } from './components/SiteHeader'
+import { SystemRegistry } from './components/SystemRegistry'
 import { hero, portfolio, snapshotMetrics } from './content/portfolio'
 import type { ClaySnapshot } from './content/types'
 
@@ -52,32 +54,34 @@ export default function App() {
 
         <ControlRoom snapshot={claySnapshot} />
 
-        <section id="work" className="section section--placeholder" aria-labelledby="work-title">
+        <section id="work" className="section selected-systems" aria-labelledby="work-title">
           <p className="eyebrow">02 / Selected systems</p>
           <h2 id="work-title">Work with evidence, not a tool list.</h2>
-          <p>Three case studies cover account scoring, healthcare entity resolution, and activation-ready workflows.</p>
+          <p>Three systems show the problem, observable build, evidence boundary, failure state, and the production revision I would make next.</p>
+          <div className="selected-systems__list">
+            {portfolio.caseStudies.map((study, index) => <CaseStudy key={study.slug} study={study} index={index} />)}
+          </div>
         </section>
 
-        <section id="registry" className="section section--placeholder" aria-labelledby="registry-title">
-          <p className="eyebrow">03 / System registry</p>
-          <h2 id="registry-title">Signals and workflows, inventory pending.</h2>
-          <p>Registry details will surface sanitized, build-time aggregates only—never rows, records, or private workspace links.</p>
-        </section>
+        <SystemRegistry snapshot={claySnapshot as unknown as ClaySnapshot} />
 
-        <section id="about" className="section section--placeholder" aria-labelledby="about-title">
+        <section id="about" className="section career" aria-labelledby="about-title">
           <p className="eyebrow">04 / Through-line</p>
-          <h2 id="about-title">Data platforms first. GTM systems next.</h2>
-          <p>Ryan has built cloud data systems in startup and digital-health settings, including BetterHelp, Cylinder Health, and Optum/AbleTo.</p>
+          <h2 id="about-title">Data platforms first. Healthcare GTM systems next.</h2>
+          <p className="career__lead">4+ years building cloud data platforms across startup and digital-health environments.</p>
+          <div className="career__evidence">
+            <article><h3>BetterHelp</h3><p>Built lifecycle and operational data foundations with Snowflake, dbt, Fivetran, AWS, Looker, Python, Google Sheets, and Iterable—connecting reliable data work to segmentation and lifecycle decisions.</p></article>
+            <article><h3>Cylinder Health</h3><p>Built startup healthcare data systems across claims, membership, product usage, billing, and reporting with GCP, BigQuery, Composer/Airflow, Dataflow, Cloud Functions, GKE, GCS, and Terraform.</p></article>
+            <article><h3>Optum / AbleTo</h3><p>Supported healthcare member data at scale with ETL/ELT and BigQuery for downstream analytical and operational consumers.</p></article>
+          </div>
+          <p className="career__footnote">Earlier, two years of oil-and-gas data consulting supplied one durable lesson: an automation reduced a multiweek process to 10 minutes. It is supporting proof for the same instinct—make repetitive, high-stakes data work observable and repeatable.</p>
         </section>
 
-        <section id="contact" className="section section--placeholder" aria-labelledby="contact-title">
+        <section id="contact" className="section contact" aria-labelledby="contact-title">
           <p className="eyebrow">05 / Next system</p>
           <h2 id="contact-title">Building a healthcare GTM data system?</h2>
-          <p>
-            <a className="text-link" href={`mailto:${portfolio.person.email}`}>
-              {portfolio.person.email}
-            </a>
-          </p>
+          <p>Let’s talk about the source data, signal contracts, routing, and reliability work that makes an activation layer useful.</p>
+          <div className="contact__links"><a className="button" href={`mailto:${portfolio.person.email}`}>Email Ryan</a><a className="text-link" href={portfolio.person.linkedIn} target="_blank" rel="noreferrer">Professional profile</a></div>
         </section>
       </main>
     </>
