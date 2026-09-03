@@ -27,17 +27,17 @@ The finished release must:
 
 ## Concept: The GTM Control Room
 
-Ryan's career arc is the design system: industrial instrumentation and control systems, production healthcare data engineering, then GTM engineering. The portfolio presents GTM as a closed-loop system:
+Ryan's recent career is the design system: more than four years building cloud data platforms across startup and digital-health environments, followed by a deliberate move toward GTM engineering. The portfolio presents GTM as an observable data system:
 
 `detect → normalize → qualify → route → activate → observe → improve`
 
-The memorable, Ryan-only interaction is the **GTM Control Room**. It is an interactive systems diagram, not a decorative animation. Visitors can toggle data sources and follow an anonymized record through signals, the AutoTier function, segmentation, research, and activation. Each stage reveals its input, transformation, output, and failure mode.
+The memorable, Ryan-only interaction is the **GTM Control Room**. It is an interactive systems diagram, not a decorative animation. Visitors can toggle data sources and follow an anonymized record through signals, the AutoTier function, segmentation, research, and activation. Each stage reveals its input, transformation, output, and failure mode. “Control Room” describes the need for visibility and feedback in healthcare GTM systems; it does not make oil-and-gas experience the site's theme.
 
 On desktop, the control room is a horizontal pipeline with a narrow telemetry rail. On mobile, it becomes a vertical tap-through sequence with the same content and no horizontal scrolling. Motion is subtle and deterministic; reduced-motion users receive immediate state changes.
 
 ## Visual Direction
 
-The aesthetic is “technical field notebook meets healthcare operations room,” not a generic SaaS dashboard.
+The aesthetic is “digital-health data operations room meets GTM systems lab,” not a generic SaaS dashboard.
 
 - Background: warm off-white paper with faint graph-grid and registration marks.
 - Primary ink: near-black navy.
@@ -72,7 +72,8 @@ The site is a single-page portfolio with deep-linkable case-study sections:
    - Campaigns are described as an activation layer not yet shipped in this workspace. No campaign metrics are implied.
 
 5. **Career through-line**
-   - A short narrative from control systems to healthcare data platforms to GTM engineering.
+   - A short narrative centered on startup and digital-health data platforms, lifecycle systems, and the move into GTM engineering.
+   - Two years of oil-and-gas data consulting appear only as an early automation proof point, not a featured chapter.
    - This section is not a chronological resume and does not enumerate every employer bullet.
 
 6. **Contact / next system**
@@ -178,12 +179,14 @@ The GTM-engineering resume controls public positioning; the data-engineering res
 
 Career evidence used:
 
-- More than four years building production cloud data platforms and more than ten years in engineering and automation.
-- Healthcare ingestion and reporting pipelines covering millions of members.
-- Claims, membership, product-usage, lifecycle marketing, billing, BI, and operational data systems.
-- Snowflake, dbt, Fivetran, Airflow, BigQuery, Python, Terraform, Iterable, and Looker experience where relevant to the narrative.
-- A multiweek process reduced to ten minutes.
-- Work on $1B+ engineering programs and a schedule change associated with 200K+ hours saved and a ten-month reduction.
+- More than four years building production cloud data platforms, with startup and digital-health experience as the primary career context.
+- BetterHelp work spanning Snowflake, dbt, Fivetran, lifecycle marketing, audience segmentation, Iterable, Looker, and operational analytics.
+- Cylinder Health work spanning claims, membership, product usage, client billing, reporting, and batch/real-time pipelines in a startup environment.
+- Optum/AbleTo healthcare pipelines and data marts supporting millions of members, BI, call-center, marketing, and data-science consumers.
+- Reliability practices including data-quality checks, testing, CI/CD, lineage-aware modeling, production troubleshooting, and stakeholder translation.
+- Two years of earlier oil-and-gas data consulting, represented by one concise automation example: a multiweek data process reduced to ten minutes.
+
+The public narrative does not use the broader oil-and-gas engineering tenure, $1B+ program scale, 200K+ hours, or ten-month schedule reduction as headline credibility. Those achievements may remain on a full resume, but they distract from the portfolio's digital-health and GTM focus.
 
 Public identity links:
 
