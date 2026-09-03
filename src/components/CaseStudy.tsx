@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import type { CaseStudyContent } from '../content/types'
+import { resolveLocalAsset } from '../content/localAsset'
 import { MetricStrip } from './MetricStrip'
 
 export function CaseStudy({ study, index }: { study: CaseStudyContent; index: number }) {
@@ -26,7 +27,7 @@ export function CaseStudy({ study, index }: { study: CaseStudyContent; index: nu
 
       {study.media && <figure className="case-study__media">
         <img
-          src={study.media.src}
+          src={resolveLocalAsset(study.media.src)}
           alt={study.media.alt}
           width={study.media.width}
           height={study.media.height}

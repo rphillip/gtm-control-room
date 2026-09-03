@@ -1,10 +1,13 @@
 import { cleanup, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { CaseStudy } from './CaseStudy'
 import { portfolio } from '../content/portfolio'
 
-afterEach(cleanup)
+afterEach(() => {
+  cleanup()
+  vi.unstubAllEnvs()
+})
 
 describe('CaseStudy', () => {
   it('shows evidence provenance and expands the build log', async () => {
@@ -27,6 +30,7 @@ describe('CaseStudy', () => {
   })
 
   it('renders optional local evidence media from a content entry', () => {
+    vi.stubEnv('BASE_URL', '/gtm-control-room/')
     render(
       <CaseStudy
         index={0}
@@ -46,7 +50,7 @@ describe('CaseStudy', () => {
 
     expect(screen.getByRole('img', { name: /anonymized account-engine topology/i })).toHaveAttribute(
       'src',
-      '/evidence/account-engine-topology.svg',
+      '/gtm-control-room/evidence/account-engine-topology.svg',
     )
     expect(screen.getByRole('img', { name: /anonymized account-engine topology/i })).toHaveAttribute('width', '1600')
     expect(screen.getByRole('img', { name: /anonymized account-engine topology/i })).toHaveAttribute('height', '900')

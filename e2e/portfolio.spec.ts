@@ -97,6 +97,22 @@ test('content remains usable at 200% text zoom', async ({ page }) => {
   await expect(page.locator('#control-room')).toBeInViewport()
 })
 
+test('public evidence assets load beneath the Pages base path', async ({ page }) => {
+  await page.goto(sitePath)
+  const assetUrl = new URL(`${sitePath}evidence/base-path-test.svg`, page.url()).href
+  const response = await page.request.get(assetUrl)
+
+  expect(response.ok()).toBe(true)
+  expect(response.headers()['content-type']).toContain('image/svg+xml')
+  const dimensions = await page.evaluate((src) => new Promise<{ width: number; height: number }>((resolve, reject) => {
+    const image = new Image()
+    image.addEventListener('load', () => resolve({ width: image.naturalWidth, height: image.naturalHeight }), { once: true })
+    image.addEventListener('error', () => reject(new Error(`Failed to load ${src}`)), { once: true })
+    image.src = src
+  }), assetUrl)
+  expect(dimensions).toEqual({ width: 64, height: 40 })
+})
+
 test('landmarks, headings, targets, images, and local assets meet basic accessibility invariants', async ({ page }) => {
   const requestedUrls: string[] = []
   page.on('request', (request) => requestedUrls.push(request.url()))
