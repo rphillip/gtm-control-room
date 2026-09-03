@@ -1,0 +1,166 @@
+{
+  "generatedAt": "2026-09-03T15:20:26.897Z",
+  "signals": [
+    {
+      "name": "Event: Company topic intent",
+      "type": "CompanyTopicIntent",
+      "status": "Active",
+      "cadence": "quarterly",
+      "inputKind": "table"
+    },
+    {
+      "name": "Event: Job posting",
+      "type": "JobPost",
+      "status": "Active",
+      "cadence": "quarterly",
+      "inputKind": "table"
+    },
+    {
+      "name": "Event: New hire",
+      "type": "NewHire",
+      "status": "Active",
+      "cadence": "quarterly",
+      "inputKind": "table"
+    },
+    {
+      "name": "OSHA news",
+      "type": "News",
+      "status": "Errored",
+      "cadence": "quarterly",
+      "inputKind": "audience"
+    },
+    {
+      "name": "Event: Job posting",
+      "type": "JobPost",
+      "status": "Active",
+      "cadence": "quarterly",
+      "inputKind": "audience"
+    },
+    {
+      "name": "Event: New hire",
+      "type": "NewHire",
+      "status": "Active",
+      "cadence": "quarterly",
+      "inputKind": "audience"
+    }
+  ],
+  "function": {
+    "name": "AutoTier",
+    "contract": "Value + company domain + scoring dimension → tier"
+  },
+  "workflows": [
+    {
+      "name": "Turquoise Immature",
+      "nodes": [
+        {
+          "name": "Segment",
+          "type": "trigger"
+        },
+        {
+          "name": "Has company identifier?",
+          "type": "conditional"
+        },
+        {
+          "name": "Mark no company identifier",
+          "type": "tool"
+        },
+        {
+          "name": "Find contacts at company",
+          "type": "tool"
+        },
+        {
+          "name": "Add contact to Audiences",
+          "type": "tool"
+        }
+      ],
+      "edges": [
+        [
+          3,
+          4
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "name": "Turquoise Operator Enrichment",
+      "nodes": [
+        {
+          "name": "Segment",
+          "type": "trigger"
+        },
+        {
+          "name": "Operator Send Research",
+          "type": "agent"
+        },
+        {
+          "name": "Write LinkedIn Message",
+          "type": "agent"
+        },
+        {
+          "name": "Save To Audience Record",
+          "type": "tool"
+        }
+      ],
+      "edges": [
+        [
+          2,
+          3
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          0,
+          1
+        ]
+      ]
+    }
+  ],
+  "aggregates": {
+    "signalsActive": 5,
+    "signalsErrored": 1,
+    "scoredAccounts": 60,
+    "newHireEvents": 27,
+    "scoreTiers": {
+      "High": 11,
+      "Medium": 40,
+      "Low": 9
+    },
+    "intentTiers": {
+      "High": 9,
+      "Medium": 37,
+      "Low": 7,
+      "Unclassified": 7
+    },
+    "injuryTiers": {
+      "High": 20,
+      "Medium": 12,
+      "Low": 28
+    },
+    "blsInjuryRows": 9,
+    "sampledActionHealth": {
+      "sampled": 10,
+      "succeeded": 9,
+      "errored": 1
+    },
+    "cmsFacilities": 5419,
+    "chspSystems": 639,
+    "healthSystemWorkingRows": 922,
+    "matureTargets": 139,
+    "immatureTargets": 196,
+    "payerProviders": 167,
+    "campaigns": 0
+  }
+}
