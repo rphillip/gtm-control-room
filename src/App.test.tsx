@@ -1,6 +1,7 @@
 import { cleanup, render, screen, within } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { afterEach, describe, expect, it } from 'vitest'
-import App from './App'
+import App, { PortfolioPage } from './App'
 
 afterEach(cleanup)
 
@@ -52,5 +53,15 @@ describe('portfolio shell', () => {
       'href',
       'mailto:ryansulapas@gmail.com',
     )
+  })
+
+  it('keeps authored content and labels dynamic values unavailable for a malformed snapshot', async () => {
+    const user = userEvent.setup()
+    render(<PortfolioPage snapshot={{ aggregates: { campaigns: 0 }, workflows: 'not a list' }} />)
+
+    expect(screen.getByRole('heading', { level: 3, name: /Multi-Signal Account Engine/i })).toBeInTheDocument()
+    expect(screen.getByText(/^Unavailable scored accounts$/i)).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: 'Signals' }))
+    expect(screen.getByText(/Signal inventory unavailable/i)).toBeInTheDocument()
   })
 })

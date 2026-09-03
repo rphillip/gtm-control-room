@@ -1,9 +1,16 @@
-export type MetricProvenance = 'observed' | 'sampled'
+export type MetricProvenance = 'observed' | 'sampled' | 'unavailable'
 
 export interface Metric {
   label: string
   value: string
   provenance: MetricProvenance
+}
+
+export interface EvidenceMedia {
+  kind: 'image'
+  src: string
+  alt: string
+  caption: string
 }
 
 export interface CaseStudyContent {
@@ -16,6 +23,7 @@ export interface CaseStudyContent {
   buildLog: string[]
   failures: string[]
   reflection: string
+  media?: EvidenceMedia
 }
 
 export interface PortfolioContent {
@@ -35,4 +43,11 @@ export interface ClaySnapshot {
   function: { name: 'AutoTier'; contract: string }
   workflows: { name: string; nodes: { name: string; type: string }[]; edges: [number, number][] }[]
   aggregates: Record<string, number | Record<string, number>>
+}
+
+export interface PublicClaySnapshot {
+  signals?: ClaySnapshot['signals']
+  function?: ClaySnapshot['function']
+  workflows?: ClaySnapshot['workflows']
+  aggregates?: ClaySnapshot['aggregates']
 }

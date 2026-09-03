@@ -24,6 +24,11 @@ export function CaseStudy({ study, index }: { study: CaseStudyContent; index: nu
 
       <MetricStrip metrics={study.metrics} />
 
+      {study.media && <figure className="case-study__media">
+        <img src={study.media.src} alt={study.media.alt} />
+        <figcaption>{study.media.caption}</figcaption>
+      </figure>}
+
       <section className="case-study__evidence" aria-label={`${study.title} system evidence`}>
         <div className="case-study__evidence-screen" aria-hidden="true">
           <span>INPUT</span><i /><span>TRANSFORM</span><i /><span>OUTPUT</span>

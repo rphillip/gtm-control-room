@@ -5,12 +5,16 @@ import { MetricStrip } from './components/MetricStrip'
 import { SiteHeader } from './components/SiteHeader'
 import { SystemRegistry } from './components/SystemRegistry'
 import { hero, portfolio, snapshotMetrics } from './content/portfolio'
-import type { ClaySnapshot } from './content/types'
-
-// JSON imports lose tuple inference; Task 2 has already sanitized this build-time asset.
-const metrics = snapshotMetrics(claySnapshot as unknown as ClaySnapshot)
+import { normalizePublicSnapshot } from './content/publicSnapshot'
 
 export default function App() {
+  return <PortfolioPage snapshot={claySnapshot} />
+}
+
+export function PortfolioPage({ snapshot }: { snapshot?: unknown }) {
+  const publicSnapshot = normalizePublicSnapshot(snapshot)
+  const metrics = snapshotMetrics(publicSnapshot)
+
   return (
     <>
       <a className="skip-link" href="#main">
@@ -52,7 +56,7 @@ export default function App() {
           <MetricStrip metrics={metrics} />
         </section>
 
-        <ControlRoom snapshot={claySnapshot} />
+        <ControlRoom snapshot={publicSnapshot} />
 
         <section id="work" className="section selected-systems" aria-labelledby="work-title">
           <p className="eyebrow">02 / Selected systems</p>
@@ -63,16 +67,16 @@ export default function App() {
           </div>
         </section>
 
-        <SystemRegistry snapshot={claySnapshot as unknown as ClaySnapshot} />
+        <SystemRegistry snapshot={publicSnapshot} />
 
         <section id="about" className="section career" aria-labelledby="about-title">
           <p className="eyebrow">04 / Through-line</p>
           <h2 id="about-title">Data platforms first. Healthcare GTM systems next.</h2>
           <p className="career__lead">4+ years building cloud data platforms across startup and digital-health environments.</p>
           <div className="career__evidence">
-            <article><h3>BetterHelp</h3><p>Built lifecycle and operational data foundations with Snowflake, dbt, Fivetran, AWS, Looker, Python, Google Sheets, and Iterable—connecting reliable data work to segmentation and lifecycle decisions.</p></article>
-            <article><h3>Cylinder Health</h3><p>Built startup healthcare data systems across claims, membership, product usage, billing, and reporting with GCP, BigQuery, Composer/Airflow, Dataflow, Cloud Functions, GKE, GCS, and Terraform.</p></article>
-            <article><h3>Optum / AbleTo</h3><p>Supported healthcare member data at scale with ETL/ELT and BigQuery for downstream analytical and operational consumers.</p></article>
+            <article><h3>BetterHelp</h3><p>Connected Snowflake, dbt, and Fivetran models to AWS-backed operational views in Looker, Python, and Google Sheets—giving Iterable lifecycle segmentation a dependable data contract.</p></article>
+            <article><h3>Cylinder Health</h3><p>Designed GCP pipelines across BigQuery, Composer/Airflow, Dataflow, Cloud Functions, GKE, GCS, and Terraform to make claims, membership, product, billing, and reporting states usable together.</p></article>
+            <article><h3>Optum / AbleTo</h3><p>Built ETL/ELT and BigQuery data marts that made healthcare member data usable by analytical and operational teams at scale.</p></article>
           </div>
           <p className="career__footnote">Earlier, two years of oil-and-gas data consulting supplied one durable lesson: an automation reduced a multiweek process to 10 minutes. It is supporting proof for the same instinct—make repetitive, high-stakes data work observable and repeatable.</p>
         </section>

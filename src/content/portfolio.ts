@@ -1,4 +1,4 @@
-import type { ClaySnapshot, Metric, PortfolioContent } from './types'
+import type { Metric, PortfolioContent, PublicClaySnapshot } from './types'
 import { validatePortfolio } from './validate'
 
 export const hero = {
@@ -105,13 +105,15 @@ export const portfolio: PortfolioContent = validatePortfolio({
   ],
 })
 
-export function snapshotMetrics(snapshot: ClaySnapshot): Metric[] {
+export function snapshotMetrics(snapshot?: PublicClaySnapshot): Metric[] {
+  const signalsActive = snapshot?.aggregates?.signalsActive
+  const scoredAccounts = snapshot?.aggregates?.scoredAccounts
   const metrics: Metric[] = [
-    { label: 'Signals active', value: String(snapshot.aggregates.signalsActive), provenance: 'observed' },
-    { label: 'Account engine', value: `${snapshot.aggregates.scoredAccounts} scored`, provenance: 'observed' },
+    { label: 'Signals active', value: typeof signalsActive === 'number' ? String(signalsActive) : 'Unavailable', provenance: typeof signalsActive === 'number' ? 'observed' : 'unavailable' },
+    { label: 'Account engine', value: typeof scoredAccounts === 'number' ? `${scoredAccounts} scored` : 'Unavailable scored accounts', provenance: typeof scoredAccounts === 'number' ? 'observed' : 'unavailable' },
   ]
 
-  const sampledActionHealth = snapshot.aggregates.sampledActionHealth
+  const sampledActionHealth = snapshot?.aggregates?.sampledActionHealth
   if (
     sampledActionHealth &&
     typeof sampledActionHealth === 'object' &&
