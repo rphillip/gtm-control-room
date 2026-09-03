@@ -186,7 +186,7 @@ export function ControlRoom({ snapshot }: { snapshot: unknown }) {
         </p>
       </div>
 
-      <div className="control-room__sources" aria-label="Public data sources">
+      <div className="control-room__sources" role="group" aria-label="Public data sources">
         {(Object.keys(paths) as PathId[]).map((pathId) => {
           const source = paths[pathId]
           const selected = selectedPath === pathId
@@ -219,12 +219,11 @@ export function ControlRoom({ snapshot }: { snapshot: unknown }) {
                   <button
                     type="button"
                     aria-pressed={isSelected}
-                    aria-label={`${String(index + 1).padStart(2, '0')} ${item.name}${isOnPath ? ', on selected path' : ', outside selected path'}`}
                     onClick={() => setSelectedStage(item.id)}
                   >
                     <span className="control-room__stage-number">{String(index + 1).padStart(2, '0')}</span>
                     <span>{item.name}</span>
-                    <span className="control-room__stage-state">{isOnPath ? 'On path' : 'Not used'}</span>
+                    <span className="control-room__stage-state">{isSelected ? 'Selected' : isOnPath ? 'On path' : 'Not used'}</span>
                   </button>
                 </li>
               )
@@ -260,9 +259,9 @@ export function ControlRoom({ snapshot }: { snapshot: unknown }) {
         </aside>
       </div>
 
-      <div className="control-room__rail" aria-label="Reliability and workflow telemetry">
+      <div className="control-room__rail" role="group" aria-label="Reliability and workflow telemetry">
         <section className="control-room__rail-item control-room__rail-item--failure" aria-labelledby="failure-title">
-          <p className="eyebrow" id="failure-title">Failure rail</p>
+          <h3 className="eyebrow" id="failure-title">Failure rail</h3>
           <p>OSHA news is errored: taxonomy input needs attention.</p>
           {view.sampledActionHealth ? (
             <p>
@@ -272,10 +271,10 @@ export function ControlRoom({ snapshot }: { snapshot: unknown }) {
           ) : <p>Sampled action health unavailable.</p>}
         </section>
         <section className="control-room__rail-item" aria-labelledby="workflow-title">
-          <p className="eyebrow" id="workflow-title">Workflow topologies</p>
+          <h3 className="eyebrow" id="workflow-title">Workflow topologies</h3>
           {view.workflows.length > 0 ? view.workflows.map((workflow) => (
             <article className="control-room__workflow" key={workflow.name}>
-              <h3>{workflow.name} · {workflow.shape}</h3>
+              <h4>{workflow.name} · {workflow.shape}</h4>
               <ol>
                 {workflow.nodes.map((node) => <li key={`${workflow.name}-${node.name}`}><span>{node.name}</span> <span>{node.type}</span></li>)}
               </ol>

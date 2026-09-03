@@ -33,7 +33,9 @@ export function validatePortfolio(value: unknown): PortfolioContent {
     }
     if (study.media && (
       study.media.kind !== 'image' || !/^\/(?!\/)/.test(study.media.src) || study.media.src.includes('..') ||
-      !study.media.alt || !study.media.caption
+      !study.media.alt || !study.media.caption ||
+      !Number.isInteger(study.media.width) || study.media.width <= 0 ||
+      !Number.isInteger(study.media.height) || study.media.height <= 0
     )) throw new Error('Case study media is invalid')
   }
 

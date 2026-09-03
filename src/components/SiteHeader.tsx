@@ -9,7 +9,7 @@ const links = [
 export function SiteHeader() {
   return (
     <header className="site-header">
-      <a className="site-header__mark" href="#main" aria-label="Ryan Sulapas — return to main content">
+      <a className="site-header__mark" href="#main" aria-label="RS — Ryan Sulapas, return to main content">
         RS<span aria-hidden="true">/</span>
       </a>
       <nav aria-label="Portfolio sections">

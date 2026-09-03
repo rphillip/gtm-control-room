@@ -44,10 +44,10 @@ export function SystemRegistry({ snapshot }: { snapshot?: PublicClaySnapshot }) 
       <p className="eyebrow">03 / Sanitized system inventory</p>
       <h2 id="registry-title">System Registry</h2>
       <p className="system-registry__intro">Build-time topology and observed aggregates, deliberately kept separate from contact-level data and private workspace resources.</p>
-      <div className="system-registry__tabs" aria-label="System registry views">
-        {tabs.map((tab) => <button key={tab} type="button" aria-pressed={selected === tab} onClick={() => setSelected(tab)}>{tab}</button>)}
+      <div className="system-registry__tabs" role="group" aria-label="System registry views">
+        {tabs.map((tab) => <button key={tab} type="button" aria-pressed={selected === tab} onClick={() => setSelected(tab)}><span className="system-registry__selected-marker" aria-hidden="true">✓</span>{tab}</button>)}
       </div>
-      <div className="system-registry__panel" aria-live="polite" aria-label={`${selected} registry`}>
+      <div className="system-registry__panel" role="region" aria-live="polite" aria-label={`${selected} registry`}>
         {selected === 'Tables' && <div className="registry-grid">
           <article><p className="eyebrow">Week 2 / Account engine</p><h3>Source + scoring inventory</h3><p>{aggregate(snapshot, 'scoredAccounts')} scored accounts · normalized identity, public signals, Tally feedback, BLS injury tiers, and composite-score outputs.</p></article>
           <article><p className="eyebrow">Week 3 / Healthcare map</p><h3>Facility + system pipeline</h3><p>{aggregate(snapshot, 'cmsFacilities')} CMS facility rows · {aggregate(snapshot, 'chspSystems')} CHSP health-system records · {aggregate(snapshot, 'healthSystemWorkingRows')} Turquoise Health Systems working rows.</p></article>

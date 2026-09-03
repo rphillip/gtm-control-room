@@ -54,5 +54,8 @@ describe('validatePortfolio', () => {
     expect(() => validatePortfolio({ ...base, caseStudies: [{ ...base.caseStudies[0], problem: '' }, base.caseStudies[1]] })).toThrow(/incomplete/i)
     expect(() => validatePortfolio({ ...base, caseStudies: [{ ...base.caseStudies[0], metrics: [{ label: 'Metric', value: '1', provenance: 'estimated' }] }, base.caseStudies[1]] })).toThrow(/metric/i)
     expect(() => validatePortfolio({ ...base, caseStudies: [{ ...base.caseStudies[0], media: { kind: 'image', src: 'https://example.com/evidence.png', alt: 'Evidence', caption: 'Caption' } }, base.caseStudies[1]] })).toThrow(/media/i)
+    expect(() => validatePortfolio({ ...base, caseStudies: [{ ...base.caseStudies[0], media: { kind: 'image', src: '/evidence.png', alt: 'Evidence', caption: 'Caption' } }, base.caseStudies[1]] })).toThrow(/media/i)
+    expect(() => validatePortfolio({ ...base, caseStudies: [{ ...base.caseStudies[0], media: { kind: 'image', src: '/evidence.png', alt: 'Evidence', caption: 'Caption', width: 0, height: 900 } }, base.caseStudies[1]] })).toThrow(/media/i)
+    expect(() => validatePortfolio({ ...base, caseStudies: [{ ...base.caseStudies[0], media: { kind: 'image', src: '/evidence.png', alt: 'Evidence', caption: 'Caption', width: 1600, height: 900 } }, base.caseStudies[1]] })).not.toThrow()
   })
 })

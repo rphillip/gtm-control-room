@@ -37,6 +37,8 @@ describe('CaseStudy', () => {
             src: '/evidence/account-engine-topology.svg',
             alt: 'An anonymized account-engine topology',
             caption: 'An optional portfolio-safe topology asset.',
+            width: 1600,
+            height: 900,
           },
         }}
       />,
@@ -46,6 +48,8 @@ describe('CaseStudy', () => {
       'src',
       '/evidence/account-engine-topology.svg',
     )
+    expect(screen.getByRole('img', { name: /anonymized account-engine topology/i })).toHaveAttribute('width', '1600')
+    expect(screen.getByRole('img', { name: /anonymized account-engine topology/i })).toHaveAttribute('height', '900')
     expect(screen.getByText(/optional portfolio-safe topology asset/i)).toBeInTheDocument()
   })
 

@@ -15,7 +15,7 @@ export function CaseStudy({ study, index }: { study: CaseStudyContent; index: nu
         <p className="case-study__summary">{study.summary}</p>
       </header>
 
-      <div className="case-study__architecture" aria-label={`${study.title} architecture stages`}>
+      <div className="case-study__architecture" role="group" aria-label={`${study.title} architecture stages`}>
         <p className="eyebrow">System path</p>
         <ol>
           {study.stages.map((stage, stageIndex) => <li key={stage}><span>{String(stageIndex + 1).padStart(2, '0')}</span>{stage}</li>)}
@@ -25,11 +25,19 @@ export function CaseStudy({ study, index }: { study: CaseStudyContent; index: nu
       <MetricStrip metrics={study.metrics} />
 
       {study.media && <figure className="case-study__media">
-        <img src={study.media.src} alt={study.media.alt} />
+        <img
+          src={study.media.src}
+          alt={study.media.alt}
+          width={study.media.width}
+          height={study.media.height}
+          loading="lazy"
+          decoding="async"
+        />
         <figcaption>{study.media.caption}</figcaption>
       </figure>}
 
       <section className="case-study__evidence" aria-label={`${study.title} system evidence`}>
+        <h4 className="visually-hidden">System evidence</h4>
         <div className="case-study__evidence-screen" aria-hidden="true">
           <span>INPUT</span><i /><span>TRANSFORM</span><i /><span>OUTPUT</span>
           <b>SAFE VIEW</b>
