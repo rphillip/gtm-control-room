@@ -252,7 +252,7 @@ The checked-in snapshot makes deployment reproducible even when Clay is unavaila
 - Automated checks for accessible names and critical ARIA state.
 - TypeScript type-check, lint, unit tests, and production build run before completion.
 - Browser checks at 320 px, 390 px, 768 px, and desktop widths.
-- Reduced-motion, keyboard-only, dark/high-contrast behavior, broken-link, and missing-data checks.
+- Reduced-motion, keyboard-only, forced-colors/high-contrast, broken-link, and missing-data checks. A separate dark theme is outside the first-release scope.
 - Production GitHub Pages URL verified after deployment.
 
 ## Repository and Deployment
