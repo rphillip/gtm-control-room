@@ -50,7 +50,7 @@ export default function App() {
           <MetricStrip metrics={metrics} />
         </section>
 
-        <ControlRoom snapshot={claySnapshot as unknown as ClaySnapshot} />
+        <ControlRoom snapshot={claySnapshot} />
 
         <section id="work" className="section section--placeholder" aria-labelledby="work-title">
           <p className="eyebrow">02 / Selected systems</p>

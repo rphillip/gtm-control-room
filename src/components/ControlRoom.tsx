@@ -1,36 +1,59 @@
 import { useState } from 'react'
-import type { ClaySnapshot } from '../content/types'
 
 const stages = [
   {
     id: 'detect',
     name: 'Detect',
     description: 'Public-market signals enter the monitored GTM system.',
+    input: 'Public hiring, intent, healthcare, and safety source events.',
+    transformation: 'Classify the incoming source as an observed signal and retain its visible status.',
+    output: 'An eligible signal event or source record ready for normalization.',
+    failure: 'OSHA news remains visibly errored when its taxonomy input needs attention.',
   },
   {
     id: 'normalize',
     name: 'Normalize',
     description: 'Source fields are made comparable before scoring or routing.',
+    input: 'Facility, company, industry, and health-system attributes from public sources.',
+    transformation: 'Align shared entity fields and match keys before downstream scoring.',
+    output: 'Comparable account and system context.',
+    failure: 'Unresolved parent, system, or company identifiers remain explicit states.',
   },
   {
     id: 'qualify',
     name: 'Qualify',
     description: 'AutoTier assigns a reusable tier from its public scoring contract.',
+    input: 'A scoring value, company domain, and scoring dimension.',
+    transformation: 'Apply the public AutoTier contract to assign a reusable tier.',
+    output: 'A tier that can contribute to a qualified account or system.',
+    failure: 'A sampled AutoTier intent action errored; the sample is not a workspace-wide rate.',
   },
   {
     id: 'route',
     name: 'Route',
     description: 'Qualified work moves through an explicit workflow topology.',
+    input: 'Qualified tiers plus an audience segment and identifier availability.',
+    transformation: 'Send work through a linear sequence or an explicit conditional branch.',
+    output: 'A research-ready audience state or a marked missing-identifier state.',
+    failure: 'Missing company identifiers take the named branch instead of silently failing.',
   },
   {
     id: 'activate',
     name: 'Activate',
     description: 'Activation-ready outputs are prepared; Campaigns are not yet shipped.',
+    input: 'Prepared research and message outputs from the routed audience state.',
+    transformation: 'Hold activation-ready work for a future delivery layer.',
+    output: 'Prepared output only; Campaigns remains at zero and is not yet shipped.',
+    failure: 'No campaign execution is represented, so campaign performance is not implied.',
   },
   {
     id: 'observe',
     name: 'Observe',
     description: 'Sampled health and named failure states stay visible for improvement.',
+    input: 'Signal states, workflow topology, and sampled action outcomes.',
+    transformation: 'Surface sampled health and known failures alongside the path.',
+    output: 'An operator-readable reliability view for the next improvement cycle.',
+    failure: 'A ten-action sample includes one AutoTier intent error; it is labeled as sampled.',
   },
 ] as const
 
@@ -55,30 +78,101 @@ const paths = {
 type PathId = keyof typeof paths
 type StageId = (typeof stages)[number]['id']
 
-function aggregate(snapshot: ClaySnapshot, name: string): number {
-  const value = snapshot.aggregates[name]
-  return typeof value === 'number' ? value : 0
+interface WorkflowNode {
+  name: string
+  type: string
 }
 
-function nestedAggregate(snapshot: ClaySnapshot, group: string, name: string): number {
-  const value = snapshot.aggregates[group]
-  return typeof value === 'object' && value !== null && typeof value[name] === 'number' ? value[name] : 0
+interface WorkflowTopology {
+  name: string
+  nodes: WorkflowNode[]
+  edges: [number, number][]
+  shape: 'Linear sequence' | 'Conditional branch' | 'Connected topology'
 }
 
-export function ControlRoom({ snapshot }: { snapshot: ClaySnapshot }) {
+interface ControlRoomView {
+  activeSignals?: number
+  erroredSignals?: number
+  tierContract?: string
+  campaigns?: number
+  sampledActionHealth?: { sampled: number; succeeded: number }
+  workflows: WorkflowTopology[]
+}
+
+const workflowNames = ['Turquoise Immature', 'Turquoise Operator Enrichment'] as const
+
+function asRecord(value: unknown): Record<string, unknown> | undefined {
+  return typeof value === 'object' && value !== null && !Array.isArray(value) ? value as Record<string, unknown> : undefined
+}
+
+function numberAt(record: Record<string, unknown> | undefined, key: string): number | undefined {
+  const value = record?.[key]
+  return typeof value === 'number' && Number.isFinite(value) && value >= 0 ? value : undefined
+}
+
+function normalizeWorkflow(value: unknown, expectedName: string): WorkflowTopology | undefined {
+  const workflow = asRecord(value)
+  if (workflow?.name !== expectedName || !Array.isArray(workflow.nodes) || !Array.isArray(workflow.edges)) return undefined
+
+  const nodes = workflow.nodes.map((node) => {
+    const parsed = asRecord(node)
+    return typeof parsed?.name === 'string' && typeof parsed.type === 'string'
+      ? { name: parsed.name, type: parsed.type }
+      : undefined
+  })
+  if (nodes.some((node) => node === undefined) || nodes.length === 0) return undefined
+
+  const edges = workflow.edges.map((edge) => {
+    if (!Array.isArray(edge) || edge.length !== 2 || !Number.isInteger(edge[0]) || !Number.isInteger(edge[1])) return undefined
+    const [from, to] = edge
+    return from >= 0 && from < nodes.length && to >= 0 && to < nodes.length ? [from, to] as [number, number] : undefined
+  })
+  if (edges.some((edge) => edge === undefined) || edges.length === 0) return undefined
+
+  const completeNodes = nodes as WorkflowNode[]
+  const completeEdges = edges as [number, number][]
+  const outgoing = completeNodes.map((_, index) => completeEdges.filter(([from]) => from === index).length)
+  const shape = outgoing.some((count) => count > 1)
+    ? 'Conditional branch'
+    : completeEdges.length === completeNodes.length - 1 && outgoing.every((count) => count <= 1)
+      ? 'Linear sequence'
+      : 'Connected topology'
+
+  return { name: expectedName, nodes: completeNodes, edges: completeEdges, shape }
+}
+
+function normalizeView(snapshot: unknown): ControlRoomView {
+  const source = asRecord(snapshot)
+  const aggregates = asRecord(source?.aggregates)
+  const sampledHealth = asRecord(aggregates?.sampledActionHealth)
+  const sampled = numberAt(sampledHealth, 'sampled')
+  const succeeded = numberAt(sampledHealth, 'succeeded')
+  const fn = asRecord(source?.function)
+  const tierContract = fn?.name === 'AutoTier' && typeof fn.contract === 'string' ? `AutoTier: ${fn.contract}` : undefined
+  const candidates = Array.isArray(source?.workflows) ? source.workflows : []
+  const workflows = workflowNames.flatMap((name) => {
+    const match = candidates.find((workflow) => asRecord(workflow)?.name === name)
+    const normalized = normalizeWorkflow(match, name)
+    return normalized ? [normalized] : []
+  })
+
+  return {
+    activeSignals: numberAt(aggregates, 'signalsActive'),
+    erroredSignals: numberAt(aggregates, 'signalsErrored'),
+    tierContract,
+    campaigns: numberAt(aggregates, 'campaigns'),
+    sampledActionHealth: sampled !== undefined && succeeded !== undefined && succeeded <= sampled ? { sampled, succeeded } : undefined,
+    workflows,
+  }
+}
+
+export function ControlRoom({ snapshot }: { snapshot: unknown }) {
   const [selectedPath, setSelectedPath] = useState<PathId>('signals')
   const [selectedStage, setSelectedStage] = useState<StageId>('detect')
   const path = paths[selectedPath]
   const stage = stages.find(({ id }) => id === selectedStage) ?? stages[0]
   const activeStages = new Set<string>(path.stages)
-  const activeSignals = aggregate(snapshot, 'signalsActive')
-  const erroredSignals = aggregate(snapshot, 'signalsErrored')
-  const sampled = nestedAggregate(snapshot, 'sampledActionHealth', 'sampled')
-  const succeeded = nestedAggregate(snapshot, 'sampledActionHealth', 'succeeded')
-  const campaigns = aggregate(snapshot, 'campaigns')
-  const workflows = snapshot.workflows.filter(
-    ({ name }) => name === 'Turquoise Immature' || name === 'Turquoise Operator Enrichment',
-  )
+  const view = normalizeView(snapshot)
 
   return (
     <section id="control-room" className="section control-room" aria-labelledby="control-room-title">
@@ -140,21 +234,27 @@ export function ControlRoom({ snapshot }: { snapshot: ClaySnapshot }) {
 
         <aside className="control-room__telemetry" aria-label="Control Room telemetry">
           <p className="eyebrow">Live explanation</p>
-          <p className="control-room__status" role="status" aria-live="polite">
-            {path.telemetry}. {stage.name}: {stage.description}
-          </p>
+          <div className="control-room__status" role="status" aria-live="polite">
+            <p>{path.telemetry}. {stage.name}: {stage.description}</p>
+            <dl className="control-room__stage-detail">
+              <div><dt>Input</dt><dd>{stage.input}</dd></div>
+              <div><dt>Transformation</dt><dd>{stage.transformation}</dd></div>
+              <div><dt>Output</dt><dd>{stage.output}</dd></div>
+              <div><dt>Failure mode</dt><dd>{stage.failure}</dd></div>
+            </dl>
+          </div>
           <dl className="control-room__facts">
             <div>
               <dt>Signals</dt>
-              <dd>{activeSignals} active · {erroredSignals} errored</dd>
+              <dd>{view.activeSignals !== undefined && view.erroredSignals !== undefined ? `${view.activeSignals} active · ${view.erroredSignals} errored` : 'Signal status unavailable'}</dd>
             </div>
             <div>
               <dt>Tier contract</dt>
-              <dd>{snapshot.function.name}: {snapshot.function.contract}</dd>
+              <dd>{view.tierContract ?? 'Tier contract unavailable'}</dd>
             </div>
             <div>
               <dt>Campaigns</dt>
-              <dd>{campaigns} · not yet shipped</dd>
+              <dd>{view.campaigns === undefined ? 'Campaign state unavailable' : `${view.campaigns} · not yet shipped`}</dd>
             </div>
           </dl>
         </aside>
@@ -164,20 +264,24 @@ export function ControlRoom({ snapshot }: { snapshot: ClaySnapshot }) {
         <section className="control-room__rail-item control-room__rail-item--failure" aria-labelledby="failure-title">
           <p className="eyebrow" id="failure-title">Failure rail</p>
           <p>OSHA news is errored: taxonomy input needs attention.</p>
-          <p>
-            Sampled action health: {succeeded} of {sampled} actions succeeded; one AutoTier intent action errored. This is a sample,
-            not a workspace-wide error rate.
-          </p>
+          {view.sampledActionHealth ? (
+            <p>
+              Sampled action health: {view.sampledActionHealth.succeeded} of {view.sampledActionHealth.sampled} actions succeeded; one AutoTier intent action errored. This is a sample,
+              not a workspace-wide error rate.
+            </p>
+          ) : <p>Sampled action health unavailable.</p>}
         </section>
         <section className="control-room__rail-item" aria-labelledby="workflow-title">
           <p className="eyebrow" id="workflow-title">Workflow topologies</p>
-          <ul>
-            {workflows.map((workflow) => (
-              <li key={workflow.name}>
-                {workflow.name} · {workflow.nodes.length} nodes
-              </li>
-            ))}
-          </ul>
+          {view.workflows.length > 0 ? view.workflows.map((workflow) => (
+            <article className="control-room__workflow" key={workflow.name}>
+              <h3>{workflow.name} · {workflow.shape}</h3>
+              <ol>
+                {workflow.nodes.map((node) => <li key={`${workflow.name}-${node.name}`}><span>{node.name}</span> <span>{node.type}</span></li>)}
+              </ol>
+              <p>Edges: {[...workflow.edges].sort(([fromA, toA], [fromB, toB]) => fromA - fromB || toA - toB).map(([from, to]) => `${workflow.nodes[from].name} → ${workflow.nodes[to].name}`).join(' · ')}</p>
+            </article>
+          )) : <p>Workflow topology unavailable.</p>}
         </section>
       </div>
     </section>
