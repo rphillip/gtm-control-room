@@ -29,6 +29,7 @@ body { margin: 0; min-width: 320px; font-family: var(--mono); }
 a { color: inherit; text-underline-offset: 0.2em; }
 
 a:focus-visible, button:focus-visible { outline: var(--focus-ring); outline-offset: 3px; }
+main:focus-visible { outline: var(--focus-ring); outline-offset: 4px; }
 
 .skip-link {
   position: fixed;
@@ -96,7 +97,7 @@ a:focus-visible, button:focus-visible { outline: var(--focus-ring); outline-offs
 .hero::before {
   position: absolute;
   z-index: -1;
-  inset: var(--space-4) -1rem 0;
+  inset: var(--space-4) 0 0;
   content: '';
   background-image: linear-gradient(var(--grid-line) 1px, transparent 1px), linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
   background-size: 1.25rem 1.25rem;
@@ -117,6 +118,7 @@ h1 { max-width: 15ch; margin-top: var(--space-2); font-size: clamp(2.8rem, 7vw, 
 h2 { max-width: 23ch; margin-top: var(--space-2); font-size: clamp(2rem, 5vw, 4.2rem); line-height: 0.96; }
 
 .hero__lede { max-width: 52ch; margin: var(--space-3) 0 0; color: var(--ink-muted); font-family: var(--serif); font-size: clamp(1.15rem, 2vw, 1.55rem); line-height: 1.3; }
+.hero__proof { margin: var(--space-2) 0 0; color: var(--ink); font-size: 0.72rem; font-weight: 500; letter-spacing: 0.02em; line-height: 1.55; }
 
 .hero__actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); margin-top: var(--space-4); }
 

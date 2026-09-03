@@ -14,18 +14,22 @@ export default function App() {
         Skip to main content
       </a>
       <SiteHeader />
-      <main id="main">
+      <main id="main" tabIndex={-1}>
         <section className="hero" aria-labelledby="hero-title">
           <div className="hero__copy">
             <p className="eyebrow">{hero.eyebrow}</p>
             <h1 id="hero-title">{hero.title}</h1>
             <p className="hero__lede">{hero.lede}</p>
+            <p className="hero__proof">{hero.proof}</p>
             <div className="hero__actions">
               <a className="button" href="#control-room">
                 Enter the Control Room
               </a>
               <a className="text-link" href={portfolio.person.linkedIn}>
                 LinkedIn
+              </a>
+              <a className="text-link" href={`mailto:${portfolio.person.email}`}>
+                Email Ryan
               </a>
             </div>
           </div>
@@ -36,7 +40,9 @@ export default function App() {
               <li>Normalize</li>
               <li>Qualify</li>
               <li>Route</li>
+              <li>Activate</li>
               <li>Observe</li>
+              <li>Improve</li>
             </ol>
             <p className="hero__system-note">Signals become dependable only when their failure states remain in view.</p>
           </div>

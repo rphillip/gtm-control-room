@@ -6,6 +6,7 @@ export const hero = {
   title: 'Healthcare GTM problems are usually data problems first.',
   lede:
     'I build the signals, models, integrations, and automation that turn fragmented healthcare data into action.',
+  proof: '4+ years building production cloud data systems across startup and digital-health teams.',
 }
 
 export const portfolio: PortfolioContent = validatePortfolio({
@@ -75,16 +76,25 @@ export const portfolio: PortfolioContent = validatePortfolio({
   ],
 })
 
-export const heroMetrics: Metric[] = [
-  { label: 'Cloud data engineering', value: '4+ years', provenance: 'observed' },
-  { label: 'Healthcare systems', value: '3', provenance: 'observed' },
-  { label: 'Campaigns shipped', value: '0 · activation next', provenance: 'observed' },
-]
-
 export function snapshotMetrics(snapshot: ClaySnapshot): Metric[] {
-  return [
+  const metrics: Metric[] = [
     { label: 'Signals active', value: String(snapshot.aggregates.signalsActive), provenance: 'observed' },
     { label: 'Account engine', value: `${snapshot.aggregates.scoredAccounts} scored`, provenance: 'observed' },
-    { label: 'Sampled action health', value: '9 / 10 succeeded', provenance: 'sampled' },
   ]
+
+  const sampledActionHealth = snapshot.aggregates.sampledActionHealth
+  if (
+    sampledActionHealth &&
+    typeof sampledActionHealth === 'object' &&
+    typeof sampledActionHealth.sampled === 'number' &&
+    typeof sampledActionHealth.succeeded === 'number'
+  ) {
+    metrics.push({
+      label: 'Sampled action health',
+      value: `${sampledActionHealth.succeeded} / ${sampledActionHealth.sampled} succeeded`,
+      provenance: 'sampled',
+    })
+  }
+
+  return metrics
 }
