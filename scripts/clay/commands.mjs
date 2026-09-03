@@ -23,14 +23,21 @@ function isAllowed(args, prefix) {
   return args.length >= prefix.length && prefix.every((part, index) => args[index] === part)
 }
 
-export async function runClay(args) {
-  if (!Array.isArray(args) || args.length === 0 || args.some((arg) => typeof arg !== 'string')) {
-    throw new TypeError('Clay arguments must be a non-empty string array')
-  }
-  if (!ALLOWED_PREFIXES.some((prefix) => isAllowed(args, prefix))) {
-    throw new Error(`Clay command is not read-only allowlisted: ${args.slice(0, 3).join(' ')}`)
-  }
+export function createClayRunner(execute = execFileAsync) {
+  return async function runClayCommand(args) {
+    if (!Array.isArray(args) || args.length === 0 || args.some((arg) => typeof arg !== 'string')) {
+      throw new TypeError('Clay arguments must be a non-empty string array')
+    }
+    const allowedPrefix = ALLOWED_PREFIXES.find((prefix) => isAllowed(args, prefix))
+    if (!allowedPrefix) throw new Error('Clay command is not read-only allowlisted')
 
-  const { stdout } = await execFileAsync('clay', args, { maxBuffer: 10_000_000 })
-  return JSON.parse(stdout)
+    try {
+      const { stdout } = await execute('clay', args, { maxBuffer: 10_000_000 })
+      return JSON.parse(stdout)
+    } catch {
+      throw new Error(`Clay read failed for ${allowedPrefix.join(' ')}`)
+    }
+  }
 }
+
+export const runClay = createClayRunner()

@@ -1,4 +1,5 @@
-import { mkdir, writeFile } from 'node:fs/promises'
+import { randomUUID } from 'node:crypto'
+import { lstat, mkdir, open, rename, unlink } from 'node:fs/promises'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 
@@ -14,6 +15,10 @@ const SIGNAL_COUNTS = new Map([
 ])
 const WORKFLOW_NAMES = ['Turquoise Immature', 'Turquoise Operator Enrichment']
 const FUNCTION_NAME = 'AutoTier'
+const SNAPSHOT_PATH = resolve(
+  dirname(fileURLToPath(import.meta.url)),
+  '../src/data/clay-snapshot.json',
+)
 
 const TABLE_NAMES = {
   blsInjury: '⚡️BLS Industry Injury Rate',
@@ -39,18 +44,26 @@ function assertDataPage(value, label) {
   return value
 }
 
-async function listAll(prefix, limit) {
+const MAX_CLAY_PAGES = 25
+
+export async function listAllClayPages(prefix, limit, execute = runClay) {
   const data = []
+  const seenCursors = new Set()
+  let pageCount = 0
   let cursor
   do {
+    if (pageCount >= MAX_CLAY_PAGES) throw new Error('Clay pagination exceeded the page limit')
+    pageCount += 1
     const args = [...prefix, '--limit', String(limit)]
     if (cursor) args.push('--cursor', cursor)
-    const page = assertDataPage(await runClay(args), prefix.join(' '))
+    const page = assertDataPage(await execute(args), 'Clay list')
     data.push(...page.data)
     cursor = page.cursor
     if (cursor !== undefined && typeof cursor !== 'string') {
-      throw new Error(`${prefix.join(' ')} cursor is malformed`)
+      throw new Error('Clay pagination cursor is malformed')
     }
+    if (cursor && seenCursors.has(cursor)) throw new Error('Clay pagination cursor repeated')
+    if (cursor) seenCursors.add(cursor)
   } while (cursor)
   return data
 }
@@ -166,7 +179,10 @@ async function collectSignals() {
 }
 
 async function collectFunction() {
-  const functions = await listAll(['functions', 'list', '--filter', 'source=custom'], 100)
+  const functions = await listAllClayPages(
+    ['functions', 'list', '--filter', 'source=custom'],
+    100,
+  )
   const selected = resolveExactName(functions, FUNCTION_NAME, 'function')
   const detail = await runClay(['functions', 'get', assertId(selected.id, 'function')])
   if (detail?.name !== FUNCTION_NAME) throw new Error('Function detail name does not match inventory')
@@ -174,7 +190,7 @@ async function collectFunction() {
 }
 
 async function collectWorkflows() {
-  const inventory = await listAll(['workflows', 'list'], 200)
+  const inventory = await listAllClayPages(['workflows', 'list'], 200)
   return Promise.all(
     WORKFLOW_NAMES.map(async (name) => {
       const workflow = resolveExactName(inventory, name, 'workflow')
@@ -194,19 +210,19 @@ async function collectWorkflows() {
 }
 
 async function collectCampaignCount() {
-  return (await listAll(['campaigns', 'list'], 100)).length
+  return (await listAllClayPages(['campaigns', 'list'], 100)).length
 }
 
 async function collectNamedResources() {
-  const workbooks = await listAll(['workbooks', 'list'], 100)
+  const workbooks = await listAllClayPages(['workbooks', 'list'], 100)
   const week2 = resolveExactName(workbooks, WORKBOOK_NAMES[0], 'workbook')
   const week3 = resolveExactName(workbooks, WORKBOOK_NAMES[1], 'workbook')
   const week2Id = assertId(week2.id, 'Week 2 workbook')
   const week3Id = assertId(week3.id, 'Week 3 workbook')
 
   const [week2Tables, week3Tables] = await Promise.all([
-    listAll(['tables', 'list', '--filter', `workbook.id=${week2Id}`], 100),
-    listAll(['tables', 'list', '--filter', `workbook.id=${week3Id}`], 100),
+    listAllClayPages(['tables', 'list', '--filter', `workbook.id=${week2Id}`], 100),
+    listAllClayPages(['tables', 'list', '--filter', `workbook.id=${week3Id}`], 100),
   ])
 
   return {
@@ -311,20 +327,66 @@ export async function buildClaySnapshot() {
   return sanitizeClay({ signals, function: functionDefinition, workflows, aggregates })
 }
 
-async function main() {
-  const snapshot = await buildClaySnapshot()
+async function assertRegularDestination(destination) {
+  try {
+    const metadata = await lstat(destination)
+    if (!metadata.isFile() || metadata.isSymbolicLink()) {
+      throw new Error('Snapshot destination must be a regular file')
+    }
+  } catch (error) {
+    if (error?.code !== 'ENOENT') throw error
+  }
+}
+
+export async function writeSnapshotFile(snapshot, destination = SNAPSHOT_PATH) {
   assertPublicClaySnapshot(snapshot)
   const serialized = `${JSON.stringify(snapshot, null, 2)}\n`
-  const outputPath = resolve(dirname(fileURLToPath(import.meta.url)), '../src/data/clay-snapshot.json')
-  await mkdir(dirname(outputPath), { recursive: true })
-  await writeFile(outputPath, serialized, 'utf8')
-  process.stdout.write('Wrote sanitized Clay snapshot.\n')
+  const destinationDirectory = dirname(destination)
+  const temporaryPath = resolve(
+    destinationDirectory,
+    `.clay-snapshot.${process.pid}.${randomUUID()}.tmp`,
+  )
+  await mkdir(destinationDirectory, { recursive: true })
+  await assertRegularDestination(destination)
+
+  let temporaryFile
+  try {
+    temporaryFile = await open(temporaryPath, 'wx', 0o644)
+    await temporaryFile.writeFile(serialized, 'utf8')
+    await temporaryFile.sync()
+    await temporaryFile.close()
+    temporaryFile = undefined
+
+    await assertRegularDestination(destination)
+    await rename(temporaryPath, destination)
+  } finally {
+    if (temporaryFile) await temporaryFile.close().catch(() => undefined)
+    await unlink(temporaryPath).catch((error) => {
+      if (error?.code !== 'ENOENT') throw error
+    })
+  }
+}
+
+export async function runSyncCli({
+  build = buildClaySnapshot,
+  write = writeSnapshotFile,
+  stdout = process.stdout,
+  stderr = process.stderr,
+} = {}) {
+  try {
+    const snapshot = await build()
+    await write(snapshot)
+    stdout.write('Wrote sanitized Clay snapshot.\n')
+    return 0
+  } catch {
+    stderr.write('Clay sync failed.\n')
+    return 1
+  }
 }
 
 const entry = process.argv[1] ? pathToFileURL(resolve(process.argv[1])).href : ''
 if (entry === import.meta.url) {
-  main().catch((error) => {
-    process.stderr.write(`${error instanceof Error ? error.message : 'Clay sync failed'}\n`)
-    process.exitCode = 1
+  runSyncCli().then((exitCode) => {
+    process.exitCode = exitCode
   })
 }
