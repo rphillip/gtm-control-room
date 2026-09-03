@@ -1,4 +1,5 @@
 import claySnapshot from './data/clay-snapshot.json'
+import { ControlRoom } from './components/ControlRoom'
 import { MetricStrip } from './components/MetricStrip'
 import { SiteHeader } from './components/SiteHeader'
 import { hero, portfolio, snapshotMetrics } from './content/portfolio'
@@ -49,11 +50,7 @@ export default function App() {
           <MetricStrip metrics={metrics} />
         </section>
 
-        <section id="control-room" className="section section--placeholder" aria-labelledby="control-room-title">
-          <p className="eyebrow">01 / Closed-loop GTM</p>
-          <h2 id="control-room-title">GTM Control Room</h2>
-          <p>A navigable systems view of source data, transformations, outputs, and failure states is being assembled here.</p>
-        </section>
+        <ControlRoom snapshot={claySnapshot as unknown as ClaySnapshot} />
 
         <section id="work" className="section section--placeholder" aria-labelledby="work-title">
           <p className="eyebrow">02 / Selected systems</p>
