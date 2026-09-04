@@ -20,6 +20,8 @@ describe('portfolio shell', () => {
       screen.getByText(/4\+ years building production cloud data systems across startup and digital-health teams/i),
     ).toBeInTheDocument()
     expect(screen.getByText(/Atelier de données · Houston/i)).toBeInTheDocument()
+    expect(document.querySelector('[data-atelier-ball]')).toHaveAttribute('aria-hidden', 'true')
+    expect(document.querySelectorAll('[data-atelier-part]')).toHaveLength(3)
     const heroRegion = screen.getByRole('region', { name: /healthcare GTM problems/i })
     expect(within(heroRegion).queryByLabelText('Selected system evidence')).not.toBeInTheDocument()
   })

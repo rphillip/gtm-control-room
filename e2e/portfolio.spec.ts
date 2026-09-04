@@ -99,12 +99,33 @@ test('reduced motion and forced colors preserve usable state changes', async ({ 
   )
   expect(transitionDuration).toBeLessThan(0.01)
   expect(await selectedStage.evaluate((element) => getComputedStyle(element).borderTopStyle)).toBe('solid')
+  expect(await page.locator('[data-atelier-ball]').evaluate((element) =>
+    Number.parseFloat(getComputedStyle(element).animationDuration) || 0,
+  )).toBeLessThan(0.01)
+
+  await page.getByText('Open full case file', { exact: true }).first().click()
+  expect(await page.locator('[data-case-ball]').first().evaluate((element) =>
+    Number.parseFloat(getComputedStyle(element).animationDuration) || 0,
+  )).toBeLessThan(0.01)
 
   await page.getByText('Open the registry', { exact: true }).click()
   const signalsView = page.getByRole('button', { name: 'Signals', exact: true })
   await signalsView.click()
   await expect(signalsView).toHaveAttribute('aria-pressed', 'true')
   await expect(signalsView.locator('[aria-hidden="true"]')).toBeVisible()
+})
+
+test('case machines expose evidence on focus and retain a permanent caption', async ({ page }) => {
+  await page.goto(sitePath)
+  await page.getByText('Open full case file', { exact: true }).first().click()
+
+  const machine = page.getByRole('figure', { name: 'Multi-Signal Account Engine animated system machine' })
+  await expect(machine).toBeVisible()
+  const evidence = machine.getByRole('button', { name: /Evidence: 11 High score tier/i })
+  await evidence.focus()
+  await expect(evidence.locator('.case-machine__tooltip')).toBeVisible()
+  await expect(machine.locator('figcaption')).toContainText('Scored accounts')
+  await expect(machine.locator('figcaption')).toContainText('60')
 })
 
 test('content remains usable at 200% text zoom', async ({ page }) => {

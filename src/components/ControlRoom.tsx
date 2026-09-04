@@ -182,15 +182,16 @@ function normalizeView(snapshot: unknown): ControlRoomView {
 
 function MachineGlyph({ id }: { id: StageId }) {
   const common = { fill: 'none', stroke: 'currentColor', strokeWidth: 1.8, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const }
+  const mechanism = `machine-glyph__mechanism machine-glyph__mechanism--${id}`
   return (
     <svg className="machine-glyph" viewBox="0 0 48 48" aria-hidden="true">
-      {id === 'detect' && <g {...common}><path d="M24 36V20m-8 16h16M18 18a8 8 0 0 1 12 0M13 13a15 15 0 0 1 22 0"/><circle cx="24" cy="20" r="2.5"/></g>}
-      {id === 'normalize' && <g {...common}><path d="M10 10h28l-11 14v11l-6 4V24z"/><path d="M16 16h16"/></g>}
-      {id === 'qualify' && <g {...common}><path d="M24 9v28M12 15h24M16 15l-6 12h12zm16 0-6 12h12zM17 38h14"/></g>}
-      {id === 'route' && <g {...common}><path d="M10 24h16m0 0 9-10m-9 10 9 10"/><circle cx="9" cy="24" r="3"/><circle cx="37" cy="12" r="3"/><circle cx="37" cy="36" r="3"/></g>}
-      {id === 'activate' && <g {...common}><rect x="9" y="14" width="30" height="21" rx="1"/><path d="m10 16 14 11 14-11M24 9v5m-6-3 2 3m10-3-2 3"/></g>}
-      {id === 'observe' && <g {...common}><path d="M6 24s7-10 18-10 18 10 18 10-7 10-18 10S6 24 6 24z"/><circle cx="24" cy="24" r="5"/><path d="M24 24l6-4"/></g>}
-      {id === 'improve' && <g {...common}><path d="M15 16a14 14 0 0 1 22 8l4-4m0 0v9h-9M33 33a14 14 0 0 1-22-8l-4 4m0 0v-9h9"/></g>}
+      {id === 'detect' && <g className={mechanism} data-ball-interaction={id} {...common}><path d="M24 36V20m-8 16h16"/><path className="machine-glyph__wave machine-glyph__wave--near" d="M18 18a8 8 0 0 1 12 0"/><path className="machine-glyph__wave machine-glyph__wave--far" d="M13 13a15 15 0 0 1 22 0"/><circle className="machine-glyph__catch" cx="24" cy="20" r="2.5"/></g>}
+      {id === 'normalize' && <g className={mechanism} data-ball-interaction={id} {...common}><path className="machine-glyph__funnel" d="M10 10h28l-11 14v11l-6 4V24z"/><path d="M16 16h16"/><circle className="machine-glyph__micro-ball" cx="24" cy="12" r="2.6" fill="currentColor" stroke="none"/></g>}
+      {id === 'qualify' && <g className={mechanism} data-ball-interaction={id} {...common}><path d="M24 9v28M17 38h14"/><g className="machine-glyph__balance"><path d="M12 15h24M16 15l-6 12h12zm16 0-6 12h12z"/></g></g>}
+      {id === 'route' && <g className={mechanism} data-ball-interaction={id} {...common}><path className="machine-glyph__switch" d="M10 24h16m0 0 9-10m-9 10 9 10"/><circle cx="9" cy="24" r="3"/><circle cx="37" cy="12" r="3"/><circle cx="37" cy="36" r="3"/></g>}
+      {id === 'activate' && <g className={mechanism} data-ball-interaction={id} {...common}><rect x="9" y="14" width="30" height="21" rx="1"/><path className="machine-glyph__flap" d="m10 16 14 11 14-11"/><path d="M24 9v5m-6-3 2 3m10-3-2 3"/></g>}
+      {id === 'observe' && <g className={mechanism} data-ball-interaction={id} {...common}><path className="machine-glyph__eye" d="M6 24s7-10 18-10 18 10 18 10-7 10-18 10S6 24 6 24z"/><circle className="machine-glyph__iris" cx="24" cy="24" r="5"/><path className="machine-glyph__needle" d="M24 24l6-4"/></g>}
+      {id === 'improve' && <g className={mechanism} data-ball-interaction={id} {...common}><g className="machine-glyph__loop"><path d="M15 16a14 14 0 0 1 22 8l4-4m0 0v9h-9M33 33a14 14 0 0 1-22-8l-4 4m0 0v-9h9"/></g></g>}
     </svg>
   )
 }

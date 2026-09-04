@@ -34,6 +34,7 @@ describe('ControlRoom', () => {
 
     expect(container.querySelector('[data-contraption-motion="ball"]')).toHaveAttribute('aria-hidden', 'true')
     expect(container.querySelectorAll('[data-contraption-part]')).toHaveLength(3)
+    expect(container.querySelectorAll('[data-ball-interaction]')).toHaveLength(7)
   })
 
   it('updates selected-stage telemetry through keyboard operation', async () => {

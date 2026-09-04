@@ -18,13 +18,14 @@ describe('CaseStudy', () => {
     const user = userEvent.setup()
     render(<CaseStudy study={snapshotPortfolio.caseStudies[0]} index={0} />)
 
-    expect(screen.getByText('11')).toBeInTheDocument()
+    expect(screen.getAllByText('11').length).toBeGreaterThan(0)
     expect(screen.getByText('Observed aggregate evidence; samples are labeled.')).toBeInTheDocument()
     expect(screen.getByText(/normalized company identity/i)).not.toBeVisible()
 
     await user.click(screen.getByText(/open full case file/i))
 
     expect(screen.getByText(/normalized company identity/i)).toBeVisible()
+    expect(screen.getByRole('figure', { name: /Multi-Signal Account Engine animated system machine/i })).toBeVisible()
   })
 
   it('presents failures without converting samples into global rates', () => {

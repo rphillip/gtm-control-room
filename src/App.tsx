@@ -43,15 +43,25 @@ export function PortfolioPage({ snapshot }: { snapshot?: unknown }) {
               <g className="hero__atelier-lines">
                 <path d="M65 87h490v234H65zM65 128h490"/>
                 <path d="M101 235h95l32 35h124l31-35h135"/>
-                <path d="M101 207v55h95v-55zM263 195v88h88v-88zM423 207v55h95v-55z"/>
-                <path d="m101 207 47-24 48 24-48 23zm162-12 44-23 44 23-44 23zm160 12 47-24 48 24-48 23z"/>
-                <path d="M148 183v-27m-13 0h26M307 172v-34m-14 0h28M470 183v-27m-13 0h26"/>
                 <circle cx="228" cy="270" r="12"/><circle cx="383" cy="235" r="12"/>
-                <path d="M216 270h24m131-35h24M307 138l17-17m-17 17-17-17"/>
+                <path d="M216 270h24m131-35h24"/>
                 <path d="M84 335h452M107 349h80m245 0h80"/>
+              </g>
+              <g className="hero__atelier-station hero__atelier-station--signals" data-atelier-part="signals">
+                <path d="M101 207v55h95v-55z"/><path d="m101 207 47-24 48 24-48 23z"/>
+                <path className="hero__atelier-antenna" d="M148 183v-27m-13 0h26"/>
+              </g>
+              <g className="hero__atelier-station hero__atelier-station--join" data-atelier-part="join">
+                <path d="M263 195v88h88v-88z"/><path d="m263 195 44-23 44 23-44 23z"/>
+                <g className="hero__atelier-rotor"><path d="M307 172v-34m-14 0h28M307 138l17-17m-17 17-17-17"/></g>
+              </g>
+              <g className="hero__atelier-station hero__atelier-station--route" data-atelier-part="route">
+                <path d="M423 207v55h95v-55z"/><path className="hero__atelier-route-lid" d="m423 207 47-24 48 24-48 23z"/>
+                <path d="M470 183v-27m-13 0h26"/>
               </g>
               <g className="hero__atelier-accent"><circle cx="228" cy="270" r="5"/><path d="M101 235h34"/></g>
               <g className="hero__atelier-blue"><path d="M484 235h34"/><circle cx="383" cy="235" r="5"/></g>
+              <circle className="hero__atelier-ball" data-atelier-ball aria-hidden="true" cx="108" cy="228" r="9" />
               <text x="112" y="305">SIGNALS</text><text x="285" y="305">JOIN</text><text x="445" y="305">ROUTE</text>
             </svg>
             <p className="hero__system-note">The small red pulley is failure visibility. Remove it and the whole thing becomes “just automation.”</p>

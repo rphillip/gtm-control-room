@@ -1,0 +1,24 @@
+import { cleanup, render, screen, within } from '@testing-library/react'
+import { afterEach, describe, expect, it } from 'vitest'
+import { portfolio } from '../content/portfolio'
+import { CaseMachine } from './CaseMachine'
+
+afterEach(cleanup)
+
+describe('CaseMachine', () => {
+  it.each(portfolio.caseStudies)(
+    'renders an accessible animated machine and permanent evidence caption for $title',
+    (study) => {
+      const { container } = render(<CaseMachine study={study} />)
+      const figure = screen.getByRole('figure', { name: `${study.title} animated system machine` })
+
+      expect(figure).toHaveAttribute('data-machine', study.slug)
+      expect(container.querySelector('[data-case-ball]')).toHaveAttribute('aria-hidden', 'true')
+      expect(within(figure).getAllByRole('button', { name: /evidence:/i })).toHaveLength(study.metrics.length)
+      for (const metric of study.metrics) {
+        expect(within(figure).getByText(metric.value, { selector: 'dd' })).toBeInTheDocument()
+        expect(within(figure).getByText(metric.label, { selector: 'dt' })).toBeInTheDocument()
+      }
+    },
+  )
+})
