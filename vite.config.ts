@@ -1,7 +1,7 @@
 import { existsSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 
-import { defineConfig } from 'vite'
+import { defineConfig, type Plugin, type ViteDevServer } from 'vite'
 import react from '@vitejs/plugin-react'
 import { configDefaults } from 'vitest/config'
 
@@ -16,24 +16,52 @@ export function pagesBase(repository = process.env.GITHUB_REPOSITORY) {
   return repositoryName ? `/${repositoryName}/` : '/'
 }
 
-export function publicSnapshotPlugin(snapshotPath: string) {
+function invalidatePublicSnapshot(server: ViteDevServer) {
+  const module = server.moduleGraph.getModuleById(resolvedPublicSnapshotModule)
+  if (module) server.moduleGraph.invalidateModule(module)
+  server.ws.send({ type: 'full-reload' })
+}
+
+export function publicSnapshotPlugin(snapshotPath: string): Plugin {
+  const watchedSnapshotPath = resolve(snapshotPath)
+
   return {
     name: 'public-clay-snapshot-boundary',
+    buildStart() {
+      this.addWatchFile(watchedSnapshotPath)
+    },
     resolveId(id: string) {
       return id === publicSnapshotModule ? resolvedPublicSnapshotModule : undefined
     },
     load(id: string) {
       if (id !== resolvedPublicSnapshotModule) return undefined
-      if (!existsSync(snapshotPath)) return 'export default undefined'
+      if (!existsSync(watchedSnapshotPath)) return 'export default undefined'
 
       let snapshot: unknown
       try {
-        snapshot = JSON.parse(readFileSync(snapshotPath, 'utf8'))
+        snapshot = JSON.parse(readFileSync(watchedSnapshotPath, 'utf8'))
       } catch {
         throw new Error('Public Clay snapshot is not valid JSON')
       }
       assertPublicClaySnapshot(snapshot)
       return `export default ${JSON.stringify(snapshot)}`
+    },
+    configureServer(server) {
+      server.watcher.add(watchedSnapshotPath)
+      const invalidateOnCreateOrDelete = (file: string) => {
+        if (resolve(file) === watchedSnapshotPath) invalidatePublicSnapshot(server)
+      }
+      server.watcher.on('add', invalidateOnCreateOrDelete)
+      server.watcher.on('unlink', invalidateOnCreateOrDelete)
+      server.httpServer?.once('close', () => {
+        server.watcher.off('add', invalidateOnCreateOrDelete)
+        server.watcher.off('unlink', invalidateOnCreateOrDelete)
+      })
+    },
+    handleHotUpdate({ file, server }) {
+      if (resolve(file) !== watchedSnapshotPath) return
+      invalidatePublicSnapshot(server)
+      return []
     },
   }
 }

@@ -29,6 +29,9 @@ const ALLOWED_SIGNALS = new Map([
 const ALLOWED_STATUSES = new Set(['Active', 'Errored'])
 const ALLOWED_INPUT_KINDS = new Set(['table', 'audience'])
 const ALLOWED_CADENCES = new Set(['quarterly'])
+const PUBLIC_FUNCTION_NAME = 'AutoTier'
+const PUBLIC_FUNCTION_CONTRACT = 'Value + company domain + scoring dimension → tier'
+const NORMALIZED_ISO_TIMESTAMP = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/
 
 const ALLOWED_WORKFLOWS = new Map([
   [
@@ -229,7 +232,7 @@ function sanitizeFunction(value) {
   const properties = value?.inputSchema?.properties
   if (
     !isObject(value) ||
-    value.name !== 'AutoTier' ||
+    value.name !== PUBLIC_FUNCTION_NAME ||
     !isObject(value.inputSchema) ||
     !isObject(properties) ||
     !requiredInputs.every((name) => Object.hasOwn(properties, name))
@@ -238,8 +241,8 @@ function sanitizeFunction(value) {
   }
 
   return {
-    name: 'AutoTier',
-    contract: 'Value + company domain + scoring dimension → tier',
+    name: PUBLIC_FUNCTION_NAME,
+    contract: PUBLIC_FUNCTION_CONTRACT,
   }
 }
 
@@ -320,7 +323,12 @@ export function sanitizeClay(raw) {
 export function assertPublicClaySnapshot(value) {
   assertPublicSafe(value)
   assertExactKeys(value, ['generatedAt', 'signals', 'function', 'workflows', 'aggregates'], 'snapshot')
-  if (typeof value.generatedAt !== 'string') throw new Error('Snapshot generatedAt is invalid')
+  if (
+    typeof value.generatedAt !== 'string' ||
+    !NORMALIZED_ISO_TIMESTAMP.test(value.generatedAt) ||
+    Number.isNaN(Date.parse(value.generatedAt)) ||
+    new Date(value.generatedAt).toISOString() !== value.generatedAt
+  ) throw new Error('Snapshot generatedAt is invalid')
   assertPublicSignals(value.signals)
   assertPublicFunction(value.function)
   assertPublicWorkflows(value.workflows)
@@ -341,7 +349,7 @@ function assertPublicSignals(signals) {
 
 function assertPublicFunction(fn) {
   assertExactKeys(fn, ['name', 'contract'], 'function')
-  if (fn.name !== 'AutoTier' || typeof fn.contract !== 'string') throw new Error('Snapshot function is invalid')
+  if (fn.name !== PUBLIC_FUNCTION_NAME || fn.contract !== PUBLIC_FUNCTION_CONTRACT) throw new Error('Snapshot function is invalid')
 }
 
 function assertPublicWorkflows(workflows) {

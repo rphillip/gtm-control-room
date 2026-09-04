@@ -276,4 +276,17 @@ describe('sanitizeClay', () => {
   ])('recursively rejects unsafe content in a public snapshot', (value, message) => {
     expect(() => assertPublicClaySnapshot(value)).toThrow(message)
   })
+
+  it.each([
+    ['a non-normalized timestamp', (snapshot) => { snapshot.generatedAt = '2026-09-03T00:00:00Z' }, /generatedAt/i],
+    ['a private URL in the timestamp', (snapshot) => { snapshot.generatedAt = 'https://private.example/generated-at' }, /private content/i],
+    ['an arbitrary public function name', (snapshot) => { snapshot.function.name = 'Tier' }, /function/i],
+    ['an arbitrary public function contract', (snapshot) => { snapshot.function.contract = 'Value to tier' }, /function/i],
+    ['a private credential in the function contract', (snapshot) => { snapshot.function.contract = 'private_key should never ship' }, /private content/i],
+  ])('rejects %s in approved public snapshot fields', (_label, mutate, message) => {
+    const snapshot = sanitizeClay(validRaw())
+    mutate(snapshot)
+
+    expect(() => assertPublicClaySnapshot(snapshot)).toThrow(message)
+  })
 })
