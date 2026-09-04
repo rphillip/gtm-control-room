@@ -224,6 +224,42 @@ test('hero and every case machine launch their balls onto a return route', async
   }
 })
 
+test('every rendered data word receives the themed red highlight', async ({ page }) => {
+  await page.goto(sitePath)
+
+  const getCounts = () => page.evaluate(() => {
+    const registry = (CSS as typeof CSS & {
+      highlights?: { get(name: string): Iterable<Range> | undefined }
+    }).highlights
+    const ranges = Array.from(registry?.get('themed-data') ?? []).filter((range) => range.startContainer.isConnected)
+    const nodes = Array.from(document.body.querySelectorAll('*'))
+      .flatMap((element) => Array.from(element.childNodes))
+      .filter((node) => node.nodeType === Node.TEXT_NODE)
+    const nodeIds = new Map(nodes.map((node, index) => [node, index]))
+    const expectedKeys = nodes.flatMap((node) => {
+      const matches = Array.from((node.textContent ?? '').matchAll(/\bdata\b/gi))
+      return matches.map((match) => `${nodeIds.get(node)}:${match.index}`)
+    })
+    const highlightedKeys = new Set(ranges.map((range) => `${nodeIds.get(range.startContainer)}:${range.startOffset}`))
+    return {
+      expected: expectedKeys.length,
+      highlighted: ranges.length,
+      allExpectedHighlighted: expectedKeys.every((key) => highlightedKeys.has(key)),
+      onlyDataWords: ranges.every((range) => /^data$/i.test(range.toString())),
+    }
+  })
+
+  await expect.poll(async () => {
+    const { allExpectedHighlighted } = await getCounts()
+    return allExpectedHighlighted
+  }).toBe(true)
+  const counts = await getCounts()
+
+  expect(counts.onlyDataWords).toBe(true)
+  expect(counts.highlighted).toBeGreaterThanOrEqual(counts.expected)
+  expect(counts.highlighted).toBeGreaterThan(10)
+})
+
 test('content remains usable at 200% text zoom', async ({ page }) => {
   await page.setViewportSize({ width: 640, height: 900 })
   await page.goto(sitePath)

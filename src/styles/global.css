@@ -45,6 +45,8 @@ h1, h2 { max-width: 18ch; margin: var(--space-2) 0 0; font-family: var(--serif);
 h1 { font-size: clamp(3.35rem, 7.8vw, 7.4rem); line-height: 0.83; }
 h1 span { display: block; }
 h1 em { display: block; margin: 0.05em 0 0.02em 0.62em; color: var(--red); font-size: 0.48em; font-weight: 380; line-height: 1; letter-spacing: -0.025em; }
+h1 .hero__accent-word { display: inline; color: var(--red); }
+::highlight(themed-data) { color: var(--red); }
 h2 { font-size: clamp(2.9rem, 6vw, 5.7rem); line-height: 0.9; }
 h3, h4 { margin: 0; font-weight: 600; }
 .hero__lede { max-width: 47ch; margin: var(--space-4) 0 0; font-family: var(--serif); font-size: clamp(1.2rem, 2vw, 1.55rem); line-height: 1.35; }

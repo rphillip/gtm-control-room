@@ -7,6 +7,7 @@ import { SystemRegistry } from './components/SystemRegistry'
 import { hero, portfolio, portfolioWithSnapshot } from './content/portfolio'
 import { normalizePublicSnapshot } from './content/publicSnapshot'
 import { heroMachineProfile, useMatterMachine } from './hooks/useMatterMachine'
+import { useDataWordHighlight } from './hooks/useDataWordHighlight'
 
 export default function App() {
   return <PortfolioPage snapshot={claySnapshot} />
@@ -14,6 +15,7 @@ export default function App() {
 
 export function PortfolioPage({ snapshot }: { snapshot?: unknown }) {
   const atelierRef = useRef<HTMLDivElement>(null)
+  useDataWordHighlight()
   useMatterMachine(atelierRef, heroMachineProfile)
   const publicSnapshot = normalizePublicSnapshot(snapshot)
   const content = portfolioWithSnapshot(publicSnapshot)
@@ -28,7 +30,7 @@ export function PortfolioPage({ snapshot }: { snapshot?: unknown }) {
         <section className="hero" aria-labelledby="hero-title">
           <div className="hero__copy">
             <p className="eyebrow">{hero.eyebrow}</p>
-            <h1 id="hero-title"><span>Healthcare GTM problems</span> <em>are usually</em> <span>data problems first.</span></h1>
+            <h1 id="hero-title"><span>Healthcare GTM problems</span> <em>are usually</em> <span><span className="hero__accent-word">data</span> problems first.</span></h1>
             <p className="hero__lede">{hero.lede}</p>
             <p className="hero__proof">{hero.proof}</p>
             <div className="hero__actions">
