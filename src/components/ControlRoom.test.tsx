@@ -53,6 +53,7 @@ describe('ControlRoom', () => {
       [/04 route/i, /Qualified tiers plus an audience segment and identifier availability/i],
       [/05 activate/i, /Prepared research and message outputs/i],
       [/06 observe/i, /Signal states, workflow topology, and sampled action outcomes/i],
+      [/07 improve/i, /Operator-readable reliability view and production revision priorities/i],
     ] as const
 
     for (const [stageName, input] of stageInputs) {
@@ -62,6 +63,29 @@ describe('ControlRoom', () => {
       expect(telemetry).toHaveTextContent(/Output/i)
       expect(telemetry).toHaveTextContent(/Failure mode/i)
       expect(telemetry).toHaveTextContent(input)
+    }
+  })
+
+  it('keeps every source path in the canonical loop through Observe then Improve', async () => {
+    const user = userEvent.setup()
+    render(<ControlRoom snapshot={sanitizedSnapshot} />)
+
+    const loop = screen.getByRole('list', { name: 'GTM operating loop' })
+    expect(within(loop).getAllByRole('button').map((button) => button.getAttribute('aria-label'))).toEqual([
+      '01 Detect',
+      '02 Normalize',
+      '03 Qualify',
+      '04 Route',
+      '05 Activate',
+      '06 Observe',
+      '07 Improve',
+    ])
+
+    for (const source of ['Hiring + intent', 'CMS + CHSP', 'BLS injury data']) {
+      await user.click(screen.getByRole('button', { name: source }))
+      const activeStages = Array.from(loop.querySelectorAll('.is-on-path button'))
+        .map((button) => button.getAttribute('aria-label'))
+      expect(activeStages.slice(-2)).toEqual(['06 Observe', '07 Improve'])
     }
   })
 
@@ -86,5 +110,28 @@ describe('ControlRoom', () => {
     expect(screen.getByLabelText('Reliability and workflow telemetry')).toHaveTextContent(/Sampled action health unavailable/i)
     expect(screen.getByLabelText('Workflow topologies')).toHaveTextContent(/Workflow topology unavailable/i)
     expect(screen.queryByText(/0 active · 0 errored/i)).not.toBeInTheDocument()
+  })
+
+  it('derives campaign and sampled-action telemetry from consistent snapshot counts', () => {
+    const changedSnapshot = structuredClone(sanitizedSnapshot)
+    changedSnapshot.aggregates.campaigns = 3
+    changedSnapshot.aggregates.sampledActionHealth = { sampled: 10, succeeded: 8, errored: 2 }
+    render(<ControlRoom snapshot={changedSnapshot} />)
+
+    expect(screen.getByLabelText('Control Room telemetry')).toHaveTextContent(/3 · not yet shipped/i)
+    expect(screen.getByLabelText('Reliability and workflow telemetry')).toHaveTextContent(
+      /8 of 10 actions succeeded; 2 AutoTier intent actions errored/i,
+    )
+  })
+
+  it('marks inconsistent sampled-action telemetry unavailable instead of inventing a failure count', () => {
+    const inconsistentSnapshot = structuredClone(sanitizedSnapshot)
+    inconsistentSnapshot.aggregates.sampledActionHealth = { sampled: 10, succeeded: 9, errored: 2 }
+    render(<ControlRoom snapshot={inconsistentSnapshot} />)
+
+    expect(screen.getByLabelText('Reliability and workflow telemetry')).toHaveTextContent(
+      /Sampled action health unavailable/i,
+    )
+    expect(screen.queryByText(/one AutoTier intent action errored/i)).not.toBeInTheDocument()
   })
 })

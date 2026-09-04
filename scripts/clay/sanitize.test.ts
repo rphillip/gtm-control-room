@@ -65,6 +65,20 @@ function validRaw() {
           { sourceNodeId: 'wfn_find', targetNodeId: 'wfn_add' },
         ],
       },
+      {
+        name: 'Turquoise Operator Enrichment',
+        nodes: [
+          { id: 'wfn_operator_trigger', name: 'Segment', nodeType: 'trigger' },
+          { id: 'wfn_research', name: 'Operator Send Research', nodeType: 'agent' },
+          { id: 'wfn_write', name: 'Write LinkedIn Message', nodeType: 'agent' },
+          { id: 'wfn_save', name: 'Save To Audience Record', nodeType: 'tool' },
+        ],
+        edges: [
+          { sourceNodeId: 'wfn_operator_trigger', targetNodeId: 'wfn_research' },
+          { sourceNodeId: 'wfn_research', targetNodeId: 'wfn_write' },
+          { sourceNodeId: 'wfn_write', targetNodeId: 'wfn_save' },
+        ],
+      },
     ],
     function: validFunction,
     aggregates: {
@@ -160,6 +174,28 @@ describe('sanitizeClay', () => {
   })
 
   it.each([
+    ['a partial node set', (raw) => raw.workflows[0].nodes.pop()],
+    ['a duplicate node name', (raw) => { raw.workflows[0].nodes[4].name = 'Find contacts at company' }],
+    ['a disconnected graph', (raw) => { raw.workflows[0].edges[3] = { sourceNodeId: 'wfn_missing', targetNodeId: 'wfn_find' } }],
+    ['a missing required edge', (raw) => { raw.workflows[0].edges.pop() }],
+    ['an extra edge', (raw) => raw.workflows[0].edges.push({ sourceNodeId: 'wfn_missing', targetNodeId: 'wfn_add' })],
+    ['a reversed required edge', (raw) => { raw.workflows[0].edges[0] = { sourceNodeId: 'wfn_condition', targetNodeId: 'wfn_trigger' } }],
+    ['a multi-node cycle', (raw) => {
+      raw.workflows[0].edges = [
+        { sourceNodeId: 'wfn_trigger', targetNodeId: 'wfn_condition' },
+        { sourceNodeId: 'wfn_condition', targetNodeId: 'wfn_missing' },
+        { sourceNodeId: 'wfn_missing', targetNodeId: 'wfn_condition' },
+        { sourceNodeId: 'wfn_find', targetNodeId: 'wfn_add' },
+      ]
+    }],
+  ])('rejects %s instead of publishing a different workflow topology', (_label, mutate) => {
+    const raw = validRaw()
+    mutate(raw)
+
+    expect(() => sanitizeClay(raw)).toThrow(/workflow/i)
+  })
+
+  it.each([
     ['self-referential', { sourceNodeId: 'wfn_trigger', targetNodeId: 'wfn_trigger' }],
     ['duplicate', { sourceNodeId: 'wfn_trigger', targetNodeId: 'wfn_condition' }],
   ])('rejects a %s workflow edge', (_label, edge) => {
@@ -209,6 +245,13 @@ describe('sanitizeClay', () => {
     delete raw.aggregates.scoreTiers.Low
 
     expect(() => sanitizeClay(raw)).toThrow(/aggregate/i)
+  })
+
+  it('rejects inconsistent sampled action totals', () => {
+    const raw = validRaw()
+    raw.aggregates.sampledActionHealth = { sampled: 10, succeeded: 9, errored: 2 }
+
+    expect(() => sanitizeClay(raw)).toThrow(/sampled action health/i)
   })
 
   it('produces output with no private ids, URLs, prompts, rows, or credentials', () => {

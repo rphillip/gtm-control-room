@@ -2,7 +2,11 @@ import { cleanup, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { CaseStudy } from './CaseStudy'
-import { portfolio } from '../content/portfolio'
+import snapshot from '../data/clay-snapshot.json'
+import { portfolio, portfolioWithSnapshot } from '../content/portfolio'
+import { normalizePublicSnapshot } from '../content/publicSnapshot'
+
+const snapshotPortfolio = portfolioWithSnapshot(normalizePublicSnapshot(snapshot))
 
 afterEach(() => {
   cleanup()
@@ -12,7 +16,7 @@ afterEach(() => {
 describe('CaseStudy', () => {
   it('shows evidence provenance and expands the build log', async () => {
     const user = userEvent.setup()
-    render(<CaseStudy study={portfolio.caseStudies[0]} index={0} />)
+    render(<CaseStudy study={snapshotPortfolio.caseStudies[0]} index={0} />)
 
     expect(screen.getByText('11')).toBeInTheDocument()
     expect(screen.getByText('Observed aggregate evidence; samples are labeled.')).toBeInTheDocument()

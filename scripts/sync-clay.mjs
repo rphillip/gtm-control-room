@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto'
-import { lstat, mkdir, open, rename, unlink } from 'node:fs/promises'
+import { lstat, open, rename, unlink } from 'node:fs/promises'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 
@@ -338,34 +338,44 @@ async function assertRegularDestination(destination) {
   }
 }
 
-export async function writeSnapshotFile(snapshot, destination = SNAPSHOT_PATH) {
-  assertPublicClaySnapshot(snapshot)
-  const serialized = `${JSON.stringify(snapshot, null, 2)}\n`
-  const destinationDirectory = dirname(destination)
-  const temporaryPath = resolve(
-    destinationDirectory,
-    `.clay-snapshot.${process.pid}.${randomUUID()}.tmp`,
-  )
-  await mkdir(destinationDirectory, { recursive: true })
-  await assertRegularDestination(destination)
+export function createSnapshotWriter(canonicalDestination) {
+  const canonicalPath = resolve(canonicalDestination)
 
-  let temporaryFile
-  try {
-    temporaryFile = await open(temporaryPath, 'wx', 0o644)
-    await temporaryFile.writeFile(serialized, 'utf8')
-    await temporaryFile.sync()
-    await temporaryFile.close()
-    temporaryFile = undefined
+  return async function writeSnapshotFile(snapshot, destination = canonicalPath) {
+    if (resolve(destination) !== canonicalPath) throw new Error('Snapshot destination must be the canonical output path')
+    assertPublicClaySnapshot(snapshot)
+    const serialized = `${JSON.stringify(snapshot, null, 2)}\n`
+    const destinationDirectory = dirname(canonicalPath)
+    const parent = await lstat(destinationDirectory)
+    if (!parent.isDirectory() || parent.isSymbolicLink()) {
+      throw new Error('Snapshot parent must be a real directory')
+    }
+    const temporaryPath = resolve(
+      destinationDirectory,
+      `.clay-snapshot.${process.pid}.${randomUUID()}.tmp`,
+    )
+    await assertRegularDestination(canonicalPath)
 
-    await assertRegularDestination(destination)
-    await rename(temporaryPath, destination)
-  } finally {
-    if (temporaryFile) await temporaryFile.close().catch(() => undefined)
-    await unlink(temporaryPath).catch((error) => {
-      if (error?.code !== 'ENOENT') throw error
-    })
+    let temporaryFile
+    try {
+      temporaryFile = await open(temporaryPath, 'wx', 0o644)
+      await temporaryFile.writeFile(serialized, 'utf8')
+      await temporaryFile.sync()
+      await temporaryFile.close()
+      temporaryFile = undefined
+
+      await assertRegularDestination(canonicalPath)
+      await rename(temporaryPath, canonicalPath)
+    } finally {
+      if (temporaryFile) await temporaryFile.close().catch(() => undefined)
+      await unlink(temporaryPath).catch((error) => {
+        if (error?.code !== 'ENOENT') throw error
+      })
+    }
   }
 }
+
+export const writeSnapshotFile = createSnapshotWriter(SNAPSHOT_PATH)
 
 export async function runSyncCli({
   build = buildClaySnapshot,

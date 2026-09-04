@@ -26,7 +26,7 @@ const stages = [
     input: 'A scoring value, company domain, and scoring dimension.',
     transformation: 'Apply the public AutoTier contract to assign a reusable tier.',
     output: 'A tier that can contribute to a qualified account or system.',
-    failure: 'A sampled AutoTier intent action errored; the sample is not a workspace-wide rate.',
+    failure: 'Sampled AutoTier intent errors are local telemetry, not a workspace-wide rate.',
   },
   {
     id: 'route',
@@ -43,8 +43,8 @@ const stages = [
     description: 'Activation-ready outputs are prepared; Campaigns are not yet shipped.',
     input: 'Prepared research and message outputs from the routed audience state.',
     transformation: 'Hold activation-ready work for a future delivery layer.',
-    output: 'Prepared output only; Campaigns remains at zero and is not yet shipped.',
-    failure: 'No campaign execution is represented, so campaign performance is not implied.',
+    output: 'Prepared output only; campaign delivery is not represented in this workflow stage.',
+    failure: 'No campaign execution results are presented as campaign performance.',
   },
   {
     id: 'observe',
@@ -53,7 +53,16 @@ const stages = [
     input: 'Signal states, workflow topology, and sampled action outcomes.',
     transformation: 'Surface sampled health and known failures alongside the path.',
     output: 'An operator-readable reliability view for the next improvement cycle.',
-    failure: 'A ten-action sample includes one AutoTier intent error; it is labeled as sampled.',
+    failure: 'Sampled action errors remain visible as sample telemetry, never as a workspace-wide rate.',
+  },
+  {
+    id: 'improve',
+    name: 'Improve',
+    description: 'Observed reliability guides the next production revision.',
+    input: 'Operator-readable reliability view and production revision priorities.',
+    transformation: 'Turn visible failure states into explicit ownership, retry, and data-contract improvements.',
+    output: 'A safer next version of the GTM system.',
+    failure: 'Improvements stay hypotheses until the next observed or sampled telemetry confirms their effect.',
   },
 ] as const
 
@@ -61,17 +70,17 @@ const paths = {
   signals: {
     label: 'Hiring + intent',
     telemetry: '60 accounts · 27 new-hire events · 5 active watches',
-    stages: ['detect', 'normalize', 'qualify', 'route'],
+    stages: ['detect', 'normalize', 'qualify', 'route', 'observe', 'improve'],
   },
   healthcare: {
     label: 'CMS + CHSP',
     telemetry: '5,419 CMS facility rows joined to 639 CHSP health systems',
-    stages: ['detect', 'normalize', 'qualify', 'route', 'activate'],
+    stages: ['detect', 'normalize', 'qualify', 'route', 'activate', 'observe', 'improve'],
   },
   safety: {
     label: 'BLS injury data',
     telemetry: '9 industry series → 20 high / 12 medium / 28 low',
-    stages: ['detect', 'normalize', 'qualify'],
+    stages: ['detect', 'normalize', 'qualify', 'observe', 'improve'],
   },
 } as const
 
@@ -95,7 +104,7 @@ interface ControlRoomView {
   erroredSignals?: number
   tierContract?: string
   campaigns?: number
-  sampledActionHealth?: { sampled: number; succeeded: number }
+  sampledActionHealth?: { sampled: number; succeeded: number; errored: number }
   workflows: WorkflowTopology[]
 }
 
@@ -147,6 +156,7 @@ function normalizeView(snapshot: unknown): ControlRoomView {
   const sampledHealth = asRecord(aggregates?.sampledActionHealth)
   const sampled = numberAt(sampledHealth, 'sampled')
   const succeeded = numberAt(sampledHealth, 'succeeded')
+  const errored = numberAt(sampledHealth, 'errored')
   const fn = asRecord(source?.function)
   const tierContract = fn?.name === 'AutoTier' && typeof fn.contract === 'string' ? `AutoTier: ${fn.contract}` : undefined
   const candidates = Array.isArray(source?.workflows) ? source.workflows : []
@@ -161,7 +171,11 @@ function normalizeView(snapshot: unknown): ControlRoomView {
     erroredSignals: numberAt(aggregates, 'signalsErrored'),
     tierContract,
     campaigns: numberAt(aggregates, 'campaigns'),
-    sampledActionHealth: sampled !== undefined && succeeded !== undefined && succeeded <= sampled ? { sampled, succeeded } : undefined,
+    sampledActionHealth: sampled !== undefined && succeeded !== undefined && errored !== undefined &&
+      Number.isInteger(sampled) && Number.isInteger(succeeded) && Number.isInteger(errored) &&
+      succeeded + errored === sampled
+      ? { sampled, succeeded, errored }
+      : undefined,
     workflows,
   }
 }
@@ -209,7 +223,7 @@ export function ControlRoom({ snapshot }: { snapshot: unknown }) {
       <div className="control-room__layout">
         <div className="control-room__pipeline">
           <p className="control-room__pipeline-label">Selected path · {path.label}</p>
-          <ol className="control-room__stages">
+          <ol className="control-room__stages" aria-label="GTM operating loop">
             {stages.map((item, index) => {
               const isOnPath = activeStages.has(item.id)
               const isSelected = selectedStage === item.id
@@ -218,6 +232,7 @@ export function ControlRoom({ snapshot }: { snapshot: unknown }) {
                 <li key={item.id} className={isOnPath ? 'is-on-path' : 'is-off-path'}>
                   <button
                     type="button"
+                    aria-label={`${String(index + 1).padStart(2, '0')} ${item.name}`}
                     aria-pressed={isSelected}
                     onClick={() => setSelectedStage(item.id)}
                   >
@@ -265,7 +280,7 @@ export function ControlRoom({ snapshot }: { snapshot: unknown }) {
           <p>OSHA news is errored: taxonomy input needs attention.</p>
           {view.sampledActionHealth ? (
             <p>
-              Sampled action health: {view.sampledActionHealth.succeeded} of {view.sampledActionHealth.sampled} actions succeeded; one AutoTier intent action errored. This is a sample,
+              Sampled action health: {view.sampledActionHealth.succeeded} of {view.sampledActionHealth.sampled} actions succeeded; {view.sampledActionHealth.errored} AutoTier intent action{view.sampledActionHealth.errored === 1 ? '' : 's'} errored. This is a sample,
               not a workspace-wide error rate.
             </p>
           ) : <p>Sampled action health unavailable.</p>}

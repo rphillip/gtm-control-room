@@ -1,4 +1,4 @@
-function assertRootLocalPath(value: string, label: 'asset' | 'base') {
+export function assertRootLocalPath(value: string, label: 'asset' | 'base') {
   let decoded = value
   try {
     for (let remaining = value.length; remaining > 0; remaining -= 1) {
@@ -17,8 +17,12 @@ function assertRootLocalPath(value: string, label: 'asset' | 'base') {
   }
 }
 
+export function assertLocalAssetPath(value: string) {
+  assertRootLocalPath(value, 'asset')
+}
+
 export function resolveLocalAsset(src: string, baseUrl = import.meta.env.BASE_URL) {
-  assertRootLocalPath(src, 'asset')
+  assertLocalAssetPath(src)
   assertRootLocalPath(baseUrl, 'base')
   if (/[?#]/.test(baseUrl)) throw new Error('Invalid local base path')
 

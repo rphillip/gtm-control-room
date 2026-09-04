@@ -62,6 +62,26 @@ test('keyboard traversal activates the Control Room and registry', async ({ page
   await expect(page.getByRole('region', { name: 'Signals registry' })).toContainText('active')
 })
 
+test('every source retains the canonical loop through Observe then Improve', async ({ page }) => {
+  await page.goto(sitePath)
+
+  const loop = page.getByRole('list', { name: 'GTM operating loop' })
+  await expect(loop.getByRole('button')).toHaveCount(7)
+  expect(await loop.getByRole('button').evaluateAll((buttons) =>
+    buttons.map((button) => button.getAttribute('aria-label')),
+  )).toEqual([
+    '01 Detect', '02 Normalize', '03 Qualify', '04 Route', '05 Activate', '06 Observe', '07 Improve',
+  ])
+
+  const sources = page.getByLabel('Public data sources').getByRole('button')
+  for (let index = 0; index < await sources.count(); index += 1) {
+    await sources.nth(index).click()
+    expect(await loop.locator('.is-on-path button').evaluateAll((buttons) =>
+      buttons.slice(-2).map((button) => button.getAttribute('aria-label')),
+    )).toEqual(['06 Observe', '07 Improve'])
+  }
+})
+
 test('reduced motion and forced colors preserve usable state changes', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce', forcedColors: 'active' })
   await page.goto(sitePath)
@@ -177,6 +197,11 @@ test('landmarks, headings, targets, images, and local assets meet basic accessib
   expect(faviconResponse.headers()['content-type']).toContain('image/svg+xml')
 
   await expect(page.locator('meta[name="color-scheme"]')).toHaveAttribute('content', 'light')
+  await expect(page.locator('meta[http-equiv="Content-Security-Policy"]')).toHaveAttribute(
+    'content',
+    /default-src 'self';.*object-src 'none';.*base-uri 'self';.*form-action 'none'/,
+  )
+  await expect(page.locator('meta[name="referrer"]')).toHaveAttribute('content', 'same-origin')
   await expect(page.locator('meta[property="og:title"]')).toHaveAttribute('content', /Healthcare GTM Data Engineer/)
   await expect(page.locator('meta[property="og:description"]')).toHaveAttribute('content', /signal-driven go-to-market systems/)
 

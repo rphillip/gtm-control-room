@@ -7,12 +7,16 @@ import { afterEach, describe, expect, it } from 'vitest'
 import {
   listAllClayPages,
   parseTierCounts,
+  createSnapshotWriter,
   resolveExactName,
   runSyncCli,
   writeSnapshotFile,
 } from './sync-clay.mjs'
 
 const temporaryDirectories: string[] = []
+const safeSnapshot = JSON.parse(
+  await readFile('src/data/clay-snapshot.json', 'utf8'),
+)
 
 afterEach(async () => {
   await Promise.all(
@@ -116,9 +120,9 @@ describe('writeSnapshotFile', () => {
     const destination = join(directory, 'snapshot.json')
     await writeFile(destination, 'old', 'utf8')
 
-    await writeSnapshotFile({ generatedAt: 'safe' }, destination)
+    await createSnapshotWriter(destination)(safeSnapshot)
 
-    expect(await readFile(destination, 'utf8')).toBe('{\n  "generatedAt": "safe"\n}\n')
+    expect(JSON.parse(await readFile(destination, 'utf8'))).toEqual(safeSnapshot)
     expect((await lstat(destination)).isFile()).toBe(true)
   })
 
@@ -130,12 +134,34 @@ describe('writeSnapshotFile', () => {
     await writeFile(target, 'sentinel', 'utf8')
     await symlink(target, destination)
 
-    await expect(writeSnapshotFile({ generatedAt: 'safe' }, destination)).rejects.toThrow(
+    await expect(createSnapshotWriter(destination)(safeSnapshot)).rejects.toThrow(
       /regular file/i,
     )
 
     expect(await readFile(target, 'utf8')).toBe('sentinel')
     expect((await lstat(destination)).isSymbolicLink()).toBe(true)
+  })
+
+  it('rejects a symlinked parent directory without writing through it', async () => {
+    const directory = await mkdtemp(join(tmpdir(), 'clay-snapshot-test-'))
+    temporaryDirectories.push(directory)
+    const realParent = join(directory, 'real-parent')
+    const symlinkedParent = join(directory, 'linked-parent')
+    const destination = join(symlinkedParent, 'snapshot.json')
+    await (await import('node:fs/promises')).mkdir(realParent)
+    await writeFile(join(realParent, 'snapshot.json'), 'sentinel', 'utf8')
+    await symlink(realParent, symlinkedParent)
+
+    await expect(createSnapshotWriter(destination)(safeSnapshot)).rejects.toThrow(/parent/i)
+
+    expect(await readFile(join(realParent, 'snapshot.json'), 'utf8')).toBe('sentinel')
+  })
+
+  it('does not permit the production writer to target an arbitrary path', async () => {
+    const directory = await mkdtemp(join(tmpdir(), 'clay-snapshot-test-'))
+    temporaryDirectories.push(directory)
+
+    await expect(writeSnapshotFile(safeSnapshot, join(directory, 'other.json'))).rejects.toThrow(/canonical/i)
   })
 })
 

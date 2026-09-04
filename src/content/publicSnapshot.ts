@@ -11,7 +11,7 @@ function record(value: unknown): Record<string, unknown> | undefined {
 }
 
 function finiteCount(value: unknown): number | undefined {
-  return typeof value === 'number' && Number.isFinite(value) && value >= 0 ? value : undefined
+  return typeof value === 'number' && Number.isFinite(value) && Number.isInteger(value) && value >= 0 ? value : undefined
 }
 
 function normalizeSignals(value: unknown): ClaySnapshot['signals'] | undefined {
@@ -52,6 +52,15 @@ function normalizeAggregates(value: unknown): ClaySnapshot['aggregates'] | undef
     if (finiteCount(item) !== undefined) aggregates[key] = item as number
     else if (record(item) && Object.values(item as Record<string, unknown>).every((count) => finiteCount(count) !== undefined)) {
       aggregates[key] = item as Record<string, number>
+    }
+  }
+  const sampledActionHealth = record(aggregates.sampledActionHealth)
+  if (sampledActionHealth) {
+    const sampled = finiteCount(sampledActionHealth.sampled)
+    const succeeded = finiteCount(sampledActionHealth.succeeded)
+    const errored = finiteCount(sampledActionHealth.errored)
+    if (sampled === undefined || succeeded === undefined || errored === undefined || succeeded + errored !== sampled) {
+      delete aggregates.sampledActionHealth
     }
   }
   return aggregates

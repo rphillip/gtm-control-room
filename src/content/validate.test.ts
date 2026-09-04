@@ -58,4 +58,18 @@ describe('validatePortfolio', () => {
     expect(() => validatePortfolio({ ...base, caseStudies: [{ ...base.caseStudies[0], media: { kind: 'image', src: '/evidence.png', alt: 'Evidence', caption: 'Caption', width: 0, height: 900 } }, base.caseStudies[1]] })).toThrow(/media/i)
     expect(() => validatePortfolio({ ...base, caseStudies: [{ ...base.caseStudies[0], media: { kind: 'image', src: '/evidence.png', alt: 'Evidence', caption: 'Caption', width: 1600, height: 900 } }, base.caseStudies[1]] })).not.toThrow()
   })
+
+  it('requires unique conservative slugs and uses the local asset path boundary for media', () => {
+    const base = {
+      person: { name: 'Ryan', email: 'ryan@example.com', linkedIn: 'https://www.linkedin.com/in/ryan' },
+      caseStudies: [
+        { slug: 'one', title: 'One', problem: 'Problem', summary: 'Summary', metrics: [{ label: 'Metric', value: '1', provenance: 'observed' }], stages: ['Stage'], buildLog: ['Build'], failures: ['Failure'], reflection: 'Reflection' },
+        { slug: 'two', title: 'Two', problem: 'Problem', summary: 'Summary', metrics: [{ label: 'Metric', value: '1', provenance: 'observed' }], stages: ['Stage'], buildLog: ['Build'], failures: ['Failure'], reflection: 'Reflection' },
+      ],
+    }
+
+    expect(() => validatePortfolio({ ...base, caseStudies: [{ ...base.caseStudies[0], slug: 'Two' }, base.caseStudies[1]] })).toThrow(/slug/i)
+    expect(() => validatePortfolio({ ...base, caseStudies: [{ ...base.caseStudies[0], slug: 'two' }, base.caseStudies[1]] })).toThrow(/unique/i)
+    expect(() => validatePortfolio({ ...base, caseStudies: [{ ...base.caseStudies[0], media: { kind: 'image', src: '/evidence/%252e%252e/private.svg', alt: 'Evidence', caption: 'Caption', width: 1600, height: 900 } }, base.caseStudies[1]] })).toThrow(/media/i)
+  })
 })

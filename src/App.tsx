@@ -1,10 +1,10 @@
-import claySnapshot from './data/clay-snapshot.json'
+import claySnapshot from 'virtual:public-clay-snapshot'
 import { ControlRoom } from './components/ControlRoom'
 import { CaseStudy } from './components/CaseStudy'
 import { MetricStrip } from './components/MetricStrip'
 import { SiteHeader } from './components/SiteHeader'
 import { SystemRegistry } from './components/SystemRegistry'
-import { hero, portfolio, snapshotMetrics } from './content/portfolio'
+import { hero, portfolio, portfolioWithSnapshot, snapshotMetrics } from './content/portfolio'
 import { normalizePublicSnapshot } from './content/publicSnapshot'
 
 export default function App() {
@@ -14,6 +14,7 @@ export default function App() {
 export function PortfolioPage({ snapshot }: { snapshot?: unknown }) {
   const publicSnapshot = normalizePublicSnapshot(snapshot)
   const metrics = snapshotMetrics(publicSnapshot)
+  const content = portfolioWithSnapshot(publicSnapshot)
 
   return (
     <>
@@ -63,7 +64,7 @@ export function PortfolioPage({ snapshot }: { snapshot?: unknown }) {
           <h2 id="work-title">Work with evidence, not a tool list.</h2>
           <p>Three systems show the problem, observable build, evidence boundary, failure state, and the production revision I would make next.</p>
           <div className="selected-systems__list">
-            {portfolio.caseStudies.map((study, index) => <CaseStudy key={study.slug} study={study} index={index} />)}
+            {content.caseStudies.map((study, index) => <CaseStudy key={study.slug} study={study} index={index} />)}
           </div>
         </section>
 

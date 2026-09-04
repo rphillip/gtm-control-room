@@ -35,7 +35,7 @@ export const portfolio: PortfolioContent = validatePortfolio({
         { label: 'Injury tiers · high / medium / low', value: '20 / 12 / 28', provenance: 'observed' },
         { label: 'Scored accounts', value: '60', provenance: 'observed' },
         { label: 'New-hire events', value: '27', provenance: 'observed' },
-        { label: 'Sampled action health', value: '9 / 10 succeeded', provenance: 'sampled' },
+        { label: 'Sampled action health', value: 'Unavailable', provenance: 'unavailable' },
       ],
       stages: ['Normalize identity', 'Detect signals', 'Join BLS + feedback', 'AutoTier dimensions', 'Write composite score'],
       media: {
@@ -53,7 +53,7 @@ export const portfolio: PortfolioContent = validatePortfolio({
         'Applied AutoTier before composing the score, then wrote the resulting priority and its component tiers downstream.',
       ],
       failures: [
-        'In a ten-row sampled health check, one AutoTier intent action errored while the other sampled scoring and write stages succeeded. This is a sample, not a workspace-wide error rate.',
+        'Sampled action health is published only through the build-time snapshot and is never a workspace-wide error rate.',
         'A missing tier is not neutral: without an explicit null contract, an otherwise green pipeline can quietly distort prioritization.',
       ],
       reflection:
@@ -96,7 +96,7 @@ export const portfolio: PortfolioContent = validatePortfolio({
       metrics: [
         { label: 'Immature conditional workflow nodes', value: '5', provenance: 'observed' },
         { label: 'Operator Enrichment linear workflow nodes', value: '4', provenance: 'observed' },
-        { label: 'Campaigns in this workspace', value: '0', provenance: 'observed' },
+        { label: 'Campaigns in this workspace', value: 'Unavailable', provenance: 'unavailable' },
       ],
       stages: ['Select segment', 'Check identifier', 'Research public activity', 'Write contextual message', 'Persist prepared output'],
       buildLog: [
@@ -105,13 +105,61 @@ export const portfolio: PortfolioContent = validatePortfolio({
       ],
       failures: [
         'The missing-identifier branch is deliberately visible rather than an exception to hide.',
-        'Campaign execution is not yet shipped: this workspace contains zero Campaigns, so the system stops at prepared activation output and claims no business outcome.',
+        'Campaign execution outcomes are not represented here, so the system stops at prepared activation output and claims no business outcome.',
       ],
       reflection:
         'I would add owner-visible queues, retry policy, and delivery-state telemetry before calling this an activation system. A branch for incomplete inputs is a product decision, not an edge case.',
     },
   ],
 })
+
+function asRecord(value: unknown): Record<string, unknown> | undefined {
+  return value && typeof value === 'object' && !Array.isArray(value) ? value as Record<string, unknown> : undefined
+}
+
+function isCount(value: unknown): value is number {
+  return typeof value === 'number' && Number.isInteger(value) && value >= 0
+}
+
+function actionHealthMetric(snapshot?: PublicClaySnapshot): Metric {
+  const health = asRecord(snapshot?.aggregates?.sampledActionHealth)
+  const sampled = health?.sampled
+  const succeeded = health?.succeeded
+  const errored = health?.errored
+  if (
+    isCount(sampled) && isCount(succeeded) && isCount(errored) && succeeded + errored === sampled
+  ) {
+    return {
+      label: 'Sampled action health',
+      value: `${succeeded} / ${sampled} succeeded · ${errored} errored`,
+      provenance: 'sampled',
+    }
+  }
+  return { label: 'Sampled action health', value: 'Unavailable', provenance: 'unavailable' }
+}
+
+function campaignMetric(snapshot?: PublicClaySnapshot): Metric {
+  const campaigns = snapshot?.aggregates?.campaigns
+  return isCount(campaigns)
+    ? { label: 'Campaigns in this workspace', value: String(campaigns), provenance: 'observed' }
+    : { label: 'Campaigns in this workspace', value: 'Unavailable', provenance: 'unavailable' }
+}
+
+export function portfolioWithSnapshot(snapshot?: PublicClaySnapshot): PortfolioContent {
+  const sampledActionHealth = actionHealthMetric(snapshot)
+  const campaigns = campaignMetric(snapshot)
+  return {
+    ...portfolio,
+    caseStudies: portfolio.caseStudies.map((study) => ({
+      ...study,
+      metrics: study.metrics.map((metric) =>
+        metric.label === 'Sampled action health' ? sampledActionHealth
+          : metric.label === 'Campaigns in this workspace' ? campaigns
+            : metric,
+      ),
+    })),
+  }
+}
 
 export function snapshotMetrics(snapshot?: PublicClaySnapshot): Metric[] {
   const signalsActive = snapshot?.aggregates?.signalsActive
@@ -126,7 +174,9 @@ export function snapshotMetrics(snapshot?: PublicClaySnapshot): Metric[] {
     sampledActionHealth &&
     typeof sampledActionHealth === 'object' &&
     typeof sampledActionHealth.sampled === 'number' &&
-    typeof sampledActionHealth.succeeded === 'number'
+    typeof sampledActionHealth.succeeded === 'number' &&
+    typeof sampledActionHealth.errored === 'number' &&
+    sampledActionHealth.succeeded + sampledActionHealth.errored === sampledActionHealth.sampled
   ) {
     metrics.push({
       label: 'Sampled action health',
