@@ -73,6 +73,7 @@ All other Clay commands are rejected. The sync selects named, expected resources
 Safe to commit:
 
 - Authored case-study copy and explicitly sourced aggregate counts.
+- Ryan's approved public identity fields: his name, public email address, and public LinkedIn URL.
 - Signal names, generalized types, active/error status, cadence labels, and input kind.
 - The human-readable AutoTier contract.
 - Approved workflow names, node names/types, and index-based edges.
@@ -80,12 +81,12 @@ Safe to commit:
 
 Never commit:
 
-- Contact or row-level company records, names, email addresses, phone numbers, or LinkedIn profile data.
+- Clay row data or third-party contact/company records, including names, email addresses, phone numbers, and LinkedIn profile data.
 - Clay workbook, table, row, signal, function, workflow, node, or other internal IDs.
 - Raw Clay responses, private workspace URLs, prompts, credentials, authorization material, API keys, tokens, or passwords.
 - `.env` files or local Clay configuration.
 
-The sanitizer rejects forbidden keys, private-ID patterns, URLs, and credential-like strings. Review the generated diff anyway; automated checks complement human review.
+Ryan's approved public email and LinkedIn URL are the only intended personal-data exception; his phone number remains prohibited. The sanitizer rejects forbidden keys, private-ID patterns, URLs, and credential-like strings. Review the generated diff anyway; automated checks complement human review.
 
 ## Add a future project
 
