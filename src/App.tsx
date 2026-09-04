@@ -1,16 +1,20 @@
 import claySnapshot from 'virtual:public-clay-snapshot'
+import { useRef } from 'react'
 import { ControlRoom } from './components/ControlRoom'
 import { SelectedSystems } from './components/SelectedSystems'
 import { SiteHeader } from './components/SiteHeader'
 import { SystemRegistry } from './components/SystemRegistry'
 import { hero, portfolio, portfolioWithSnapshot } from './content/portfolio'
 import { normalizePublicSnapshot } from './content/publicSnapshot'
+import { heroMachineProfile, useMatterMachine } from './hooks/useMatterMachine'
 
 export default function App() {
   return <PortfolioPage snapshot={claySnapshot} />
 }
 
 export function PortfolioPage({ snapshot }: { snapshot?: unknown }) {
+  const atelierRef = useRef<HTMLDivElement>(null)
+  useMatterMachine(atelierRef, heroMachineProfile)
   const publicSnapshot = normalizePublicSnapshot(snapshot)
   const content = portfolioWithSnapshot(publicSnapshot)
 
@@ -37,7 +41,7 @@ export function PortfolioPage({ snapshot }: { snapshot?: unknown }) {
               </a>
             </div>
           </div>
-          <div className="hero__system" aria-label="An illustrated GTM data atelier">
+          <div ref={atelierRef} className="hero__system" aria-label="An illustrated GTM data atelier" data-physics-engine="matter-js">
             <p className="hero__system-label">Atelier de données · Houston</p>
             <svg className="hero__atelier" viewBox="0 0 620 400" role="img" aria-label="A clear line drawing of a healthcare GTM data workshop">
               <g className="hero__atelier-lines">
@@ -61,7 +65,14 @@ export function PortfolioPage({ snapshot }: { snapshot?: unknown }) {
               </g>
               <g className="hero__atelier-accent"><circle cx="228" cy="270" r="5"/><path d="M101 235h34"/></g>
               <g className="hero__atelier-blue"><path d="M484 235h34"/><circle cx="383" cy="235" r="5"/></g>
-              <circle className="hero__atelier-ball" data-atelier-ball aria-hidden="true" cx="108" cy="228" r="9" />
+              <path className="hero__atelier-return" d="M518 235h30V82H82v146h26" />
+              <g className="physics-launcher" data-physics-launcher transform="translate(548 235)">
+                <path className="physics-launcher__cup" d="M-13-12v24M-13-12h10M-13 12h10" />
+                <path className="physics-launcher__spring" d="M-3-9 5-5-3-1 5 3-3 7 5 11" />
+                <path d="M7-15v30" />
+              </g>
+              <circle className="hero__atelier-ball" data-atelier-ball data-physics-ball aria-hidden="true" cx="108" cy="228" r="9" />
+              <path className="physics-ball__seam" data-physics-spin aria-hidden="true" d="M -4.5 -2 L 4.5 2" transform="translate(108 228)" />
               <text x="112" y="305">SIGNALS</text><text x="285" y="305">JOIN</text><text x="445" y="305">ROUTE</text>
             </svg>
             <p className="hero__system-note">The small red pulley is failure visibility. Remove it and the whole thing becomes “just automation.”</p>

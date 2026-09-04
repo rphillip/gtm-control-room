@@ -146,6 +146,7 @@ test('the kinetic selector swaps one case and its evidence mobile without a case
 })
 
 test('Matter.js advances the ball and triggers collision-specific machine states', async ({ page }) => {
+  test.setTimeout(60_000)
   await page.setViewportSize({ width: 1280, height: 900 })
   await page.goto(sitePath)
   await page.getByRole('link', { name: 'Start the machine' }).click()
@@ -165,6 +166,10 @@ test('Matter.js advances the ball and triggers collision-specific machine states
 
   expect(Math.hypot(moved.x - start.x, moved.y - start.y)).toBeGreaterThan(2)
   await expect.poll(() => machine.getAttribute('data-physics-active')).not.toBeNull()
+  await expect.poll(async () => Number(await machine.getAttribute('data-physics-cycle')), { timeout: 25_000 }).toBeGreaterThan(0)
+  await expect.poll(async () => Number(await machine.getAttribute('data-physics-launcher-contacts'))).toBeGreaterThan(0)
+  await expect.poll(async () => Number(await machine.getAttribute('data-physics-returns')), { timeout: 15_000 }).toBeGreaterThan(0)
+  await expect(machine).not.toHaveAttribute('data-physics-recovered')
 
   await page.emulateMedia({ reducedMotion: 'reduce' })
   await expect(machine).toHaveAttribute('data-physics-state', 'reduced-motion')
@@ -179,6 +184,44 @@ test('Matter.js advances the ball and triggers collision-specific machine states
   const offscreen = await ball.evaluate((element) => `${element.getAttribute('cx')},${element.getAttribute('cy')}`)
   await page.waitForTimeout(350)
   expect(await ball.evaluate((element) => `${element.getAttribute('cx')},${element.getAttribute('cy')}`)).toBe(offscreen)
+})
+
+test('hero and every case machine launch their balls onto a return route', async ({ page }) => {
+  test.setTimeout(210_000)
+  await page.setViewportSize({ width: 1280, height: 900 })
+  await page.goto(sitePath)
+
+  const atelier = page.locator('.hero__system[data-physics-engine="matter-js"]')
+  await atelier.scrollIntoViewIfNeeded()
+  await expect(atelier).toHaveAttribute('data-physics-state', 'running')
+  const atelierBall = atelier.locator('[data-physics-ball]')
+  const atelierStart = await atelierBall.evaluate((element) => `${element.getAttribute('cx')},${element.getAttribute('cy')}`)
+  await expect.poll(async () => atelierBall.evaluate((element) => `${element.getAttribute('cx')},${element.getAttribute('cy')}`)).not.toBe(atelierStart)
+  await expect.poll(async () => Number(await atelier.getAttribute('data-physics-cycle')), { timeout: 25_000 }).toBeGreaterThan(0)
+  await expect.poll(async () => Number(await atelier.getAttribute('data-physics-launcher-contacts'))).toBeGreaterThan(0)
+  await expect.poll(async () => Number(await atelier.getAttribute('data-physics-returns')), { timeout: 15_000 }).toBeGreaterThan(0)
+  await expect(atelier).not.toHaveAttribute('data-physics-recovered')
+
+  for (const slug of ['multi-signal-account-engine', 'healthcare-market-map', 'activation-workflows']) {
+    const selector = page.locator(`[data-case-selector="${slug}"]`)
+    await selector.scrollIntoViewIfNeeded()
+    await selector.click()
+    await expect(selector).toHaveAttribute('data-physics-state', 'running')
+    await expect.poll(async () => Number(await selector.getAttribute('data-physics-cycle')), { timeout: 20_000 }).toBeGreaterThan(0)
+    await expect.poll(async () => Number(await selector.getAttribute('data-physics-returns')), { timeout: 15_000 }).toBeGreaterThan(0)
+    await expect(selector).not.toHaveAttribute('data-physics-recovered')
+
+    const drawer = page.locator('.case-study__drawer')
+    await drawer.locator('summary').click()
+    const caseMachine = page.locator(`.case-machine[data-machine="${slug}"]`)
+    await caseMachine.scrollIntoViewIfNeeded()
+    await expect(caseMachine).toHaveAttribute('data-physics-state', 'running')
+    await expect.poll(async () => Number(await caseMachine.getAttribute('data-physics-cycle')), { timeout: 30_000 }).toBeGreaterThan(0)
+    await expect.poll(async () => Number(await caseMachine.getAttribute('data-physics-launcher-contacts'))).toBeGreaterThan(0)
+    await expect.poll(async () => Number(await caseMachine.getAttribute('data-physics-returns')), { timeout: 30_000 }).toBeGreaterThan(0)
+    await expect(caseMachine).not.toHaveAttribute('data-physics-recovered')
+    await drawer.locator('summary').click()
+  }
 })
 
 test('content remains usable at 200% text zoom', async ({ page }) => {

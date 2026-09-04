@@ -16,6 +16,9 @@ describe('CaseMachine', () => {
       expect(figure).toHaveAttribute('data-physics-engine', 'matter-js')
       expect(container.querySelector('[data-case-ball]')).toHaveAttribute('aria-hidden', 'true')
       expect(container.querySelector('[data-case-ball]')?.tagName.toLowerCase()).toBe('circle')
+      expect(container.querySelector('[data-physics-spin]')).toBeInTheDocument()
+      expect(container.querySelector('[data-physics-launcher]')).toBeInTheDocument()
+      expect(container.querySelector('.case-machine__return-track')).toBeInTheDocument()
       expect(within(figure).getAllByRole('button', { name: /evidence:/i })).toHaveLength(study.metrics.length)
       for (const metric of study.metrics) {
         expect(within(figure).getByText(metric.value, { selector: 'dd' })).toBeInTheDocument()

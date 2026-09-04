@@ -249,9 +249,15 @@ export function ControlRoom({ snapshot }: { snapshot: unknown }) {
             <path className="track track--blue" d="M721 343v44h145" />
             <circle cx="274" cy="73" r="14"/><circle cx="626" cy="103" r="14"/><circle cx="455" cy="351" r="14"/>
             <path d="M260 73h28M626 89v28M441 351h28"/>
+            <g className="physics-launcher" data-physics-launcher transform="translate(174 286)">
+              <path className="physics-launcher__cup" d="M-13-12v24M-13-12h10M-13 12h10" />
+              <path className="physics-launcher__spring" d="M-3-9 5-5-3-1 5 3-3 7 5 11" />
+              <path d="M7-15v30" />
+            </g>
           </svg>
           <svg className="contraption__physics" viewBox="0 0 1000 430" preserveAspectRatio="none" aria-hidden="true">
             <circle className="contraption__parcel" data-contraption-motion="ball" data-physics-ball aria-hidden="true" cx="76" cy="118" r="10" />
+            <path className="physics-ball__seam" data-physics-spin aria-hidden="true" d="M -5 -2 L 5 2" transform="translate(76 118)" />
           </svg>
           <span className="contraption__mechanism contraption__mechanism--wheel" data-contraption-part="wheel" aria-hidden="true"><i /><i /><i /></span>
           <span className="contraption__mechanism contraption__mechanism--lever" data-contraption-part="lever" aria-hidden="true"><i /></span>

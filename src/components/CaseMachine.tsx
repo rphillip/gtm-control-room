@@ -2,6 +2,23 @@ import type { CaseStudyContent } from '../content/types'
 import { useRef } from 'react'
 import { caseMachineProfiles, useMatterMachine } from '../hooks/useMatterMachine'
 
+function RollingCaseBall({ x, y }: { x: number; y: number }) {
+  return <>
+    <circle className="case-machine__ball" data-case-ball data-physics-ball aria-hidden="true" cx={x} cy={y} r="10" />
+    <path className="physics-ball__seam" data-physics-spin aria-hidden="true" d="M-5-2 5 2" transform={`translate(${x} ${y})`} />
+  </>
+}
+
+function CaseLauncher({ x, y }: { x: number; y: number }) {
+  return (
+    <g className="physics-launcher" data-physics-launcher transform={`translate(${x} ${y})`}>
+      <path className="physics-launcher__cup" d="M-13-12v24M-13-12h10M-13 12h10" />
+      <path className="physics-launcher__spring" d="M-3-9 5-5-3-1 5 3-3 7 5 11" />
+      <path d="M7-15v30" />
+    </g>
+  )
+}
+
 function AccountMachine() {
   return (
     <svg className="case-machine__diagram" viewBox="0 0 900 300" aria-hidden="true">
@@ -20,7 +37,9 @@ function AccountMachine() {
       </g>
       <g className="case-machine__red"><circle cx="92" cy="61" r="7"/><circle cx="114" cy="61" r="7"/><circle cx="136" cy="61" r="7"/></g>
       <g className="case-machine__blue"><path d="M641 129h91"/><path d="M230 133h26"/></g>
-      <circle className="case-machine__ball" data-case-ball data-physics-ball aria-hidden="true" cx="55" cy="100" r="10" />
+      <path className="case-machine__return-track" d="M845 152V38H55v62" />
+      <CaseLauncher x={845} y={152} />
+      <RollingCaseBall x={55} y={100} />
       <text x="64" y="270">SIGNALS</text><text x="205" y="270">NORMALIZE</text><text x="390" y="270">WEIGH</text><text x="638" y="270">QUEUE</text>
     </svg>
   )
@@ -45,7 +64,9 @@ function MarketMachine() {
       </g>
       <g className="case-machine__red"><circle cx="83" cy="110" r="7"/><circle cx="117" cy="84" r="7"/><circle cx="151" cy="135" r="7"/></g>
       <g className="case-machine__blue"><circle cx="307" cy="151" r="8"/><path d="M674 125l35 18 40-22"/></g>
-      <circle className="case-machine__ball" data-case-ball data-physics-ball aria-hidden="true" cx="48" cy="151" r="10" />
+      <path className="case-machine__return-track" d="M852 151V38H48v113" />
+      <CaseLauncher x={852} y={151} />
+      <RollingCaseBall x={48} y={151} />
       <text x="65" y="260">FACILITIES</text><text x="274" y="260">RESOLVE</text><text x="468" y="260">PARENT</text><text x="674" y="260">MAP</text>
     </svg>
   )
@@ -63,7 +84,9 @@ function ActivationMachine() {
       </g>
       <g className="case-machine__red"><path d="M96 126h69"/><circle cx="430" cy="150" r="8"/></g>
       <g className="case-machine__blue"><path d="M692 52l50 39 51-39"/><path d="M677 185h131"/></g>
-      <circle className="case-machine__ball" data-case-ball data-physics-ball aria-hidden="true" cx="50" cy="150" r="10" />
+      <path className="case-machine__return-track" d="M852 215V38H50v112" />
+      <CaseLauncher x={852} y={215} />
+      <RollingCaseBall x={50} y={150} />
       <text x="92" y="270">SEGMENT</text><text x="390" y="270">CHECK ID</text><text x="692" y="145">PREPARE</text><text x="699" y="278">REVIEW</text>
     </svg>
   )

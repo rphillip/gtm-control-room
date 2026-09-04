@@ -35,6 +35,8 @@ describe('ControlRoom', () => {
     expect(container.querySelector('[data-contraption-motion="ball"]')).toHaveAttribute('aria-hidden', 'true')
     expect(container.querySelector('[data-physics-engine="matter-js"]')).toBeInTheDocument()
     expect(container.querySelector('[data-contraption-motion="ball"]')?.tagName.toLowerCase()).toBe('circle')
+    expect(container.querySelector('[data-physics-spin]')).toBeInTheDocument()
+    expect(container.querySelector('[data-physics-launcher]')).toBeInTheDocument()
     expect(container.querySelectorAll('[data-contraption-part]')).toHaveLength(3)
     expect(container.querySelectorAll('[data-ball-interaction]')).toHaveLength(7)
   })
