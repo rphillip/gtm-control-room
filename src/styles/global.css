@@ -222,7 +222,9 @@ details[open] > summary .disclosure-plus { color: var(--paper); background: var(
 .control-room__stage-state { align-self: end; color: var(--muted); font-size: 0.52rem; letter-spacing: 0.04em; text-align: right; text-transform: uppercase; }
 .control-room__stages button[aria-pressed='true'] .control-room__stage-number { color: #f26a59; }
 .control-room__stages button[aria-pressed='true'] .control-room__stage-state { color: var(--paper-deep); }
-.contraption__parcel { position: absolute; z-index: 4; top: 7.3rem; left: 3.8rem; width: 1.1rem; height: 1.1rem; border: 2px solid var(--ink); border-radius: 50%; background: var(--red); box-shadow: 2px 2px 0 var(--ink); animation: ball-tour 12s linear infinite; will-change: transform; }
+.contraption__physics { position: absolute; z-index: 4; inset: 3rem 1rem 1rem; width: calc(100% - 2rem); height: calc(100% - 4rem); overflow: visible; pointer-events: none; }
+.contraption__parcel { fill: var(--red); stroke: var(--ink); stroke-width: 3; filter: drop-shadow(3px 3px 0 var(--ink)); animation: ball-tour 12s linear infinite; will-change: transform; }
+.contraption[data-physics-state='running'] .contraption__parcel, .case-machine[data-physics-state='running'] .case-machine__ball { animation: none; }
 .contraption__mechanism { position: absolute; z-index: 3; display: block; color: var(--ink); pointer-events: none; }
 .contraption__mechanism--wheel { top: 4.7rem; left: 27%; width: 2rem; height: 2rem; border: 2px solid currentColor; border-radius: 50%; animation: wheel-turn 12s ease-in-out infinite; }
 .contraption__mechanism--wheel i { position: absolute; top: 50%; left: 50%; width: 1.6rem; height: 1px; background: currentColor; transform: translate(-50%, -50%) rotate(var(--spoke, 0deg)); }
@@ -236,12 +238,12 @@ details[open] > summary .disclosure-plus { color: var(--paper); background: var(
 .contraption__mechanism--bell i { position: absolute; left: -0.3rem; right: -0.3rem; bottom: -0.15rem; height: 2px; background: var(--ink); }
 @keyframes ball-tour {
   0%, 5% { transform: translate(0, 0); }
-  18% { transform: translate(10.8rem, -2.7rem); }
-  33% { transform: translate(22.5rem, 2.8rem); }
-  49% { transform: translate(34.5rem, -1.2rem); }
-  62% { transform: translate(45.5rem, 5.3rem); }
-  78% { transform: translate(38rem, 17rem); }
-  92% { transform: translate(20rem, 17rem); }
+  18% { transform: translate(198px, -45px); }
+  33% { transform: translate(373px, 53px); }
+  49% { transform: translate(550px, -15px); }
+  62% { transform: translate(760px, 70px); }
+  78% { transform: translate(645px, 225px); }
+  92% { transform: translate(379px, 233px); }
   100% { transform: translate(0, 0); }
 }
 @keyframes wheel-turn { 0%, 10%, 100% { transform: rotate(0); } 18%, 28% { transform: rotate(240deg); } 34%, 99% { transform: rotate(360deg); } }
@@ -258,6 +260,56 @@ details[open] > summary .disclosure-plus { color: var(--paper); background: var(
 @keyframes observe-blink { 0%, 70%, 85%, 100% { transform: scaleY(1); } 77%, 82% { transform: scaleY(0.12); } }
 @keyframes observe-inspect { 0%, 70%, 85%, 100% { transform: translateX(0) rotate(0); } 75% { transform: translateX(-3px) rotate(-15deg); } 81% { transform: translateX(3px) rotate(15deg); } }
 @keyframes improve-loop { 0%, 84%, 100% { transform: rotate(0); } 96% { transform: rotate(360deg); } }
+
+.contraption[data-physics-state='running'] .machine-glyph__wave,
+.contraption[data-physics-state='running'] .machine-glyph__catch,
+.contraption[data-physics-state='running'] .machine-glyph__micro-ball,
+.contraption[data-physics-state='running'] .machine-glyph__funnel,
+.contraption[data-physics-state='running'] .machine-glyph__balance,
+.contraption[data-physics-state='running'] .machine-glyph__switch,
+.contraption[data-physics-state='running'] .machine-glyph__flap,
+.contraption[data-physics-state='running'] .machine-glyph__eye,
+.contraption[data-physics-state='running'] .machine-glyph__iris,
+.contraption[data-physics-state='running'] .machine-glyph__needle,
+.contraption[data-physics-state='running'] .machine-glyph__loop { animation: none; }
+.contraption[data-physics-active='detect'] .machine-glyph__wave { animation: physics-signal 520ms ease-out both; }
+.contraption[data-physics-active='detect'] .machine-glyph__catch { animation: physics-catch 520ms ease-out both; }
+.contraption[data-physics-active='normalize'] .machine-glyph__funnel { animation: physics-jiggle 620ms ease-in-out both; }
+.contraption[data-physics-active='normalize'] .machine-glyph__micro-ball { animation: physics-drop 620ms ease-in both; }
+.contraption[data-physics-active='qualify'] .machine-glyph__balance { animation: physics-weigh 760ms ease-in-out both; }
+.contraption[data-physics-active='route'] .machine-glyph__switch { animation: physics-switch 560ms ease-out both; }
+.contraption[data-physics-active='activate'] .machine-glyph__flap { animation: physics-pack 700ms ease-in-out both; }
+.contraption[data-physics-active='observe'] .machine-glyph__eye { animation: physics-blink 700ms ease-in-out both; }
+.contraption[data-physics-active='observe'] .machine-glyph__iris, .contraption[data-physics-active='observe'] .machine-glyph__needle { animation: physics-inspect 700ms ease-in-out both; }
+.contraption[data-physics-active='improve'] .machine-glyph__loop { animation: physics-loop 780ms ease-in-out both; }
+
+.case-machine[data-physics-state='running'] .case-machine__account-scale,
+.case-machine[data-physics-state='running'] .case-machine__account-queue,
+.case-machine[data-physics-state='running'] .case-machine__market-join,
+.case-machine[data-physics-state='running'] .case-machine__market-system,
+.case-machine[data-physics-state='running'] .case-machine__market-map,
+.case-machine[data-physics-state='running'] .case-machine__activation-switch,
+.case-machine[data-physics-state='running'] .case-machine__activation-envelope,
+.case-machine[data-physics-state='running'] .case-machine__activation-bin { animation: none; }
+.case-machine[data-physics-active='weigh'] .case-machine__account-scale { animation: physics-weigh 760ms ease-in-out both; }
+.case-machine[data-physics-active='queue'] .case-machine__account-queue { animation: physics-catch 600ms ease-out both; }
+.case-machine[data-physics-active='resolve'] .case-machine__market-join { animation: physics-loop 800ms ease-in-out both; }
+.case-machine[data-physics-active='parent'] .case-machine__market-system { animation: physics-catch 650ms ease-out both; }
+.case-machine[data-physics-active='map'] .case-machine__market-map { animation: physics-inspect 720ms ease-in-out both; }
+.case-machine[data-physics-active='check'] .case-machine__activation-switch { animation: physics-switch 620ms ease-in-out both; }
+.case-machine[data-physics-active='prepare'] .case-machine__activation-envelope { animation: physics-pack 720ms ease-in-out both; }
+.case-machine[data-physics-active='review'] .case-machine__activation-bin { animation: physics-catch 620ms ease-out both; }
+
+@keyframes physics-signal { 0% { opacity: 0.15; transform: scale(0.7); } 55% { opacity: 1; transform: scale(1.18); } 100% { opacity: 1; transform: scale(1); } }
+@keyframes physics-catch { 0% { transform: scale(1); } 45% { transform: scale(1.24); } 72% { transform: scale(0.92); } 100% { transform: scale(1); } }
+@keyframes physics-jiggle { 0%, 100% { transform: rotate(0); } 30% { transform: rotate(-7deg); } 65% { transform: rotate(6deg); } }
+@keyframes physics-drop { 0% { transform: translateY(-8px); opacity: 1; } 78% { transform: translateY(21px); opacity: 1; } 100% { transform: translateY(24px); opacity: 0; } }
+@keyframes physics-weigh { 0%, 100% { transform: rotate(0); } 28% { transform: rotate(-9deg); } 60% { transform: rotate(7deg); } 82% { transform: rotate(-3deg); } }
+@keyframes physics-switch { 0%, 100% { transform: rotate(0); } 45% { transform: rotate(-9deg); } 72% { transform: rotate(6deg); } }
+@keyframes physics-pack { 0%, 100% { transform: scaleY(1); } 48% { transform: scaleY(0.2); } 70% { transform: scaleY(1.12); } }
+@keyframes physics-blink { 0%, 100% { transform: scaleY(1); } 44%, 58% { transform: scaleY(0.1); } }
+@keyframes physics-inspect { 0%, 100% { transform: translateX(0) rotate(0); } 35% { transform: translateX(-4px) rotate(-14deg); } 70% { transform: translateX(4px) rotate(14deg); } }
+@keyframes physics-loop { from { transform: rotate(0); } to { transform: rotate(360deg); } }
 .control-room__telemetry { align-self: end; padding: 1rem; border: 2px solid var(--ink); border-top: 9px solid var(--ink); background: var(--paper); }
 .control-room__status { margin-top: 0.8rem; font-family: var(--serif); font-size: 1.15rem; line-height: 1.35; }
 .control-room__status p { margin: 0; }

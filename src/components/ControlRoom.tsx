@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
+import { mainMachineProfile, useMatterMachine } from '../hooks/useMatterMachine'
 
 const stages = [
   {
@@ -197,6 +198,8 @@ function MachineGlyph({ id }: { id: StageId }) {
 }
 
 export function ControlRoom({ snapshot }: { snapshot: unknown }) {
+  const machineRef = useRef<HTMLDivElement>(null)
+  useMatterMachine(machineRef, mainMachineProfile)
   const [selectedPath, setSelectedPath] = useState<PathId>('signals')
   const [selectedStage, setSelectedStage] = useState<StageId>('detect')
   const path = paths[selectedPath]
@@ -237,7 +240,7 @@ export function ControlRoom({ snapshot }: { snapshot: unknown }) {
       </div>
 
       <div className="control-room__layout">
-        <div className="control-room__pipeline contraption" data-selected={selectedStage}>
+        <div ref={machineRef} className="control-room__pipeline contraption" data-selected={selectedStage} data-physics-engine="matter-js">
           <p className="control-room__pipeline-label">Selected path · {path.label}</p>
           <svg className="contraption__tracks" viewBox="0 0 1000 430" preserveAspectRatio="none" aria-hidden="true">
             <path className="track track--main" d="M76 118H228L274 73H405L449 171H570L626 103H785L836 188H944" />
@@ -247,7 +250,9 @@ export function ControlRoom({ snapshot }: { snapshot: unknown }) {
             <circle cx="274" cy="73" r="14"/><circle cx="626" cy="103" r="14"/><circle cx="455" cy="351" r="14"/>
             <path d="M260 73h28M626 89v28M441 351h28"/>
           </svg>
-          <span className="contraption__parcel" data-contraption-motion="ball" aria-hidden="true" />
+          <svg className="contraption__physics" viewBox="0 0 1000 430" preserveAspectRatio="none" aria-hidden="true">
+            <circle className="contraption__parcel" data-contraption-motion="ball" data-physics-ball aria-hidden="true" cx="76" cy="118" r="10" />
+          </svg>
           <span className="contraption__mechanism contraption__mechanism--wheel" data-contraption-part="wheel" aria-hidden="true"><i /><i /><i /></span>
           <span className="contraption__mechanism contraption__mechanism--lever" data-contraption-part="lever" aria-hidden="true"><i /></span>
           <span className="contraption__mechanism contraption__mechanism--bell" data-contraption-part="bell" aria-hidden="true"><i /></span>

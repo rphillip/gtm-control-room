@@ -128,6 +128,42 @@ test('case machines expose evidence on focus and retain a permanent caption', as
   await expect(machine.locator('figcaption')).toContainText('60')
 })
 
+test('Matter.js advances the ball and triggers collision-specific machine states', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 })
+  await page.goto(sitePath)
+  await page.getByRole('link', { name: 'Start the machine' }).click()
+
+  const machine = page.locator('.contraption[data-physics-engine="matter-js"]')
+  await expect(machine).toHaveAttribute('data-physics-state', 'running')
+  const ball = machine.locator('[data-physics-ball]')
+  const start = await ball.evaluate((element) => ({
+    x: Number(element.getAttribute('cx')),
+    y: Number(element.getAttribute('cy')),
+  }))
+  await page.waitForTimeout(450)
+  const moved = await ball.evaluate((element) => ({
+    x: Number(element.getAttribute('cx')),
+    y: Number(element.getAttribute('cy')),
+  }))
+
+  expect(Math.hypot(moved.x - start.x, moved.y - start.y)).toBeGreaterThan(2)
+  await expect.poll(() => machine.getAttribute('data-physics-active')).not.toBeNull()
+
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  await expect(machine).toHaveAttribute('data-physics-state', 'reduced-motion')
+  const reduced = await ball.evaluate((element) => `${element.getAttribute('cx')},${element.getAttribute('cy')}`)
+  await page.waitForTimeout(250)
+  expect(await ball.evaluate((element) => `${element.getAttribute('cx')},${element.getAttribute('cy')}`)).toBe(reduced)
+
+  await page.emulateMedia({ reducedMotion: 'no-preference' })
+  await expect(machine).toHaveAttribute('data-physics-state', 'running')
+  await page.locator('#contact').scrollIntoViewIfNeeded()
+  await page.waitForTimeout(300)
+  const offscreen = await ball.evaluate((element) => `${element.getAttribute('cx')},${element.getAttribute('cy')}`)
+  await page.waitForTimeout(350)
+  expect(await ball.evaluate((element) => `${element.getAttribute('cx')},${element.getAttribute('cy')}`)).toBe(offscreen)
+})
+
 test('content remains usable at 200% text zoom', async ({ page }) => {
   await page.setViewportSize({ width: 640, height: 900 })
   await page.goto(sitePath)

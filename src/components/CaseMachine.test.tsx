@@ -13,7 +13,9 @@ describe('CaseMachine', () => {
       const figure = screen.getByRole('figure', { name: `${study.title} animated system machine` })
 
       expect(figure).toHaveAttribute('data-machine', study.slug)
+      expect(figure).toHaveAttribute('data-physics-engine', 'matter-js')
       expect(container.querySelector('[data-case-ball]')).toHaveAttribute('aria-hidden', 'true')
+      expect(container.querySelector('[data-case-ball]')?.tagName.toLowerCase()).toBe('circle')
       expect(within(figure).getAllByRole('button', { name: /evidence:/i })).toHaveLength(study.metrics.length)
       for (const metric of study.metrics) {
         expect(within(figure).getByText(metric.value, { selector: 'dd' })).toBeInTheDocument()
