@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="420" viewBox="0 0 960 420" role="img">
+  <title>Sanitized Multi-Signal Account Engine system schematic</title>
+  <rect width="960" height="420" fill="#f5f1e8"/>
+  <path d="M0 70h960M0 350h960M40 0v420M920 0v420" stroke="#7a8780" stroke-width="1" opacity=".45"/>
+  <g fill="#102c34" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">
+    <text x="40" y="38" font-size="13" font-weight="700" letter-spacing="2">SANITIZED SYSTEM SCHEMATIC</text>
+    <text x="40" y="59" font-size="12" fill="#005e70">MULTI-SIGNAL ACCOUNT ENGINE · STRUCTURE ONLY</text>
+  </g>
+
+  <g font-family="ui-monospace, SFMono-Regular, Menlo, monospace">
+    <rect x="40" y="105" width="180" height="210" fill="#f5f1e8" stroke="#102c34" stroke-width="2"/>
+    <rect x="40" y="105" width="180" height="38" fill="#102c34"/>
+    <text x="56" y="129" fill="#f5f1e8" font-size="13" font-weight="700">PUBLIC SOURCES</text>
+    <g fill="#102c34" font-size="13">
+      <circle cx="59" cy="170" r="5" fill="#057f95"/><text x="75" y="175">Hiring events</text>
+      <circle cx="59" cy="207" r="5" fill="#057f95"/><text x="75" y="212">Topic intent</text>
+      <circle cx="59" cy="244" r="5" fill="#057f95"/><text x="75" y="249">BLS injury data</text>
+      <circle cx="59" cy="281" r="5" fill="#057f95"/><text x="75" y="286">Field feedback</text>
+    </g>
+
+    <rect x="270" y="135" width="150" height="105" fill="#f5f1e8" stroke="#005e70" stroke-width="3"/>
+    <text x="288" y="166" fill="#005e70" font-size="12" font-weight="700" letter-spacing="1">NORMALIZE</text>
+    <text x="288" y="192" fill="#102c34" font-size="13">Identity</text>
+    <text x="288" y="216" fill="#102c34" font-size="13">+ domain</text>
+
+    <rect x="470" y="135" width="150" height="105" fill="#f5f1e8" stroke="#005e70" stroke-width="3"/>
+    <text x="488" y="166" fill="#005e70" font-size="12" font-weight="700" letter-spacing="1">AUTOTIER</text>
+    <text x="488" y="192" fill="#102c34" font-size="13">Dimension</text>
+    <text x="488" y="216" fill="#102c34" font-size="13">tiers</text>
+
+    <rect x="670" y="135" width="120" height="105" fill="#102c34" stroke="#102c34" stroke-width="3"/>
+    <text x="688" y="166" fill="#d8ee9b" font-size="12" font-weight="700" letter-spacing="1">COMPOSITE</text>
+    <text x="688" y="192" fill="#f5f1e8" font-size="13">Score</text>
+    <text x="688" y="216" fill="#f5f1e8" font-size="13">+ priority</text>
+
+    <rect x="840" y="105" width="80" height="210" fill="#005e70"/>
+    <text x="855" y="132" fill="#d8ee9b" font-size="11" font-weight="700" letter-spacing="1">QUEUE</text>
+    <g fill="#f5f1e8" font-size="12">
+      <text x="855" y="176">HIGH</text>
+      <text x="855" y="213">MED</text>
+      <text x="855" y="250">LOW</text>
+    </g>
+    <path d="M855 190h50M855 227h50M855 264h50" stroke="#d8ee9b" stroke-width="2"/>
+
+    <g fill="none" stroke="#102c34" stroke-width="3">
+      <path d="M220 188h42"/><path d="m254 180 10 8-10 8"/>
+      <path d="M420 188h42"/><path d="m454 180 10 8-10 8"/>
+      <path d="M620 188h42"/><path d="m654 180 10 8-10 8"/>
+      <path d="M790 188h42"/><path d="m824 180 10 8-10 8"/>
+    </g>
+
+    <path d="M545 240v47H270" fill="none" stroke="#b84513" stroke-width="3" stroke-dasharray="7 5"/>
+    <rect x="270" y="270" width="350" height="45" fill="#f5f1e8" stroke="#b84513" stroke-width="3"/>
+    <text x="288" y="288" fill="#b84513" font-size="11" font-weight="700" letter-spacing="1">FAILURE RAIL</text>
+    <text x="288" y="305" fill="#b84513" font-size="11" font-weight="700" letter-spacing=".6">NULL + ERROR STATES STAY VISIBLE</text>
+  </g>
+
+  <text x="40" y="386" fill="#476068" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="12">NO SOURCE ROWS · NO CONTACT DATA · NO PRIVATE WORKSPACE IDENTIFIERS</text>
+</svg>

@@ -38,6 +38,14 @@ export const portfolio: PortfolioContent = validatePortfolio({
         { label: 'Sampled action health', value: '9 / 10 succeeded', provenance: 'sampled' },
       ],
       stages: ['Normalize identity', 'Detect signals', 'Join BLS + feedback', 'AutoTier dimensions', 'Write composite score'],
+      media: {
+        kind: 'image',
+        src: '/evidence/multi-signal-account-engine.svg',
+        alt: 'Sanitized schematic showing public signals normalized, tiered, scored, and routed to an observable account queue with a failure rail.',
+        caption: 'Sanitized system schematic—not a workspace screenshot. It shows the observed architecture without source rows, contact data, or private workspace identifiers.',
+        width: 960,
+        height: 420,
+      },
       buildLog: [
         'Normalized company identity and domain so account and event sources could be joined without treating inconsistent names as different businesses.',
         'Detected new-hire, job-posting, and company-topic-intent events; then added qualitative Tally feedback alongside the account context.',

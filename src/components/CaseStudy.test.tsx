@@ -15,7 +15,7 @@ describe('CaseStudy', () => {
     render(<CaseStudy study={portfolio.caseStudies[0]} index={0} />)
 
     expect(screen.getByText('11')).toBeInTheDocument()
-    expect(screen.getByText(/observed/i)).toBeInTheDocument()
+    expect(screen.getByText('Observed aggregate evidence; samples are labeled.')).toBeInTheDocument()
 
     await user.click(screen.getByRole('button', { name: /open build log/i }))
 

@@ -97,20 +97,33 @@ test('content remains usable at 200% text zoom', async ({ page }) => {
   await expect(page.locator('#control-room')).toBeInViewport()
 })
 
-test('public evidence assets load beneath the Pages base path', async ({ page }) => {
+test('rendered case-study evidence loads beneath the Pages base without layout instability', async ({ page }) => {
+  await page.addInitScript(() => {
+    const state = window as typeof window & { __layoutShift: number }
+    state.__layoutShift = 0
+    new PerformanceObserver((list) => {
+      for (const entry of list.getEntries() as (PerformanceEntry & { hadRecentInput: boolean; value: number })[]) {
+        if (!entry.hadRecentInput) state.__layoutShift += entry.value
+      }
+    }).observe({ type: 'layout-shift', buffered: true })
+  })
   await page.goto(sitePath)
-  const assetUrl = new URL(`${sitePath}evidence/base-path-test.svg`, page.url()).href
-  const response = await page.request.get(assetUrl)
+  const image = page.getByRole('img', { name: /public signals.*observable account queue/i })
 
-  expect(response.ok()).toBe(true)
-  expect(response.headers()['content-type']).toContain('image/svg+xml')
-  const dimensions = await page.evaluate((src) => new Promise<{ width: number; height: number }>((resolve, reject) => {
-    const image = new Image()
-    image.addEventListener('load', () => resolve({ width: image.naturalWidth, height: image.naturalHeight }), { once: true })
-    image.addEventListener('error', () => reject(new Error(`Failed to load ${src}`)), { once: true })
-    image.src = src
-  }), assetUrl)
-  expect(dimensions).toEqual({ width: 64, height: 40 })
+  await image.scrollIntoViewIfNeeded()
+  await expect(image).toBeVisible()
+  await expect.poll(() => image.evaluate((element) => (element as HTMLImageElement).naturalWidth)).toBeGreaterThan(0)
+  const src = await image.getAttribute('src')
+  expect(new URL(src!, page.url()).pathname).toBe('/gtm-control-room/evidence/multi-signal-account-engine.svg')
+  await expect(image).toHaveAttribute('width', '960')
+  await expect(image).toHaveAttribute('height', '420')
+
+  const pageMetrics = await page.evaluate(() => ({
+    layoutShift: (window as typeof window & { __layoutShift: number }).__layoutShift,
+    overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+  }))
+  expect(pageMetrics.layoutShift).toBeLessThanOrEqual(0.1)
+  expect(pageMetrics.overflow).toBeLessThanOrEqual(1)
 })
 
 test('landmarks, headings, targets, images, and local assets meet basic accessibility invariants', async ({ page }) => {
