@@ -14,14 +14,15 @@ afterEach(() => {
 })
 
 describe('CaseStudy', () => {
-  it('shows evidence provenance and expands the build log', async () => {
+  it('shows the main idea first and expands the full case file', async () => {
     const user = userEvent.setup()
     render(<CaseStudy study={snapshotPortfolio.caseStudies[0]} index={0} />)
 
     expect(screen.getByText('11')).toBeInTheDocument()
     expect(screen.getByText('Observed aggregate evidence; samples are labeled.')).toBeInTheDocument()
+    expect(screen.getByText(/normalized company identity/i)).not.toBeVisible()
 
-    await user.click(screen.getByRole('button', { name: /open build log/i }))
+    await user.click(screen.getByText(/open full case file/i))
 
     expect(screen.getByText(/normalized company identity/i)).toBeVisible()
   })

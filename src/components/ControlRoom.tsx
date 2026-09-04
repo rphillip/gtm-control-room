@@ -180,6 +180,21 @@ function normalizeView(snapshot: unknown): ControlRoomView {
   }
 }
 
+function MachineGlyph({ id }: { id: StageId }) {
+  const common = { fill: 'none', stroke: 'currentColor', strokeWidth: 1.8, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const }
+  return (
+    <svg className="machine-glyph" viewBox="0 0 48 48" aria-hidden="true">
+      {id === 'detect' && <g {...common}><path d="M24 36V20m-8 16h16M18 18a8 8 0 0 1 12 0M13 13a15 15 0 0 1 22 0"/><circle cx="24" cy="20" r="2.5"/></g>}
+      {id === 'normalize' && <g {...common}><path d="M10 10h28l-11 14v11l-6 4V24z"/><path d="M16 16h16"/></g>}
+      {id === 'qualify' && <g {...common}><path d="M24 9v28M12 15h24M16 15l-6 12h12zm16 0-6 12h12zM17 38h14"/></g>}
+      {id === 'route' && <g {...common}><path d="M10 24h16m0 0 9-10m-9 10 9 10"/><circle cx="9" cy="24" r="3"/><circle cx="37" cy="12" r="3"/><circle cx="37" cy="36" r="3"/></g>}
+      {id === 'activate' && <g {...common}><rect x="9" y="14" width="30" height="21" rx="1"/><path d="m10 16 14 11 14-11M24 9v5m-6-3 2 3m10-3-2 3"/></g>}
+      {id === 'observe' && <g {...common}><path d="M6 24s7-10 18-10 18 10 18 10-7 10-18 10S6 24 6 24z"/><circle cx="24" cy="24" r="5"/><path d="M24 24l6-4"/></g>}
+      {id === 'improve' && <g {...common}><path d="M15 16a14 14 0 0 1 22 8l4-4m0 0v9h-9M33 33a14 14 0 0 1-22-8l-4 4m0 0v-9h9"/></g>}
+    </svg>
+  )
+}
+
 export function ControlRoom({ snapshot }: { snapshot: unknown }) {
   const [selectedPath, setSelectedPath] = useState<PathId>('signals')
   const [selectedStage, setSelectedStage] = useState<StageId>('detect')
@@ -192,11 +207,11 @@ export function ControlRoom({ snapshot }: { snapshot: unknown }) {
     <section id="control-room" className="section control-room" aria-labelledby="control-room-title">
       <div className="control-room__heading">
         <div>
-          <p className="eyebrow">01 / Closed-loop GTM</p>
-          <h2 id="control-room-title">GTM Control Room</h2>
+          <p className="eyebrow">01 / La machine</p>
+          <h2 id="control-room-title">A very serious data machine.</h2>
         </div>
         <p className="control-room__intro">
-          Select a public data source, then inspect the visible path through a healthcare GTM system.
+          Choose a source. The contraption shows how raw evidence becomes an accountable GTM action—and where the gears can jam.
         </p>
       </div>
 
@@ -221,8 +236,17 @@ export function ControlRoom({ snapshot }: { snapshot: unknown }) {
       </div>
 
       <div className="control-room__layout">
-        <div className="control-room__pipeline">
+        <div className="control-room__pipeline contraption" data-selected={selectedStage}>
           <p className="control-room__pipeline-label">Selected path · {path.label}</p>
+          <svg className="contraption__tracks" viewBox="0 0 1000 430" preserveAspectRatio="none" aria-hidden="true">
+            <path className="track track--main" d="M76 118H228L274 73H405L449 171H570L626 103H785L836 188H944" />
+            <path className="track track--return" d="M944 188v155H721l-42-55H502l-47 63H233L174 286H76V118" />
+            <path className="track track--red" d="M275 73v-34h112" />
+            <path className="track track--blue" d="M721 343v44h145" />
+            <circle cx="274" cy="73" r="14"/><circle cx="626" cy="103" r="14"/><circle cx="455" cy="351" r="14"/>
+            <path d="M260 73h28M626 89v28M441 351h28"/>
+          </svg>
+          <span className="contraption__parcel" aria-hidden="true" />
           <ol className="control-room__stages" aria-label="GTM operating loop">
             {stages.map((item, index) => {
               const isOnPath = activeStages.has(item.id)
@@ -237,7 +261,8 @@ export function ControlRoom({ snapshot }: { snapshot: unknown }) {
                     onClick={() => setSelectedStage(item.id)}
                   >
                     <span className="control-room__stage-number">{String(index + 1).padStart(2, '0')}</span>
-                    <span>{item.name}</span>
+                    <MachineGlyph id={item.id} />
+                    <span className="control-room__stage-name">{item.name}</span>
                     <span className="control-room__stage-state">{isSelected ? 'Selected' : isOnPath ? 'On path' : 'Not used'}</span>
                   </button>
                 </li>
@@ -246,58 +271,49 @@ export function ControlRoom({ snapshot }: { snapshot: unknown }) {
           </ol>
         </div>
 
-        <aside className="control-room__telemetry" aria-label="Control Room telemetry">
-          <p className="eyebrow">Live explanation</p>
+        <aside className="control-room__telemetry">
+          <p className="eyebrow">Now clanking</p>
           <div className="control-room__status" role="status" aria-live="polite">
             <p>{path.telemetry}. {stage.name}: {stage.description}</p>
+          </div>
+        </aside>
+      </div>
+
+      <details className="machine-notes">
+        <summary><span>Open machine notes</span><span className="disclosure-plus" aria-hidden="true">+</span></summary>
+        <div className="machine-notes__body">
+          <div className="machine-notes__telemetry" aria-label="Control Room telemetry">
             <dl className="control-room__stage-detail">
               <div><dt>Input</dt><dd>{stage.input}</dd></div>
               <div><dt>Transformation</dt><dd>{stage.transformation}</dd></div>
               <div><dt>Output</dt><dd>{stage.output}</dd></div>
               <div><dt>Failure mode</dt><dd>{stage.failure}</dd></div>
             </dl>
+            <dl className="control-room__facts">
+              <div><dt>Signals</dt><dd>{view.activeSignals !== undefined && view.erroredSignals !== undefined ? `${view.activeSignals} active · ${view.erroredSignals} errored` : 'Signal status unavailable'}</dd></div>
+              <div><dt>Tier contract</dt><dd>{view.tierContract ?? 'Tier contract unavailable'}</dd></div>
+              <div><dt>Campaigns</dt><dd>{view.campaigns === undefined ? 'Campaign state unavailable' : `${view.campaigns} · not yet shipped`}</dd></div>
+            </dl>
           </div>
-          <dl className="control-room__facts">
-            <div>
-              <dt>Signals</dt>
-              <dd>{view.activeSignals !== undefined && view.erroredSignals !== undefined ? `${view.activeSignals} active · ${view.erroredSignals} errored` : 'Signal status unavailable'}</dd>
-            </div>
-            <div>
-              <dt>Tier contract</dt>
-              <dd>{view.tierContract ?? 'Tier contract unavailable'}</dd>
-            </div>
-            <div>
-              <dt>Campaigns</dt>
-              <dd>{view.campaigns === undefined ? 'Campaign state unavailable' : `${view.campaigns} · not yet shipped`}</dd>
-            </div>
-          </dl>
-        </aside>
-      </div>
-
-      <div className="control-room__rail" role="group" aria-label="Reliability and workflow telemetry">
-        <section className="control-room__rail-item control-room__rail-item--failure" aria-labelledby="failure-title">
-          <h3 className="eyebrow" id="failure-title">Failure rail</h3>
-          <p>OSHA news is errored: taxonomy input needs attention.</p>
-          {view.sampledActionHealth ? (
-            <p>
-              Sampled action health: {view.sampledActionHealth.succeeded} of {view.sampledActionHealth.sampled} actions succeeded; {view.sampledActionHealth.errored} AutoTier intent action{view.sampledActionHealth.errored === 1 ? '' : 's'} errored. This is a sample,
-              not a workspace-wide error rate.
-            </p>
-          ) : <p>Sampled action health unavailable.</p>}
-        </section>
-        <section className="control-room__rail-item" aria-labelledby="workflow-title">
-          <h3 className="eyebrow" id="workflow-title">Workflow topologies</h3>
-          {view.workflows.length > 0 ? view.workflows.map((workflow) => (
-            <article className="control-room__workflow" key={workflow.name}>
-              <h4>{workflow.name} · {workflow.shape}</h4>
-              <ol>
-                {workflow.nodes.map((node) => <li key={`${workflow.name}-${node.name}`}><span>{node.name}</span> <span>{node.type}</span></li>)}
-              </ol>
-              <p>Edges: {[...workflow.edges].sort(([fromA, toA], [fromB, toB]) => fromA - fromB || toA - toB).map(([from, to]) => `${workflow.nodes[from].name} → ${workflow.nodes[to].name}`).join(' · ')}</p>
-            </article>
-          )) : <p>Workflow topology unavailable.</p>}
-        </section>
-      </div>
+          <div className="control-room__rail" role="group" aria-label="Reliability and workflow telemetry">
+            <section className="control-room__rail-item control-room__rail-item--failure" aria-labelledby="failure-title">
+              <h3 className="eyebrow" id="failure-title">Failure rail</h3>
+              <p>OSHA news is errored: taxonomy input needs attention.</p>
+              {view.sampledActionHealth ? <p>Sampled action health: {view.sampledActionHealth.succeeded} of {view.sampledActionHealth.sampled} actions succeeded; {view.sampledActionHealth.errored} AutoTier intent action{view.sampledActionHealth.errored === 1 ? '' : 's'} errored. This is a sample, not a workspace-wide error rate.</p> : <p>Sampled action health unavailable.</p>}
+            </section>
+            <section className="control-room__rail-item" aria-labelledby="workflow-title">
+              <h3 className="eyebrow" id="workflow-title">Workflow topologies</h3>
+              {view.workflows.length > 0 ? view.workflows.map((workflow) => (
+                <article className="control-room__workflow" key={workflow.name}>
+                  <h4>{workflow.name} · {workflow.shape}</h4>
+                  <ol>{workflow.nodes.map((node) => <li key={`${workflow.name}-${node.name}`}><span>{node.name}</span> <span>{node.type}</span></li>)}</ol>
+                  <p>Edges: {[...workflow.edges].sort(([fromA, toA], [fromB, toB]) => fromA - fromB || toA - toB).map(([from, to]) => `${workflow.nodes[from].name} → ${workflow.nodes[to].name}`).join(' · ')}</p>
+                </article>
+              )) : <p>Workflow topology unavailable.</p>}
+            </section>
+          </div>
+        </div>
+      </details>
     </section>
   )
 }

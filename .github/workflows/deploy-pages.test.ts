@@ -27,4 +27,13 @@ describe('GitHub Actions supply-chain pins', () => {
       /mutable action reference/i,
     )
   })
+
+  it('installs Chromium before browser-backed unit tests run', async () => {
+    const workflow = await readFile('.github/workflows/deploy-pages.yml', 'utf8')
+    const browserInstall = workflow.indexOf('npx playwright install --with-deps chromium')
+    const unitTests = workflow.indexOf('run: npm test')
+
+    expect(browserInstall).toBeGreaterThan(-1)
+    expect(unitTests).toBeGreaterThan(browserInstall)
+  })
 })

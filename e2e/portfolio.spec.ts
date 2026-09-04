@@ -27,7 +27,7 @@ for (const viewport of [
     )
     expect(overflow).toBeLessThanOrEqual(1)
 
-    await page.getByRole('link', { name: 'Enter the Control Room' }).click()
+    await page.getByRole('link', { name: 'Start the machine' }).click()
     await expect(page.locator('#control-room')).toBeInViewport()
     await page.getByRole('navigation', { name: 'Portfolio sections' }).getByRole('link', { name: 'Registry' }).click()
     await expect(page.locator('#registry')).toBeInViewport()
@@ -55,6 +55,9 @@ test('keyboard traversal activates the Control Room and registry', async ({ page
   await expect(normalizeStage).toHaveAttribute('aria-pressed', 'true')
   await expect(page.getByRole('status')).toContainText('Normalize')
 
+  const registryDisclosure = page.locator('.registry-disclosure > summary')
+  await tabTo(page, registryDisclosure)
+  await page.keyboard.press('Enter')
   const signalsView = page.getByRole('button', { name: 'Signals', exact: true })
   await tabTo(page, signalsView)
   await page.keyboard.press('Enter')
@@ -97,6 +100,7 @@ test('reduced motion and forced colors preserve usable state changes', async ({ 
   expect(transitionDuration).toBeLessThan(0.01)
   expect(await selectedStage.evaluate((element) => getComputedStyle(element).borderTopStyle)).toBe('solid')
 
+  await page.getByText('Open the registry', { exact: true }).click()
   const signalsView = page.getByRole('button', { name: 'Signals', exact: true })
   await signalsView.click()
   await expect(signalsView).toHaveAttribute('aria-pressed', 'true')
@@ -113,7 +117,7 @@ test('content remains usable at 200% text zoom', async ({ page }) => {
     () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
   )
   expect(overflow).toBeLessThanOrEqual(1)
-  await page.getByRole('link', { name: 'Enter the Control Room' }).click()
+  await page.getByRole('link', { name: 'Start the machine' }).click()
   await expect(page.locator('#control-room')).toBeInViewport()
 })
 
@@ -128,6 +132,7 @@ test('rendered case-study evidence loads beneath the Pages base without layout i
     }).observe({ type: 'layout-shift', buffered: true })
   })
   await page.goto(sitePath)
+  await page.getByText('Open full case file', { exact: true }).first().click()
   const image = page.getByRole('img', { name: /public signals.*observable account queue/i })
 
   await image.scrollIntoViewIfNeeded()

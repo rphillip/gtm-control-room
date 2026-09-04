@@ -24,7 +24,7 @@ describe('portfolio shell', () => {
   it('exposes keyboard-reachable navigation and public profile links', () => {
     render(<App />)
 
-    expect(screen.getByRole('link', { name: /enter the control room/i })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: /start the machine/i })).toHaveAttribute(
       'href',
       '#control-room',
     )
@@ -61,6 +61,7 @@ describe('portfolio shell', () => {
 
     expect(screen.getByRole('heading', { level: 3, name: /Multi-Signal Account Engine/i })).toBeInTheDocument()
     expect(screen.getByText(/^Unavailable scored accounts$/i)).toBeInTheDocument()
+    await user.click(screen.getByText(/open the registry/i))
     await user.click(screen.getByRole('button', { name: 'Signals' }))
     expect(screen.getByText(/Signal inventory unavailable/i)).toBeInTheDocument()
   })

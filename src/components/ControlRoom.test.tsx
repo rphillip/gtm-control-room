@@ -44,6 +44,7 @@ describe('ControlRoom', () => {
   it('explains each selected stage with inputs, transformations, outputs, and failure modes', async () => {
     const user = userEvent.setup()
     render(<ControlRoom snapshot={sanitizedSnapshot} />)
+    await user.click(screen.getByText(/open machine notes/i))
 
     const telemetry = screen.getByLabelText('Control Room telemetry')
     const stageInputs = [
@@ -92,6 +93,8 @@ describe('ControlRoom', () => {
   it('renders the snapshot workflow nodes, edges, and topology shape', () => {
     render(<ControlRoom snapshot={sanitizedSnapshot} />)
 
+    screen.getByText(/open machine notes/i).click()
+
     const workflows = screen.getByLabelText('Workflow topologies')
     expect(workflows).toHaveTextContent(/Turquoise Immature.*Conditional branch/i)
     expect(workflows).toHaveTextContent(/Has company identifier\?.*conditional/i)
@@ -103,6 +106,8 @@ describe('ControlRoom', () => {
   it('renders authored unavailable states instead of false zeroes for incomplete snapshots', () => {
     const incompleteSnapshot = { aggregates: {}, signals: [] }
     render(<ControlRoom snapshot={incompleteSnapshot} />)
+
+    screen.getByText(/open machine notes/i).click()
 
     expect(screen.getByLabelText('Control Room telemetry')).toHaveTextContent(/Signal status unavailable/i)
     expect(screen.getByLabelText('Control Room telemetry')).toHaveTextContent(/Tier contract unavailable/i)
@@ -118,6 +123,8 @@ describe('ControlRoom', () => {
     changedSnapshot.aggregates.sampledActionHealth = { sampled: 10, succeeded: 8, errored: 2 }
     render(<ControlRoom snapshot={changedSnapshot} />)
 
+    screen.getByText(/open machine notes/i).click()
+
     expect(screen.getByLabelText('Control Room telemetry')).toHaveTextContent(/3 · not yet shipped/i)
     expect(screen.getByLabelText('Reliability and workflow telemetry')).toHaveTextContent(
       /8 of 10 actions succeeded; 2 AutoTier intent actions errored/i,
@@ -128,6 +135,8 @@ describe('ControlRoom', () => {
     const inconsistentSnapshot = structuredClone(sanitizedSnapshot)
     inconsistentSnapshot.aggregates.sampledActionHealth = { sampled: 10, succeeded: 9, errored: 2 }
     render(<ControlRoom snapshot={inconsistentSnapshot} />)
+
+    screen.getByText(/open machine notes/i).click()
 
     expect(screen.getByLabelText('Reliability and workflow telemetry')).toHaveTextContent(
       /Sampled action health unavailable/i,
