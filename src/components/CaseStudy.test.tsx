@@ -20,6 +20,7 @@ describe('CaseStudy', () => {
 
     expect(screen.getAllByText('11').length).toBeGreaterThan(0)
     expect(screen.getByText('Observed aggregate evidence; samples are labeled.')).toBeInTheDocument()
+    expect(screen.getByRole('figure', { name: /Multi-Signal Account Engine evidence mobile/i })).toBeInTheDocument()
     expect(screen.getByText(/normalized company identity/i)).not.toBeVisible()
 
     await user.click(screen.getByText(/open full case file/i))

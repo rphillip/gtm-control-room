@@ -1,6 +1,6 @@
 import claySnapshot from 'virtual:public-clay-snapshot'
 import { ControlRoom } from './components/ControlRoom'
-import { CaseStudy } from './components/CaseStudy'
+import { SelectedSystems } from './components/SelectedSystems'
 import { SiteHeader } from './components/SiteHeader'
 import { SystemRegistry } from './components/SystemRegistry'
 import { hero, portfolio, portfolioWithSnapshot } from './content/portfolio'
@@ -70,14 +70,7 @@ export function PortfolioPage({ snapshot }: { snapshot?: unknown }) {
 
         <ControlRoom snapshot={publicSnapshot} />
 
-        <section id="work" className="section selected-systems" aria-labelledby="work-title">
-          <p className="eyebrow">02 / Les systèmes</p>
-          <h2 id="work-title">Three machines. Real evidence.</h2>
-          <p>See the idea first. Open a case file for the build logs, failures, and what I would change in production.</p>
-          <div className="selected-systems__list">
-            {content.caseStudies.map((study, index) => <CaseStudy key={study.slug} study={study} index={index} />)}
-          </div>
-        </section>
+        <SelectedSystems studies={content.caseStudies} />
 
         <SystemRegistry snapshot={publicSnapshot} />
 

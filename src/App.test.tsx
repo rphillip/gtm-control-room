@@ -24,6 +24,7 @@ describe('portfolio shell', () => {
     expect(document.querySelectorAll('[data-atelier-part]')).toHaveLength(3)
     const heroRegion = screen.getByRole('region', { name: /healthcare GTM problems/i })
     expect(within(heroRegion).queryByLabelText('Selected system evidence')).not.toBeInTheDocument()
+    expect(screen.getByRole('group', { name: 'Choose a case file' })).toBeInTheDocument()
   })
 
   it('exposes keyboard-reachable navigation and public profile links', () => {

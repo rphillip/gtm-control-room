@@ -82,21 +82,21 @@ describe('ControlRoom', () => {
     render(<ControlRoom snapshot={sanitizedSnapshot} />)
 
     const loop = screen.getByRole('list', { name: 'GTM operating loop' })
-    expect(within(loop).getAllByRole('button').map((button) => button.getAttribute('aria-label'))).toEqual([
-      '01 Detect',
-      '02 Normalize',
-      '03 Qualify',
-      '04 Route',
-      '05 Activate',
-      '06 Observe',
-      '07 Improve',
+    expect(within(loop).getAllByRole('button').map((button) => button.querySelector('.control-room__stage-name')?.textContent)).toEqual([
+      'Detect',
+      'Normalize',
+      'Qualify',
+      'Route',
+      'Activate',
+      'Observe',
+      'Improve',
     ])
 
     for (const source of ['Hiring + intent', 'CMS + CHSP', 'BLS injury data']) {
       await user.click(screen.getByRole('button', { name: source }))
       const activeStages = Array.from(loop.querySelectorAll('.is-on-path button'))
-        .map((button) => button.getAttribute('aria-label'))
-      expect(activeStages.slice(-2)).toEqual(['06 Observe', '07 Improve'])
+        .map((button) => button.querySelector('.control-room__stage-name')?.textContent)
+      expect(activeStages.slice(-2)).toEqual(['Observe', 'Improve'])
     }
   })
 

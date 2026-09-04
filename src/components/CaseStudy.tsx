@@ -1,7 +1,7 @@
 import type { CaseStudyContent } from '../content/types'
 import { resolveLocalAsset } from '../content/localAsset'
 import { CaseMachine } from './CaseMachine'
-import { MetricStrip } from './MetricStrip'
+import { EvidenceMobile } from './EvidenceMobile'
 
 export function CaseStudy({ study, index }: { study: CaseStudyContent; index: number }) {
   const titleId = `${study.slug}-title`
@@ -16,7 +16,7 @@ export function CaseStudy({ study, index }: { study: CaseStudyContent; index: nu
         <p className="case-study__summary">{study.summary}</p>
       </header>
 
-      <MetricStrip metrics={featuredMetrics} />
+      <EvidenceMobile title={study.title} metrics={featuredMetrics} />
 
       <details className="case-study__drawer">
         <summary><span>Open full case file</span><span className="disclosure-plus" aria-hidden="true">+</span></summary>

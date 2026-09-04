@@ -47,13 +47,14 @@ test('keyboard traversal activates the Control Room and registry', async ({ page
   await tabTo(page, healthcareSource)
   await page.keyboard.press('Enter')
   await expect(healthcareSource).toHaveAttribute('aria-pressed', 'true')
-  await expect(page.getByRole('status')).toContainText('5,419 CMS facility rows')
+  const machineStatus = page.locator('.control-room__status')
+  await expect(machineStatus).toContainText('5,419 CMS facility rows')
 
   const normalizeStage = page.getByRole('button', { name: /02 Normalize/i })
   await tabTo(page, normalizeStage)
   await page.keyboard.press('Space')
   await expect(normalizeStage).toHaveAttribute('aria-pressed', 'true')
-  await expect(page.getByRole('status')).toContainText('Normalize')
+  await expect(machineStatus).toContainText('Normalize')
 
   const registryDisclosure = page.locator('.registry-disclosure > summary')
   await tabTo(page, registryDisclosure)
@@ -71,17 +72,17 @@ test('every source retains the canonical loop through Observe then Improve', asy
   const loop = page.getByRole('list', { name: 'GTM operating loop' })
   await expect(loop.getByRole('button')).toHaveCount(7)
   expect(await loop.getByRole('button').evaluateAll((buttons) =>
-    buttons.map((button) => button.getAttribute('aria-label')),
+    buttons.map((button) => button.querySelector('.control-room__stage-name')?.textContent),
   )).toEqual([
-    '01 Detect', '02 Normalize', '03 Qualify', '04 Route', '05 Activate', '06 Observe', '07 Improve',
+    'Detect', 'Normalize', 'Qualify', 'Route', 'Activate', 'Observe', 'Improve',
   ])
 
   const sources = page.getByLabel('Public data sources').getByRole('button')
   for (let index = 0; index < await sources.count(); index += 1) {
     await sources.nth(index).click()
     expect(await loop.locator('.is-on-path button').evaluateAll((buttons) =>
-      buttons.slice(-2).map((button) => button.getAttribute('aria-label')),
-    )).toEqual(['06 Observe', '07 Improve'])
+      buttons.slice(-2).map((button) => button.querySelector('.control-room__stage-name')?.textContent),
+    )).toEqual(['Observe', 'Improve'])
   }
 })
 
@@ -126,6 +127,22 @@ test('case machines expose evidence on focus and retain a permanent caption', as
   await expect(evidence.locator('.case-machine__tooltip')).toBeVisible()
   await expect(machine.locator('figcaption')).toContainText('Scored accounts')
   await expect(machine.locator('figcaption')).toContainText('60')
+})
+
+test('the kinetic selector swaps one case and its evidence mobile without a case-study stack', async ({ page }) => {
+  await page.goto(sitePath)
+  const selector = page.getByRole('group', { name: 'Choose a case file' })
+
+  await expect(selector.getByRole('button')).toHaveCount(3)
+  await expect(page.locator('.selected-systems__stage .case-study')).toHaveCount(1)
+  await expect(page.getByRole('figure', { name: 'Multi-Signal Account Engine evidence mobile' })).toBeVisible()
+
+  const market = selector.getByRole('button', { name: /Healthcare Market Map/ })
+  await market.click()
+  await expect(market).toHaveAttribute('aria-pressed', 'true')
+  await expect(page.getByRole('heading', { level: 3, name: 'Healthcare Market Map' })).toBeVisible()
+  await expect(page.getByRole('figure', { name: 'Healthcare Market Map evidence mobile' })).toBeVisible()
+  await expect(page.locator('.selected-systems__stage .case-study')).toHaveCount(1)
 })
 
 test('Matter.js advances the ball and triggers collision-specific machine states', async ({ page }) => {

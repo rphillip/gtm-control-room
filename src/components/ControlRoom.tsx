@@ -265,7 +265,6 @@ export function ControlRoom({ snapshot }: { snapshot: unknown }) {
                 <li key={item.id} className={isOnPath ? 'is-on-path' : 'is-off-path'}>
                   <button
                     type="button"
-                    aria-label={`${String(index + 1).padStart(2, '0')} ${item.name}`}
                     aria-pressed={isSelected}
                     onClick={() => setSelectedStage(item.id)}
                   >
