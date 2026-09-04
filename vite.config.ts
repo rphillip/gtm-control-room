@@ -1,5 +1,5 @@
 import { existsSync, readFileSync } from 'node:fs'
-import { resolve } from 'node:path'
+import { dirname, resolve } from 'node:path'
 
 import { defineConfig, type Plugin, type ViteDevServer } from 'vite'
 import react from '@vitejs/plugin-react'
@@ -47,7 +47,7 @@ export function publicSnapshotPlugin(snapshotPath: string): Plugin {
       return `export default ${JSON.stringify(snapshot)}`
     },
     configureServer(server) {
-      server.watcher.add(watchedSnapshotPath)
+      server.watcher.add(dirname(watchedSnapshotPath))
       const invalidateOnCreateOrDelete = (file: string) => {
         if (resolve(file) === watchedSnapshotPath) invalidatePublicSnapshot(server)
       }
@@ -93,7 +93,7 @@ export function createViteConfig({
     ],
     test: {
       environment: 'jsdom',
-      exclude: [...configDefaults.exclude, 'e2e/**'],
+      exclude: [...configDefaults.exclude, 'e2e/**', '.worktrees/**'],
       setupFiles: './src/test/setup.ts',
     },
   }
