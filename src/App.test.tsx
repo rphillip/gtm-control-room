@@ -19,6 +19,9 @@ describe('portfolio shell', () => {
     expect(
       screen.getByText(/4\+ years building production cloud data systems across startup and digital-health teams/i),
     ).toBeInTheDocument()
+    expect(screen.getByText(/Atelier de données · Houston/i)).toBeInTheDocument()
+    const heroRegion = screen.getByRole('region', { name: /healthcare GTM problems/i })
+    expect(within(heroRegion).queryByLabelText('Selected system evidence')).not.toBeInTheDocument()
   })
 
   it('exposes keyboard-reachable navigation and public profile links', () => {
@@ -60,7 +63,8 @@ describe('portfolio shell', () => {
     render(<PortfolioPage snapshot={{ aggregates: { campaigns: 0 }, workflows: 'not a list' }} />)
 
     expect(screen.getByRole('heading', { level: 3, name: /Multi-Signal Account Engine/i })).toBeInTheDocument()
-    expect(screen.getByText(/^Unavailable scored accounts$/i)).toBeInTheDocument()
+    await user.click(screen.getByText(/open machine notes/i))
+    expect(screen.getByLabelText('Control Room telemetry')).toHaveTextContent(/Signal status unavailable/i)
     await user.click(screen.getByText(/open the registry/i))
     await user.click(screen.getByRole('button', { name: 'Signals' }))
     expect(screen.getByText(/Signal inventory unavailable/i)).toBeInTheDocument()

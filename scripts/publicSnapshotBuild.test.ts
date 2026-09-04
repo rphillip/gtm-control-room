@@ -82,16 +82,16 @@ describe('public Clay snapshot build boundary', () => {
       const page = await browser.newPage()
 
       await page.goto(origin, { waitUntil: 'domcontentloaded', timeout: 10_000 })
-      await page.getByText('Unavailable scored accounts', { exact: true }).waitFor({ timeout: 10_000 })
+      await page.getByText(/^Unavailable scored accounts ·/).waitFor({ state: 'attached', timeout: 10_000 })
 
       await createSnapshotWriter(snapshotPath)(await snapshotWithScoredAccounts(61))
-      await page.getByText('61 scored', { exact: true }).waitFor({ timeout: 10_000 })
+      await page.getByText(/^61 scored accounts ·/).waitFor({ state: 'attached', timeout: 10_000 })
 
       await createSnapshotWriter(snapshotPath)(await snapshotWithScoredAccounts(62))
-      await page.getByText('62 scored', { exact: true }).waitFor({ timeout: 10_000 })
+      await page.getByText(/^62 scored accounts ·/).waitFor({ state: 'attached', timeout: 10_000 })
 
       await unlink(snapshotPath)
-      await page.getByText('Unavailable scored accounts', { exact: true }).waitFor({ timeout: 10_000 })
+      await page.getByText(/^Unavailable scored accounts ·/).waitFor({ state: 'attached', timeout: 10_000 })
     } finally {
       await browser.close()
       await server.close()

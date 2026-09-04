@@ -29,6 +29,13 @@ describe('ControlRoom', () => {
     expect(buttons.map((button) => button.textContent)).toEqual(['Hiring + intent', 'CMS + CHSP', 'BLS injury data'])
   })
 
+  it('includes a decorative motion layer for the ball and mechanisms', () => {
+    const { container } = render(<ControlRoom snapshot={snapshot} />)
+
+    expect(container.querySelector('[data-contraption-motion="ball"]')).toHaveAttribute('aria-hidden', 'true')
+    expect(container.querySelectorAll('[data-contraption-part]')).toHaveLength(3)
+  })
+
   it('updates selected-stage telemetry through keyboard operation', async () => {
     const user = userEvent.setup()
     render(<ControlRoom snapshot={sanitizedSnapshot} />)

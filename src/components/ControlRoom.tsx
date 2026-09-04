@@ -246,7 +246,10 @@ export function ControlRoom({ snapshot }: { snapshot: unknown }) {
             <circle cx="274" cy="73" r="14"/><circle cx="626" cy="103" r="14"/><circle cx="455" cy="351" r="14"/>
             <path d="M260 73h28M626 89v28M441 351h28"/>
           </svg>
-          <span className="contraption__parcel" aria-hidden="true" />
+          <span className="contraption__parcel" data-contraption-motion="ball" aria-hidden="true" />
+          <span className="contraption__mechanism contraption__mechanism--wheel" data-contraption-part="wheel" aria-hidden="true"><i /><i /><i /></span>
+          <span className="contraption__mechanism contraption__mechanism--lever" data-contraption-part="lever" aria-hidden="true"><i /></span>
+          <span className="contraption__mechanism contraption__mechanism--bell" data-contraption-part="bell" aria-hidden="true"><i /></span>
           <ol className="control-room__stages" aria-label="GTM operating loop">
             {stages.map((item, index) => {
               const isOnPath = activeStages.has(item.id)

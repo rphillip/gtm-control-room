@@ -1,10 +1,9 @@
 import claySnapshot from 'virtual:public-clay-snapshot'
 import { ControlRoom } from './components/ControlRoom'
 import { CaseStudy } from './components/CaseStudy'
-import { MetricStrip } from './components/MetricStrip'
 import { SiteHeader } from './components/SiteHeader'
 import { SystemRegistry } from './components/SystemRegistry'
-import { hero, portfolio, portfolioWithSnapshot, snapshotMetrics } from './content/portfolio'
+import { hero, portfolio, portfolioWithSnapshot } from './content/portfolio'
 import { normalizePublicSnapshot } from './content/publicSnapshot'
 
 export default function App() {
@@ -13,7 +12,6 @@ export default function App() {
 
 export function PortfolioPage({ snapshot }: { snapshot?: unknown }) {
   const publicSnapshot = normalizePublicSnapshot(snapshot)
-  const metrics = snapshotMetrics(publicSnapshot)
   const content = portfolioWithSnapshot(publicSnapshot)
 
   return (
@@ -40,25 +38,24 @@ export function PortfolioPage({ snapshot }: { snapshot?: unknown }) {
             </div>
           </div>
           <div className="hero__system" aria-label="An illustrated GTM data atelier">
-            <p className="hero__system-label">Atelier de données · Chicago</p>
-            <svg className="hero__atelier" viewBox="0 0 620 440" role="img" aria-label="A whimsical line drawing of a healthcare GTM data workshop">
+            <p className="hero__system-label">Atelier de données · Houston</p>
+            <svg className="hero__atelier" viewBox="0 0 620 400" role="img" aria-label="A clear line drawing of a healthcare GTM data workshop">
               <g className="hero__atelier-lines">
-                <path d="M68 92h210v137H68zM99 92v137M68 129h210M333 60h196v116H333zM374 60v116M333 102h196"/>
-                <path d="m96 284 163-73 177 88-164 82zM96 284v60l176 90v-53m164-82v53l-164 82"/>
-                <path d="M153 259v-48h65v20m84 26v-62h78v41m-189 45h38v24h-38zm96 16h52v31h-52z"/>
-                <circle cx="166" cy="338" r="27"/><circle cx="374" cy="343" r="27"/>
-                <path d="M166 311v-38m-17-25a18 18 0 0 1 34 0v25m191 43v-75m-17-25a18 18 0 0 1 34 0v25"/>
-                <path d="M47 265h85m-70-14 14 14-14 14m376-52h117m-15-14 15 14-15 14"/>
-                <circle cx="304" cy="116" r="18"/><path d="M304 98v36m-18-18h36"/>
-                <path d="M482 273c-26-23-53-25-72-5m49-17 11 19-21 5"/>
+                <path d="M65 87h490v234H65zM65 128h490"/>
+                <path d="M101 235h95l32 35h124l31-35h135"/>
+                <path d="M101 207v55h95v-55zM263 195v88h88v-88zM423 207v55h95v-55z"/>
+                <path d="m101 207 47-24 48 24-48 23zm162-12 44-23 44 23-44 23zm160 12 47-24 48 24-48 23z"/>
+                <path d="M148 183v-27m-13 0h26M307 172v-34m-14 0h28M470 183v-27m-13 0h26"/>
+                <circle cx="228" cy="270" r="12"/><circle cx="383" cy="235" r="12"/>
+                <path d="M216 270h24m131-35h24M307 138l17-17m-17 17-17-17"/>
+                <path d="M84 335h452M107 349h80m245 0h80"/>
               </g>
-              <g className="hero__atelier-accent"><circle cx="304" cy="116" r="5"/><path d="M47 265h25"/></g>
-              <g className="hero__atelier-blue"><path d="M530 227h25"/><circle cx="374" cy="343" r="5"/></g>
-              <text x="111" y="322">SIGNALS</text><text x="286" y="289">JOIN</text><text x="355" y="331">ROUTE</text>
+              <g className="hero__atelier-accent"><circle cx="228" cy="270" r="5"/><path d="M101 235h34"/></g>
+              <g className="hero__atelier-blue"><path d="M484 235h34"/><circle cx="383" cy="235" r="5"/></g>
+              <text x="112" y="305">SIGNALS</text><text x="285" y="305">JOIN</text><text x="445" y="305">ROUTE</text>
             </svg>
             <p className="hero__system-note">The small red pulley is failure visibility. Remove it and the whole thing becomes “just automation.”</p>
           </div>
-          <MetricStrip metrics={metrics} />
         </section>
 
         <ControlRoom snapshot={publicSnapshot} />
