@@ -49,17 +49,171 @@ export function DataBallJourney() {
     const motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)')
     let motionAllowed = !motionPreference.matches
     let stops: MeasuredStop[] = []
-    let frame = 0
+    let scrollFrame = 0
     let measureFrame = 0
-    let jumpFrame = 0
+    let travelFrame = 0
     let previousScroll = window.scrollY
-    let previousOwner = ''
+    let previousActive = ''
     let previousSegment = -1
     let previousProgress = 0
     let ownerIndex = -1
+    let queuedCatch = -1
     let ballHalfWidth = 10
     let ballHalfHeight = 10
+    let mode: 'loop' | 'launch' | 'offscreen' | 'flight' = 'loop'
     let active = true
+
+    const place = (x: number, y: number) => {
+      carrier.style.transform = `translate3d(${(x - ballHalfWidth).toFixed(2)}px, ${(y - ballHalfHeight).toFixed(2)}px, 0)`
+      layer.dataset.scrollX = x.toFixed(2)
+      layer.dataset.scrollY = y.toFixed(2)
+    }
+
+    const dock = (index: number) => ({
+      x: stops[index].x - window.scrollX,
+      y: stops[index].y - window.scrollY,
+    })
+
+    const activate = (index: number) => {
+      const next = stops[index]
+      if (!next || previousActive === next.id) return
+      for (const stop of stops) stop.element.dataset.active = String(stop.id === next.id)
+      previousActive = next.id
+    }
+
+    const setMode = (nextMode: typeof mode, targetIndex = ownerIndex) => {
+      mode = nextMode
+      layer.dataset.scrollMode = nextMode
+      if (stops[targetIndex]) {
+        layer.dataset.scrollTarget = stops[targetIndex].id
+        activate(targetIndex)
+      }
+    }
+
+    const cancelTravel = () => {
+      if (travelFrame) window.cancelAnimationFrame(travelFrame)
+      travelFrame = 0
+    }
+
+    const animateBall = ({
+      duration,
+      startX,
+      startY,
+      end,
+      onComplete,
+    }: {
+      duration: number
+      startX: number
+      startY: number
+      end: () => { x: number; y: number }
+      onComplete: () => void
+    }) => {
+      cancelTravel()
+      place(startX, startY)
+      const startedAt = performance.now()
+      const step = (now: number) => {
+        if (!active || !motionAllowed || document.hidden) {
+          travelFrame = 0
+          return
+        }
+        const progress = Math.min(1, (now - startedAt) / duration)
+        const destination = end()
+        const x = startX + (destination.x - startX) * progress
+        const arcHeight = Math.min(180, Math.max(80, Math.abs(destination.x - startX) * 0.16))
+        const y = startY + (destination.y - startY) * progress - 4 * arcHeight * progress * (1 - progress)
+        const spin = ((x - startX) / Math.max(ballHalfWidth, 8)) * 28
+        ball.style.setProperty('--journey-spin', `${spin.toFixed(1)}deg`)
+        layer.dataset.travelProgress = progress.toFixed(3)
+        place(x, y)
+        if (progress >= 1) {
+          travelFrame = 0
+          onComplete()
+          return
+        }
+        travelFrame = window.requestAnimationFrame(step)
+      }
+      travelFrame = window.requestAnimationFrame(step)
+    }
+
+    const oppositeEdge = (x: number) => x < window.innerWidth / 2
+      ? window.innerWidth + ballHalfWidth + 20
+      : -ballHalfWidth - 20
+
+    const launch = (index: number) => {
+      if (!stops[index]) return
+      const rect = ball.getBoundingClientRect()
+      const startX = rect.left + rect.width / 2
+      const startY = rect.top + rect.height / 2
+      const edgeX = oppositeEdge(startX)
+      const edgeY = Math.min(window.innerHeight - 72, Math.max(96, startY + (index % 2 === 0 ? 64 : -48)))
+      setMode('launch', index)
+      animateBall({
+        duration: 920,
+        startX,
+        startY,
+        end: () => ({ x: edgeX, y: edgeY }),
+        onComplete: () => {
+          setMode('offscreen', index)
+          place(edgeX, edgeY)
+          if (queuedCatch >= 0) {
+            const targetIndex = queuedCatch
+            queuedCatch = -1
+            catchBall(targetIndex)
+          } else {
+            scheduleRender()
+          }
+        },
+      })
+    }
+
+    const catchBall = (targetIndex: number) => {
+      if (!stops[targetIndex]) return
+      const destination = dock(targetIndex)
+      const startX = oppositeEdge(destination.x)
+      const startY = Math.min(window.innerHeight - 90, Math.max(90, destination.y - 110))
+      setMode('flight', targetIndex)
+      place(startX, startY)
+      animateBall({
+        duration: 1040,
+        startX,
+        startY,
+        end: () => dock(targetIndex),
+        onComplete: () => {
+          ownerIndex = targetIndex
+          queuedCatch = -1
+          previousSegment = -1
+          layer.dataset.scrollOwner = stops[ownerIndex].id
+          ball.style.setProperty('--journey-spin', '0deg')
+          setMode('loop', ownerIndex)
+          const destinationDock = dock(ownerIndex)
+          place(destinationDock.x, destinationDock.y)
+          scheduleRender()
+        },
+      })
+    }
+
+    const returnToOwner = () => {
+      if (!stops[ownerIndex]) return
+      queuedCatch = -1
+      const rect = ball.getBoundingClientRect()
+      const startX = rect.left + rect.width / 2
+      const startY = rect.top + rect.height / 2
+      setMode('flight', ownerIndex)
+      animateBall({
+        duration: 720,
+        startX,
+        startY,
+        end: () => dock(ownerIndex),
+        onComplete: () => {
+          ball.style.setProperty('--journey-spin', '0deg')
+          setMode('loop', ownerIndex)
+          const ownerDock = dock(ownerIndex)
+          place(ownerDock.x, ownerDock.y)
+          previousSegment = -1
+          scheduleRender()
+        },
+      })
+    }
 
     const measure = () => {
       measureFrame = 0
@@ -89,7 +243,7 @@ export function DataBallJourney() {
     }
 
     const render = () => {
-      frame = 0
+      scrollFrame = 0
       if (!active || stops.length === 0) return
 
       const viewportHeight = window.innerHeight
@@ -109,171 +263,114 @@ export function DataBallJourney() {
       const rawProgress = lower === upper ? 0 : Math.min(1, Math.max(0, (scrollY - thresholds[lowerIndex]) / span))
       const deltaScroll = scrollY - previousScroll
       const direction = deltaScroll === 0 ? layer.dataset.scrollDirection ?? 'down' : deltaScroll < 0 ? 'up' : 'down'
-      let jumped = Math.abs(deltaScroll) > viewportHeight * 1.25
-
-      const ownerNeedsRebase = ownerIndex < 0 || ownerIndex >= stops.length || (ownerIndex !== lowerIndex && ownerIndex !== Math.min(lowerIndex + 1, stops.length - 1))
-      if (ownerNeedsRebase || jumped) {
-        if (ownerIndex >= 0 && ownerNeedsRebase) jumped = true
-        ownerIndex = rawProgress < 0.5 ? lowerIndex : Math.min(lowerIndex + 1, stops.length - 1)
-      }
-
-      const launchStart = 0.08
-      const launchEnd = 0.18
-      const arrivalStart = 0.82
-      const arrivalEnd = 0.995
       const upperIndex = Math.min(lowerIndex + 1, stops.length - 1)
-      const lowerX = lower.x - window.scrollX
-      const lowerY = lower.y - scrollY
-      const upperX = upper.x - window.scrollX
-      const upperY = upper.y - scrollY
-      const exitsRight = lowerIndex % 2 === 0
-      const launchEdgeX = exitsRight ? window.innerWidth + ballHalfWidth + 16 : -ballHalfWidth - 16
-      const arrivalEdgeX = exitsRight ? -ballHalfWidth - 16 : window.innerWidth + ballHalfWidth + 16
-      let mode: 'loop' | 'launch' | 'offscreen' | 'flight' = 'loop'
-      let x = stops[ownerIndex].x - window.scrollX
-      let y = stops[ownerIndex].y - scrollY
-      let routeProgress = 0
-      let activeIndex = ownerIndex
+      const nearestIndex = rawProgress < 0.5 ? lowerIndex : upperIndex
 
-      if (previousSegment === lowerIndex) {
-        const skippedForward = previousProgress < launchEnd && rawProgress >= arrivalStart
-        const skippedBackward = previousProgress > arrivalStart && rawProgress <= launchEnd
-        if (skippedForward || skippedBackward) jumped = true
-      }
+      if (ownerIndex < 0 || ownerIndex >= stops.length) {
+        ownerIndex = rawProgress < 0.5 ? lowerIndex : upperIndex
+        layer.dataset.scrollOwner = stops[ownerIndex].id
+        setMode('loop', ownerIndex)
+        const ownerDock = dock(ownerIndex)
+        place(ownerDock.x, ownerDock.y)
+      } else {
+        const ownerIsAdjacent = ownerIndex === lowerIndex || ownerIndex === upperIndex
+        const crossedWholePhase = Math.abs(deltaScroll) > viewportHeight * 1.25 || !ownerIsAdjacent
+        const returningToOwner = mode === 'flight' && layer.dataset.scrollTarget === stops[ownerIndex].id
+        const reversedLaunch = mode === 'launch' && (
+          (ownerIndex === lowerIndex && direction === 'up' && rawProgress < 0.08)
+          || (ownerIndex === upperIndex && direction === 'down' && rawProgress > 0.82)
+        )
+        const reversedCatch = mode === 'flight' && !returningToOwner && (
+          (ownerIndex === lowerIndex && direction === 'up' && rawProgress < 0.82)
+          || (ownerIndex === upperIndex && direction === 'down' && rawProgress > 0.18)
+        )
 
-      if (lower !== upper && ownerIndex === lowerIndex) {
-        if (rawProgress < launchStart) {
-          mode = 'loop'
-        } else if (rawProgress < launchEnd) {
-          mode = 'launch'
-          routeProgress = Math.min(1, Math.max(0, (rawProgress - launchStart) / (launchEnd - launchStart)))
-          const progress = routeProgress * routeProgress * (3 - 2 * routeProgress)
-          x = lowerX + (launchEdgeX - lowerX) * progress
-          y = lowerY - Math.sin(Math.PI * progress) * Math.min(110, viewportHeight * 0.13)
-        } else if (rawProgress < arrivalStart) {
-          mode = 'offscreen'
-          routeProgress = (rawProgress - launchEnd) / (arrivalStart - launchEnd)
-          x = arrivalEdgeX
-          y = -ballHalfHeight - 24
-        } else if (rawProgress < arrivalEnd) {
-          mode = 'flight'
-          routeProgress = Math.min(1, Math.max(0, (rawProgress - arrivalStart) / (arrivalEnd - arrivalStart)))
-          const progress = routeProgress * routeProgress * (3 - 2 * routeProgress)
-          x = arrivalEdgeX + (upperX - arrivalEdgeX) * progress
-          y = upperY - (1 - progress) * Math.min(120, viewportHeight * 0.14) - Math.sin(Math.PI * progress) * Math.min(70, viewportHeight * 0.08)
-          activeIndex = upperIndex
-        } else {
-          if (Number.parseFloat(window.getComputedStyle(ball).getPropertyValue('--journey-loop-scale')) > 0.15) jumped = true
-          ownerIndex = upperIndex
-          mode = 'loop'
-          activeIndex = ownerIndex
-          x = upperX
-          y = upperY
-        }
-      } else if (lower !== upper && ownerIndex === upperIndex) {
-        if (rawProgress > arrivalEnd) {
-          mode = 'loop'
-        } else if (rawProgress > arrivalStart) {
-          mode = 'launch'
-          routeProgress = Math.min(1, Math.max(0, (rawProgress - arrivalStart) / (arrivalEnd - arrivalStart)))
-          const progress = routeProgress * routeProgress * (3 - 2 * routeProgress)
-          x = arrivalEdgeX + (upperX - arrivalEdgeX) * progress
-          y = upperY - (1 - progress) * Math.min(120, viewportHeight * 0.14) - Math.sin(Math.PI * progress) * Math.min(70, viewportHeight * 0.08)
-        } else if (rawProgress > launchEnd) {
-          mode = 'offscreen'
-          routeProgress = (rawProgress - launchEnd) / (arrivalStart - launchEnd)
-          x = launchEdgeX
-          y = -ballHalfHeight - 24
-        } else if (rawProgress > launchStart) {
-          mode = 'flight'
-          routeProgress = Math.min(1, Math.max(0, (rawProgress - launchStart) / (launchEnd - launchStart)))
-          const progress = routeProgress * routeProgress * (3 - 2 * routeProgress)
-          x = lowerX + (launchEdgeX - lowerX) * progress
-          y = lowerY - Math.sin(Math.PI * progress) * Math.min(110, viewportHeight * 0.13)
-          activeIndex = lowerIndex
-        } else {
-          if (Number.parseFloat(window.getComputedStyle(ball).getPropertyValue('--journey-loop-scale')) > 0.15) jumped = true
-          ownerIndex = lowerIndex
-          mode = 'loop'
-          activeIndex = ownerIndex
-          x = lowerX
-          y = lowerY
-        }
-      }
-      const owner = stops[ownerIndex]
-      const activeStop = stops[activeIndex]
-
-      if (jumped) {
-        layer.dataset.jump = 'true'
-        ball.style.transition = 'none'
-        ball.style.opacity = '0'
-        if (jumpFrame) window.cancelAnimationFrame(jumpFrame)
-        jumpFrame = window.requestAnimationFrame(() => {
-          if (!active) return
-          ball.style.removeProperty('transition')
-          jumpFrame = window.requestAnimationFrame(() => {
-            if (active) {
-              layer.dataset.jump = 'false'
-              ball.style.removeProperty('opacity')
+        if (reversedLaunch || reversedCatch) {
+          returnToOwner()
+        } else if (travelFrame) {
+          if (mode === 'launch') {
+            if (!ownerIsAdjacent) queuedCatch = nearestIndex
+            else if (ownerIndex === lowerIndex) queuedCatch = rawProgress >= 0.82 ? upperIndex : -1
+            else if (ownerIndex === upperIndex) queuedCatch = rawProgress <= 0.18 ? lowerIndex : -1
+          }
+        } else if (mode === 'offscreen') {
+          if (!ownerIsAdjacent) catchBall(nearestIndex)
+          else if (ownerIndex === lowerIndex && rawProgress >= 0.82) catchBall(upperIndex)
+          else if (ownerIndex === upperIndex && rawProgress <= 0.18) catchBall(lowerIndex)
+          else if ((ownerIndex === lowerIndex && rawProgress < 0.08) || (ownerIndex === upperIndex && rawProgress > 0.82)) returnToOwner()
+        } else if (crossedWholePhase) {
+          queuedCatch = nearestIndex
+          launch(ownerIndex)
+        } else if (lower !== upper) {
+          if (direction === 'down' && ownerIndex === lowerIndex) {
+            if ((previousSegment !== lowerIndex || previousProgress < 0.82) && rawProgress >= 0.82) {
+              queuedCatch = upperIndex
+              launch(lowerIndex)
             }
-            jumpFrame = 0
-          })
-        })
+            else if (previousSegment === lowerIndex && previousProgress < 0.08 && rawProgress >= 0.08) launch(lowerIndex)
+          } else if (direction === 'up' && ownerIndex === upperIndex) {
+            if ((previousSegment !== lowerIndex || previousProgress > 0.18) && rawProgress <= 0.18) {
+              queuedCatch = lowerIndex
+              launch(upperIndex)
+            }
+            else if (previousSegment === lowerIndex && previousProgress > 0.82 && rawProgress <= 0.82) launch(upperIndex)
+          }
+        }
+        if (mode === 'loop' && !travelFrame) {
+          const ownerDock = dock(ownerIndex)
+          place(ownerDock.x, ownerDock.y)
+          activate(ownerIndex)
+        }
       }
+
       previousScroll = scrollY
       previousSegment = lowerIndex
       previousProgress = rawProgress
-      carrier.style.transform = `translate3d(${(x - ballHalfWidth).toFixed(2)}px, ${(y - ballHalfHeight).toFixed(2)}px, 0)`
-      layer.dataset.scrollOwner = owner.id
       layer.dataset.scrollDirection = direction
       layer.dataset.scrollProgress = rawProgress.toFixed(3)
-      layer.dataset.scrollMode = mode
-      layer.dataset.handoffProgress = routeProgress.toFixed(3)
-      layer.dataset.scrollTarget = activeStop.id
-      layer.dataset.scrollX = x.toFixed(2)
-      layer.dataset.scrollY = y.toFixed(2)
-
-      if (previousOwner !== activeStop.id) {
-        for (const stop of stops) stop.element.dataset.active = String(stop.id === activeStop.id)
-        previousOwner = activeStop.id
-      }
     }
 
     const scheduleRender = () => {
-      if (!motionAllowed || document.hidden || frame) return
-      frame = window.requestAnimationFrame(render)
+      if (!motionAllowed || document.hidden || scrollFrame) return
+      scrollFrame = window.requestAnimationFrame(render)
     }
 
     const applyMotionPreference = () => {
       motionAllowed = !motionPreference.matches
       layer.dataset.motion = motionAllowed ? 'full' : 'reduced'
-      if (!motionAllowed && frame) {
-        window.cancelAnimationFrame(frame)
-        frame = 0
+      if (!motionAllowed && scrollFrame) {
+        window.cancelAnimationFrame(scrollFrame)
+        scrollFrame = 0
       }
       if (!motionAllowed && measureFrame) {
         window.cancelAnimationFrame(measureFrame)
         measureFrame = 0
       }
-      if (!motionAllowed && jumpFrame) {
-        window.cancelAnimationFrame(jumpFrame)
-        jumpFrame = 0
-      }
       if (!motionAllowed) {
-        layer.dataset.jump = 'false'
-        ball.style.removeProperty('transition')
-        ball.style.removeProperty('opacity')
+        cancelTravel()
+        queuedCatch = -1
+        ownerIndex = -1
+        mode = 'loop'
+        layer.dataset.scrollMode = 'loop'
+        ball.style.setProperty('--journey-spin', '0deg')
         for (const stop of stops) stop.element.dataset.active = 'false'
-        previousOwner = ''
+        previousActive = ''
       }
       if (motionAllowed) scheduleMeasure()
     }
 
     const onVisibilityChange = () => {
       if (document.hidden) {
-        if (frame) window.cancelAnimationFrame(frame)
+        if (scrollFrame) window.cancelAnimationFrame(scrollFrame)
         if (measureFrame) window.cancelAnimationFrame(measureFrame)
-        frame = 0
+        cancelTravel()
+        queuedCatch = -1
+        ownerIndex = -1
+        mode = 'loop'
+        layer.dataset.scrollMode = 'loop'
+        ball.style.setProperty('--journey-spin', '0deg')
+        previousSegment = -1
+        scrollFrame = 0
         measureFrame = 0
         return
       }
@@ -299,9 +396,9 @@ export function DataBallJourney() {
 
     return () => {
       active = false
-      if (frame) window.cancelAnimationFrame(frame)
+      if (scrollFrame) window.cancelAnimationFrame(scrollFrame)
       if (measureFrame) window.cancelAnimationFrame(measureFrame)
-      if (jumpFrame) window.cancelAnimationFrame(jumpFrame)
+      cancelTravel()
       resizeObserver.disconnect()
       window.removeEventListener('scroll', scheduleRender)
       window.removeEventListener('resize', scheduleMeasure)

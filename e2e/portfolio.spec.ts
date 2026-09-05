@@ -321,6 +321,14 @@ test('each machine launches the data ball offscreen and the next machine catches
     }, id)
     expect(distance).toBeLessThan(3)
   }
+  const jumpToRegistry = async () => {
+    await page.evaluate(() => {
+      const target = document.querySelector('[data-data-relay="registry"] [data-data-catch]')!
+      const rect = target.getBoundingClientRect()
+      window.scrollTo({ top: rect.top + window.scrollY - window.innerHeight * 0.38, behavior: 'instant' })
+    })
+    await page.evaluate(() => new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve()))))
+  }
 
   await go(0)
   await go(0.05)
@@ -331,10 +339,22 @@ test('each machine launches the data ball offscreen and the next machine catches
   await go(0.12)
   await expect(journey).toHaveAttribute('data-scroll-owner', 'hero')
   await expect(journey).toHaveAttribute('data-scroll-mode', 'launch')
+  const launchStart = await journey.evaluate((element) => Number(element.dataset.scrollX))
+  await page.waitForTimeout(260)
+  const launchLater = await journey.evaluate((element) => Number(element.dataset.scrollX))
+  expect(Math.abs(launchLater - launchStart)).toBeGreaterThan(20)
 
-  await go(0.5)
+  await go(0.04)
+  await expect(journey).toHaveAttribute('data-scroll-mode', 'flight')
+  await expect(journey).toHaveAttribute('data-scroll-target', 'hero')
+  await expect(journey).toHaveAttribute('data-scroll-mode', 'loop', { timeout: 1500 })
+  await expectDockAlignment('hero')
+
+  await go(0.12)
+  await expect(journey).toHaveAttribute('data-scroll-mode', 'launch')
+
+  await expect(journey).toHaveAttribute('data-scroll-mode', 'offscreen', { timeout: 2000 })
   await expect(journey).toHaveAttribute('data-scroll-owner', 'hero')
-  await expect(journey).toHaveAttribute('data-scroll-mode', 'offscreen')
   const hiddenX = await journey.evaluate((element) => Number(element.dataset.scrollX))
   expect(hiddenX < 0 || hiddenX > 1280).toBe(true)
 
@@ -342,29 +362,62 @@ test('each machine launches the data ball offscreen and the next machine catches
   await expect(journey).toHaveAttribute('data-scroll-owner', 'hero')
   await expect(journey).toHaveAttribute('data-scroll-mode', 'flight')
   await expect(journey).toHaveAttribute('data-scroll-target', 'control-room')
+  const flightStart = await journey.evaluate((element) => Number(element.dataset.scrollX))
+  await page.waitForTimeout(260)
+  const flightLater = await journey.evaluate((element) => Number(element.dataset.scrollX))
+  expect(Math.abs(flightLater - flightStart)).toBeGreaterThan(20)
 
-  await go(1)
-  await expect(journey).toHaveAttribute('data-scroll-owner', 'control-room')
+  await expect(journey).toHaveAttribute('data-scroll-owner', 'control-room', { timeout: 2000 })
   await expect(journey).toHaveAttribute('data-scroll-mode', 'loop')
   await expectDockAlignment('control-room')
 
-  await go(0.9)
+  await go(0.8)
   await expect(journey).toHaveAttribute('data-scroll-owner', 'control-room')
   await expect(journey).toHaveAttribute('data-scroll-mode', 'launch')
 
-  await go(0.5)
+  await expect(journey).toHaveAttribute('data-scroll-mode', 'offscreen', { timeout: 2000 })
   await expect(journey).toHaveAttribute('data-scroll-owner', 'control-room')
-  await expect(journey).toHaveAttribute('data-scroll-mode', 'offscreen')
 
-  await go(0.12)
+  await go(0.17)
   await expect(journey).toHaveAttribute('data-scroll-owner', 'control-room')
   await expect(journey).toHaveAttribute('data-scroll-mode', 'flight')
   await expect(journey).toHaveAttribute('data-scroll-target', 'hero')
 
-  await go(0.05)
-  await expect(journey).toHaveAttribute('data-scroll-owner', 'hero')
+  await go(0.25)
+  await expect(journey).toHaveAttribute('data-scroll-mode', 'flight')
+  await expect(journey).toHaveAttribute('data-scroll-target', 'control-room')
+  await expect(journey).toHaveAttribute('data-scroll-owner', 'control-room', { timeout: 1500 })
+  await expect(journey).toHaveAttribute('data-scroll-mode', 'loop')
+
+  await go(0.9)
+  await go(0.8)
+  await expect(journey).toHaveAttribute('data-scroll-mode', 'launch')
+  await expect(journey).toHaveAttribute('data-scroll-mode', 'offscreen', { timeout: 2000 })
+  await go(0.17)
+  await expect(journey).toHaveAttribute('data-scroll-target', 'hero')
+
+  await expect(journey).toHaveAttribute('data-scroll-owner', 'hero', { timeout: 2000 })
   await expect(journey).toHaveAttribute('data-scroll-mode', 'loop')
   await expectDockAlignment('hero')
+
+  await go(0.05)
+  await go(0.12)
+  await expect(journey).toHaveAttribute('data-scroll-mode', 'launch')
+  await jumpToRegistry()
+  await go(0.4)
+  await expect(journey).toHaveAttribute('data-scroll-owner', 'hero')
+  await expect(journey).toHaveAttribute('data-scroll-mode', 'offscreen', { timeout: 2000 })
+  await go(0.04)
+  await expect(journey).toHaveAttribute('data-scroll-target', 'hero')
+  await expect(journey).toHaveAttribute('data-scroll-mode', 'loop', { timeout: 1500 })
+
+  await go(0.05)
+  await go(0.12)
+  await expect(journey).toHaveAttribute('data-scroll-mode', 'launch')
+  await jumpToRegistry()
+  await expect(journey).toHaveAttribute('data-scroll-owner', 'registry', { timeout: 3500 })
+  await expect(journey).toHaveAttribute('data-scroll-mode', 'loop')
+  await expectDockAlignment('registry')
 })
 
 test('the data journey becomes static when reduced motion is requested', async ({ page }) => {
