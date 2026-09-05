@@ -265,22 +265,89 @@ test('the data ball hands off through every section in both scroll directions', 
   await page.goto(sitePath)
   const journey = page.locator('[data-scroll-ball]')
   const stops = ['hero', 'control-room', 'work', 'registry', 'about', 'contact']
+  const scrollToStop = async (id: string) => {
+    await page.evaluate((stopId) => {
+      const stopIds = ['hero', 'control-room', 'work', 'registry', 'about', 'contact']
+      const index = stopIds.indexOf(stopId)
+      const target = document.querySelector(`[data-data-relay="${stopId}"] [data-data-catch]`)!
+      const rect = target.getBoundingClientRect()
+      const documentY = rect.top + window.scrollY
+      const maxScroll = Math.max(0, document.documentElement.scrollHeight - window.innerHeight)
+      const threshold = index === 0 ? 0 : index === stopIds.length - 1 ? maxScroll : Math.min(maxScroll, Math.max(0, documentY - window.innerHeight * 0.38))
+      window.scrollTo({ top: threshold, behavior: 'instant' })
+    }, id)
+  }
 
   await expect(journey).toHaveCount(1)
   for (const id of stops) {
-    await page.locator(`[data-data-relay="${id}"]`).evaluate((element) => element.scrollIntoView({ behavior: 'instant', block: 'center' }))
+    await scrollToStop(id)
     await page.evaluate(() => new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve()))))
     await expect(journey).toHaveAttribute('data-scroll-owner', id)
+    await expect(journey).toHaveAttribute('data-scroll-mode', 'loop')
     const point = await journey.evaluate((element) => [Number(element.dataset.scrollX), Number(element.dataset.scrollY)])
     expect(point.every(Number.isFinite)).toBe(true)
   }
 
   for (const id of [...stops].reverse()) {
-    await page.locator(`[data-data-relay="${id}"]`).evaluate((element) => element.scrollIntoView({ behavior: 'instant', block: 'center' }))
+    await scrollToStop(id)
     await page.evaluate(() => new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve()))))
     await expect(journey).toHaveAttribute('data-scroll-owner', id)
+    await expect(journey).toHaveAttribute('data-scroll-mode', 'loop')
   }
   await expect(journey).toHaveAttribute('data-scroll-direction', 'up')
+})
+
+test('the data ball loops at its machine and only travels inside a short reversible handoff', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 })
+  await page.goto(sitePath)
+  const journey = page.locator('[data-scroll-ball]')
+  const segment = await page.evaluate(() => {
+    const getY = (id: string) => {
+      const target = document.querySelector(`[data-data-relay="${id}"] [data-data-catch]`)!
+      const rect = target.getBoundingClientRect()
+      return rect.top + window.scrollY
+    }
+    return { start: 0, end: getY('control-room') - window.innerHeight * 0.38 }
+  })
+  const go = async (progress: number) => {
+    await page.evaluate(({ start, end, progress }) => window.scrollTo({ top: start + (end - start) * progress, behavior: 'instant' }), { ...segment, progress })
+    await page.evaluate(() => new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve()))))
+  }
+  const expectDockAlignment = async (id: string) => {
+    const distance = await page.evaluate((stopId) => {
+      const dock = document.querySelector(`[data-data-relay="${stopId}"] [data-data-catch]`)!.getBoundingClientRect()
+      const layer = document.querySelector<HTMLElement>('[data-scroll-ball]')!
+      return Math.hypot(Number(layer.dataset.scrollX) - (dock.left + dock.width / 2), Number(layer.dataset.scrollY) - (dock.top + dock.height / 2))
+    }, id)
+    expect(distance).toBeLessThan(3)
+  }
+
+  await go(0.5)
+  await expect(journey).toHaveAttribute('data-scroll-owner', 'hero')
+  await expect(journey).toHaveAttribute('data-scroll-mode', 'loop')
+  await expectDockAlignment('hero')
+
+  await go(0.9)
+  await expect(journey).toHaveAttribute('data-scroll-owner', 'hero')
+  await expect(journey).toHaveAttribute('data-scroll-mode', 'handoff')
+
+  await go(1)
+  await expect(journey).toHaveAttribute('data-scroll-owner', 'control-room')
+  await expect(journey).toHaveAttribute('data-scroll-mode', 'loop')
+  await expectDockAlignment('control-room')
+
+  await go(0.5)
+  await expect(journey).toHaveAttribute('data-scroll-owner', 'control-room')
+  await expect(journey).toHaveAttribute('data-scroll-mode', 'loop')
+  await expectDockAlignment('control-room')
+
+  await go(0.1)
+  await expect(journey).toHaveAttribute('data-scroll-owner', 'control-room')
+  await expect(journey).toHaveAttribute('data-scroll-mode', 'handoff')
+
+  await go(0)
+  await expect(journey).toHaveAttribute('data-scroll-owner', 'hero')
+  await expect(journey).toHaveAttribute('data-scroll-mode', 'loop')
 })
 
 test('the data journey becomes static when reduced motion is requested', async ({ page }) => {

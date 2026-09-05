@@ -37,12 +37,14 @@ export function DataRelay({ id, variant, label }: { id: StopId; variant: DataRel
 
 export function DataBallJourney() {
   const layerRef = useRef<HTMLDivElement>(null)
+  const carrierRef = useRef<HTMLDivElement>(null)
   const ballRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const layer = layerRef.current
+    const carrier = carrierRef.current
     const ball = ballRef.current
-    if (!layer || !ball || typeof window.matchMedia !== 'function' || typeof ResizeObserver === 'undefined') return
+    if (!layer || !carrier || !ball || typeof window.matchMedia !== 'function' || typeof ResizeObserver === 'undefined') return
 
     const motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)')
     let motionAllowed = !motionPreference.matches
@@ -52,7 +54,7 @@ export function DataBallJourney() {
     let jumpFrame = 0
     let previousScroll = window.scrollY
     let previousOwner = ''
-    let rotation = 0
+    let ownerIndex = -1
     let ballHalfWidth = 10
     let ballHalfHeight = 10
     let active = true
@@ -89,7 +91,6 @@ export function DataBallJourney() {
       if (!active || stops.length === 0) return
 
       const viewportHeight = window.innerHeight
-      const viewportWidth = window.innerWidth
       const scrollY = window.scrollY
       const maxScroll = Math.max(0, document.documentElement.scrollHeight - viewportHeight)
       const thresholds = stops.map((stop, index) => {
@@ -99,39 +100,89 @@ export function DataBallJourney() {
       })
       let lowerIndex = 0
 
-      while (lowerIndex < stops.length - 1 && scrollY > thresholds[lowerIndex + 1]) lowerIndex += 1
+      while (lowerIndex < stops.length - 1 && scrollY >= thresholds[lowerIndex + 1]) lowerIndex += 1
       const lower = stops[lowerIndex]
       const upper = stops[Math.min(lowerIndex + 1, stops.length - 1)]
       const span = Math.max(thresholds[Math.min(lowerIndex + 1, thresholds.length - 1)] - thresholds[lowerIndex], 1)
       const rawProgress = lower === upper ? 0 : Math.min(1, Math.max(0, (scrollY - thresholds[lowerIndex]) / span))
-      const progress = rawProgress * rawProgress * (3 - 2 * rawProgress)
-      const arc = Math.sin(Math.PI * progress)
-      const arcDirection = lowerIndex % 2 === 0 ? 1 : -1
-      const arcX = Math.min(150, viewportWidth * 0.13) * arc * arcDirection
-      const arcY = Math.min(90, viewportHeight * 0.1) * arc
-      const documentX = lower.x + (upper.x - lower.x) * progress + arcX
-      const documentY = lower.y + (upper.y - lower.y) * progress - arcY
-      const x = Math.min(viewportWidth - ballHalfWidth - 4, Math.max(ballHalfWidth + 4, documentX - window.scrollX))
-      const y = Math.min(viewportHeight - ballHalfHeight - 6, Math.max(78, documentY - scrollY))
       const deltaScroll = scrollY - previousScroll
       const direction = deltaScroll === 0 ? layer.dataset.scrollDirection ?? 'down' : deltaScroll < 0 ? 'up' : 'down'
-      const owner = rawProgress < 0.5 ? lower : upper
+      let jumped = Math.abs(deltaScroll) > viewportHeight * 1.25
 
-      const jumped = Math.abs(deltaScroll) > viewportHeight * 1.25
+      if (ownerIndex < 0 || ownerIndex >= stops.length || (ownerIndex !== lowerIndex && ownerIndex !== Math.min(lowerIndex + 1, stops.length - 1)) || jumped) {
+        ownerIndex = rawProgress < 0.5 ? lowerIndex : Math.min(lowerIndex + 1, stops.length - 1)
+      }
+
+      const forwardLaunchAt = 0.78
+      const reverseLaunchUntil = 0.22
+      let mode: 'loop' | 'handoff' = 'loop'
+      let routeFrom = stops[ownerIndex]
+      let routeTo = routeFrom
+      let routeProgress = 0
+
+      if (lower !== upper && ownerIndex === lowerIndex && rawProgress >= forwardLaunchAt) {
+        mode = 'handoff'
+        routeFrom = lower
+        routeTo = upper
+        routeProgress = Math.min(1, Math.max(0, (rawProgress - forwardLaunchAt) / (1 - forwardLaunchAt)))
+        if (rawProgress >= 0.995) {
+          if (Number.parseFloat(window.getComputedStyle(ball).getPropertyValue('--journey-loop-scale')) > 0.15) jumped = true
+          ownerIndex = Math.min(lowerIndex + 1, stops.length - 1)
+          mode = 'loop'
+          routeFrom = stops[ownerIndex]
+          routeTo = routeFrom
+          routeProgress = 0
+        }
+      } else if (lower !== upper && ownerIndex === lowerIndex + 1 && rawProgress <= reverseLaunchUntil) {
+        mode = 'handoff'
+        routeFrom = lower
+        routeTo = upper
+        routeProgress = Math.min(1, Math.max(0, rawProgress / reverseLaunchUntil))
+        if (rawProgress <= 0.005) {
+          if (Number.parseFloat(window.getComputedStyle(ball).getPropertyValue('--journey-loop-scale')) > 0.15) jumped = true
+          ownerIndex = lowerIndex
+          mode = 'loop'
+          routeFrom = stops[ownerIndex]
+          routeTo = routeFrom
+          routeProgress = 0
+        }
+      }
+
+      const progress = routeProgress * routeProgress * (3 - 2 * routeProgress)
+      const arc = Math.sin(Math.PI * progress)
+      const arcDirection = lowerIndex % 2 === 0 ? 1 : -1
+      const arcX = Math.min(150, window.innerWidth * 0.13) * arc * arcDirection
+      const arcY = Math.min(90, viewportHeight * 0.1) * arc
+      const documentX = routeFrom.x + (routeTo.x - routeFrom.x) * progress + arcX
+      const documentY = routeFrom.y + (routeTo.y - routeFrom.y) * progress - arcY
+      const x = documentX - window.scrollX
+      const y = documentY - scrollY
+      const owner = stops[ownerIndex]
+
       if (jumped) {
         layer.dataset.jump = 'true'
+        ball.style.transition = 'none'
+        ball.style.opacity = '0'
         if (jumpFrame) window.cancelAnimationFrame(jumpFrame)
         jumpFrame = window.requestAnimationFrame(() => {
-          if (active) layer.dataset.jump = 'false'
-          jumpFrame = 0
+          if (!active) return
+          ball.style.removeProperty('transition')
+          jumpFrame = window.requestAnimationFrame(() => {
+            if (active) {
+              layer.dataset.jump = 'false'
+              ball.style.removeProperty('opacity')
+            }
+            jumpFrame = 0
+          })
         })
       }
-      rotation = (rotation + Math.max(-160, Math.min(160, deltaScroll)) * 0.75) % 360
       previousScroll = scrollY
-      ball.style.transform = `translate3d(${(x - ballHalfWidth).toFixed(2)}px, ${(y - ballHalfHeight).toFixed(2)}px, 0) rotate(${rotation.toFixed(2)}deg)`
+      carrier.style.transform = `translate3d(${(x - ballHalfWidth).toFixed(2)}px, ${(y - ballHalfHeight).toFixed(2)}px, 0)`
       layer.dataset.scrollOwner = owner.id
       layer.dataset.scrollDirection = direction
       layer.dataset.scrollProgress = rawProgress.toFixed(3)
+      layer.dataset.scrollMode = mode
+      layer.dataset.handoffProgress = routeProgress.toFixed(3)
       layer.dataset.scrollX = x.toFixed(2)
       layer.dataset.scrollY = y.toFixed(2)
 
@@ -153,16 +204,33 @@ export function DataBallJourney() {
         window.cancelAnimationFrame(frame)
         frame = 0
       }
+      if (!motionAllowed && measureFrame) {
+        window.cancelAnimationFrame(measureFrame)
+        measureFrame = 0
+      }
+      if (!motionAllowed && jumpFrame) {
+        window.cancelAnimationFrame(jumpFrame)
+        jumpFrame = 0
+      }
+      if (!motionAllowed) {
+        layer.dataset.jump = 'false'
+        ball.style.removeProperty('transition')
+        ball.style.removeProperty('opacity')
+        for (const stop of stops) stop.element.dataset.active = 'false'
+        previousOwner = ''
+      }
       if (motionAllowed) scheduleMeasure()
     }
 
     const onVisibilityChange = () => {
-      if (document.hidden && frame) {
-        window.cancelAnimationFrame(frame)
+      if (document.hidden) {
+        if (frame) window.cancelAnimationFrame(frame)
+        if (measureFrame) window.cancelAnimationFrame(measureFrame)
         frame = 0
-      } else {
-        scheduleRender()
+        measureFrame = 0
+        return
       }
+      scheduleMeasure()
     }
 
     const resizeObserver = new ResizeObserver(scheduleMeasure)
@@ -196,8 +264,10 @@ export function DataBallJourney() {
   }, [])
 
   return (
-    <div ref={layerRef} className="data-ball-journey" data-scroll-ball data-motion="full" aria-hidden="true">
-      <div ref={ballRef} className="data-ball-journey__ball"><i /></div>
+    <div ref={layerRef} className="data-ball-journey" data-scroll-ball data-motion="full" data-scroll-mode="loop" aria-hidden="true">
+      <div ref={carrierRef} className="data-ball-journey__carrier">
+        <div ref={ballRef} className="data-ball-journey__ball"><i /></div>
+      </div>
     </div>
   )
 }
