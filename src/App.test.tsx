@@ -34,9 +34,9 @@ describe('portfolio shell', () => {
   it('exposes keyboard-reachable navigation and public profile links', () => {
     render(<App />)
 
-    expect(screen.getByRole('link', { name: /start the machine/i })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: /see the case studies/i })).toHaveAttribute(
       'href',
-      '#control-room',
+      '#work',
     )
     expect(screen.getByRole('link', { name: /linkedin/i })).toHaveAttribute(
       'href',
@@ -70,9 +70,9 @@ describe('portfolio shell', () => {
     render(<PortfolioPage snapshot={{ aggregates: { campaigns: 0 }, workflows: 'not a list' }} />)
 
     expect(screen.getByRole('heading', { level: 3, name: /Multi-Signal Account Engine/i })).toBeInTheDocument()
-    await user.click(screen.getByText(/open machine notes/i))
+    await user.click(screen.getByText(/inspect the operating logic/i))
     expect(screen.getByLabelText('Control Room telemetry')).toHaveTextContent(/Signal status unavailable/i)
-    await user.click(screen.getByText(/open the registry/i))
+    await user.click(screen.getByText(/inspect the Clay implementation/i))
     await user.click(screen.getByRole('button', { name: 'Signals' }))
     expect(screen.getByText(/Signal inventory unavailable/i)).toBeInTheDocument()
   })

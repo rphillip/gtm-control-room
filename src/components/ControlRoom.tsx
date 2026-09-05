@@ -89,28 +89,13 @@ const paths = {
 type PathId = keyof typeof paths
 type StageId = (typeof stages)[number]['id']
 
-interface WorkflowNode {
-  name: string
-  type: string
-}
-
-interface WorkflowTopology {
-  name: string
-  nodes: WorkflowNode[]
-  edges: [number, number][]
-  shape: 'Linear sequence' | 'Conditional branch' | 'Connected topology'
-}
-
 interface ControlRoomView {
   activeSignals?: number
   erroredSignals?: number
   tierContract?: string
   campaigns?: number
   sampledActionHealth?: { sampled: number; succeeded: number; errored: number }
-  workflows: WorkflowTopology[]
 }
-
-const workflowNames = ['Turquoise Immature', 'Turquoise Operator Enrichment'] as const
 
 function asRecord(value: unknown): Record<string, unknown> | undefined {
   return typeof value === 'object' && value !== null && !Array.isArray(value) ? value as Record<string, unknown> : undefined
@@ -119,37 +104,6 @@ function asRecord(value: unknown): Record<string, unknown> | undefined {
 function numberAt(record: Record<string, unknown> | undefined, key: string): number | undefined {
   const value = record?.[key]
   return typeof value === 'number' && Number.isFinite(value) && value >= 0 ? value : undefined
-}
-
-function normalizeWorkflow(value: unknown, expectedName: string): WorkflowTopology | undefined {
-  const workflow = asRecord(value)
-  if (workflow?.name !== expectedName || !Array.isArray(workflow.nodes) || !Array.isArray(workflow.edges)) return undefined
-
-  const nodes = workflow.nodes.map((node) => {
-    const parsed = asRecord(node)
-    return typeof parsed?.name === 'string' && typeof parsed.type === 'string'
-      ? { name: parsed.name, type: parsed.type }
-      : undefined
-  })
-  if (nodes.some((node) => node === undefined) || nodes.length === 0) return undefined
-
-  const edges = workflow.edges.map((edge) => {
-    if (!Array.isArray(edge) || edge.length !== 2 || !Number.isInteger(edge[0]) || !Number.isInteger(edge[1])) return undefined
-    const [from, to] = edge
-    return from >= 0 && from < nodes.length && to >= 0 && to < nodes.length ? [from, to] as [number, number] : undefined
-  })
-  if (edges.some((edge) => edge === undefined) || edges.length === 0) return undefined
-
-  const completeNodes = nodes as WorkflowNode[]
-  const completeEdges = edges as [number, number][]
-  const outgoing = completeNodes.map((_, index) => completeEdges.filter(([from]) => from === index).length)
-  const shape = outgoing.some((count) => count > 1)
-    ? 'Conditional branch'
-    : completeEdges.length === completeNodes.length - 1 && outgoing.every((count) => count <= 1)
-      ? 'Linear sequence'
-      : 'Connected topology'
-
-  return { name: expectedName, nodes: completeNodes, edges: completeEdges, shape }
 }
 
 function normalizeView(snapshot: unknown): ControlRoomView {
@@ -161,13 +115,6 @@ function normalizeView(snapshot: unknown): ControlRoomView {
   const errored = numberAt(sampledHealth, 'errored')
   const fn = asRecord(source?.function)
   const tierContract = fn?.name === 'AutoTier' && typeof fn.contract === 'string' ? `AutoTier: ${fn.contract}` : undefined
-  const candidates = Array.isArray(source?.workflows) ? source.workflows : []
-  const workflows = workflowNames.flatMap((name) => {
-    const match = candidates.find((workflow) => asRecord(workflow)?.name === name)
-    const normalized = normalizeWorkflow(match, name)
-    return normalized ? [normalized] : []
-  })
-
   return {
     activeSignals: numberAt(aggregates, 'signalsActive'),
     erroredSignals: numberAt(aggregates, 'signalsErrored'),
@@ -178,7 +125,6 @@ function normalizeView(snapshot: unknown): ControlRoomView {
       succeeded + errored === sampled
       ? { sampled, succeeded, errored }
       : undefined,
-    workflows,
   }
 }
 
@@ -213,11 +159,11 @@ export function ControlRoom({ snapshot }: { snapshot: unknown }) {
       <div className="control-room__heading">
         <div>
           <p className="eyebrow">01 / La machine</p>
-          <h2 id="control-room-title">A very serious data machine.</h2>
+          <h2 id="control-room-title">How I turn fragmented data into GTM action.</h2>
           <DataRelay id="control-room" variant="refinery" />
         </div>
         <p className="control-room__intro">
-          Choose a source. The contraption shows how raw evidence becomes an accountable GTM action—and where the gears can jam.
+          A reusable operating loop for healthcare GTM: detect the right signal, resolve the entity, qualify the opportunity, and keep failures visible.
         </p>
       </div>
 
@@ -288,7 +234,7 @@ export function ControlRoom({ snapshot }: { snapshot: unknown }) {
         </div>
 
         <aside className="control-room__telemetry">
-          <p className="eyebrow">Now clanking</p>
+          <p className="eyebrow">What this proves</p>
           <div className="control-room__status" role="status" aria-live="polite">
             <p>{path.telemetry}. {stage.name}: {stage.description}</p>
           </div>
@@ -296,7 +242,7 @@ export function ControlRoom({ snapshot }: { snapshot: unknown }) {
       </div>
 
       <details className="machine-notes">
-        <summary><span>Open machine notes</span><span className="disclosure-plus" aria-hidden="true">+</span></summary>
+        <summary><span>Inspect the operating logic</span><span className="disclosure-plus" aria-hidden="true">+</span></summary>
         <div className="machine-notes__body">
           <div className="machine-notes__telemetry" aria-label="Control Room telemetry">
             <dl className="control-room__stage-detail">
@@ -311,21 +257,15 @@ export function ControlRoom({ snapshot }: { snapshot: unknown }) {
               <div><dt>Campaigns</dt><dd>{view.campaigns === undefined ? 'Campaign state unavailable' : `${view.campaigns} · not yet shipped`}</dd></div>
             </dl>
           </div>
-          <div className="control-room__rail" role="group" aria-label="Reliability and workflow telemetry">
+          <div className="control-room__rail" role="group" aria-label="Reliability telemetry">
             <section className="control-room__rail-item control-room__rail-item--failure" aria-labelledby="failure-title">
               <h3 className="eyebrow" id="failure-title">Failure rail</h3>
               <p>OSHA news is errored: taxonomy input needs attention.</p>
               {view.sampledActionHealth ? <p>Sampled action health: {view.sampledActionHealth.succeeded} of {view.sampledActionHealth.sampled} actions succeeded; {view.sampledActionHealth.errored} AutoTier intent action{view.sampledActionHealth.errored === 1 ? '' : 's'} errored. This is a sample, not a workspace-wide error rate.</p> : <p>Sampled action health unavailable.</p>}
             </section>
-            <section className="control-room__rail-item" aria-labelledby="workflow-title">
-              <h3 className="eyebrow" id="workflow-title">Workflow topologies</h3>
-              {view.workflows.length > 0 ? view.workflows.map((workflow) => (
-                <article className="control-room__workflow" key={workflow.name}>
-                  <h4>{workflow.name} · {workflow.shape}</h4>
-                  <ol>{workflow.nodes.map((node) => <li key={`${workflow.name}-${node.name}`}><span>{node.name}</span> <span>{node.type}</span></li>)}</ol>
-                  <p>Edges: {[...workflow.edges].sort(([fromA, toA], [fromB, toB]) => fromA - fromB || toA - toB).map(([from, to]) => `${workflow.nodes[from].name} → ${workflow.nodes[to].name}`).join(' · ')}</p>
-                </article>
-              )) : <p>Workflow topology unavailable.</p>}
+            <section className="control-room__rail-item" aria-labelledby="judgment-title">
+              <h3 className="eyebrow" id="judgment-title">Production judgment</h3>
+              <p>Incomplete identifiers, ambiguous matches, and failed enrichments become owned states—not silent drops from the funnel.</p>
             </section>
           </div>
         </div>

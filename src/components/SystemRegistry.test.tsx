@@ -42,7 +42,7 @@ describe('SystemRegistry', () => {
     const user = userEvent.setup()
     render(<SystemRegistry snapshot={snapshot} />)
 
-    await user.click(screen.getByText(/open the registry/i))
+    await user.click(screen.getByText(/inspect the Clay implementation/i))
     await user.click(screen.getByRole('button', { name: 'Workflows' }))
 
     expect(screen.getByText(/Conditional branch: Has company identifier\?/i)).toBeInTheDocument()
@@ -53,7 +53,7 @@ describe('SystemRegistry', () => {
   it('uses native pressed view selectors that work with the keyboard', async () => {
     const user = userEvent.setup()
     render(<SystemRegistry snapshot={snapshot} />)
-    await user.click(screen.getByText(/open the registry/i))
+    await user.click(screen.getByText(/inspect the Clay implementation/i))
     const workflows = screen.getByRole('button', { name: 'Workflows' })
 
     expect(workflows).toHaveAttribute('aria-pressed', 'false')
@@ -72,7 +72,7 @@ describe('SystemRegistry', () => {
     const user = userEvent.setup()
     render(<SystemRegistry snapshot={malformedSnapshot} />)
 
-    await user.click(screen.getByText(/open the registry/i))
+    await user.click(screen.getByText(/inspect the Clay implementation/i))
     await user.click(screen.getByRole('button', { name: 'Workflows' }))
 
     expect(screen.getByText(/^Campaigns: Unavailable$/i)).toBeInTheDocument()

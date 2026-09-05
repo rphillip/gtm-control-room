@@ -39,9 +39,9 @@ export function PortfolioPage({ snapshot }: { snapshot?: unknown }) {
             <p className="hero__lede">{hero.lede}</p>
             <p className="hero__proof">{hero.proof}</p>
             <div className="hero__actions">
-              <a className="button" href="#control-room">Start the machine</a>
-              <a className="text-link" href={portfolio.person.linkedIn}>
-                LinkedIn
+              <a className="button" href="#work">See the case studies</a>
+              <a className="text-link" href={portfolio.person.linkedIn} target="_blank" rel="noreferrer">
+                View LinkedIn
               </a>
               <a className="text-link" href={`mailto:${portfolio.person.email}`}>
                 Email Ryan
@@ -82,7 +82,7 @@ export function PortfolioPage({ snapshot }: { snapshot?: unknown }) {
               <path className="physics-ball__seam" data-physics-spin aria-hidden="true" d="M -4.5 -2 L 4.5 2" transform="translate(108 228)" />
               <text x="112" y="305">SIGNALS</text><text x="285" y="305">JOIN</text><text x="445" y="305">ROUTE</text>
             </svg>
-            <p className="hero__system-note">The small red pulley is failure visibility. Remove it and the whole thing becomes “just automation.”</p>
+            <p className="hero__system-note">The red ball is data. The return track is observability—because automation without feedback is just motion.</p>
           </div>
         </section>
 
@@ -93,19 +93,19 @@ export function PortfolioPage({ snapshot }: { snapshot?: unknown }) {
         <SystemRegistry snapshot={publicSnapshot} />
 
         <section id="about" className="section career" aria-labelledby="about-title">
-          <div className="journey-heading"><div><p className="eyebrow">04 / Le parcours</p><h2 id="about-title">Data platforms first. Healthcare GTM systems next.</h2></div><DataRelay id="about" variant="elevator" /></div>
-          <p className="career__lead">4+ years building cloud data platforms across startup and digital-health environments.</p>
+          <div className="journey-heading"><div><p className="eyebrow">04 / Le parcours</p><h2 id="about-title">Healthcare data engineering, applied to GTM.</h2></div><DataRelay id="about" variant="elevator" /></div>
+          <p className="career__lead">4+ years building cloud data platforms across startup and digital-health teams—the foundation for owning signals, models, integrations, and activation infrastructure.</p>
           <div className="career__evidence">
             <details><summary><span><strong>BetterHelp</strong>Lifecycle systems built on dependable data contracts.</span><span className="disclosure-plus" aria-hidden="true">+</span></summary><p>Connected Snowflake, dbt, and Fivetran models to AWS-backed operational views in Looker, Python, and Google Sheets—giving Iterable lifecycle segmentation a dependable data contract.</p></details>
             <details><summary><span><strong>Cylinder Health</strong>Claims, membership, product, and billing made usable together.</span><span className="disclosure-plus" aria-hidden="true">+</span></summary><p>Designed GCP pipelines across BigQuery, Composer/Airflow, Dataflow, Cloud Functions, GKE, GCS, and Terraform to make claims, membership, product, billing, and reporting states usable together.</p></details>
             <details><summary><span><strong>Optum / AbleTo</strong>Healthcare member data made operational at scale.</span><span className="disclosure-plus" aria-hidden="true">+</span></summary><p>Built ETL/ELT and BigQuery data marts that made healthcare member data usable by analytical and operational teams at scale.</p></details>
           </div>
-          <p className="career__footnote">Earlier, two years of oil-and-gas data consulting supplied one durable lesson: an automation reduced a multiweek process to 10 minutes. It is supporting proof for the same instinct—make repetitive, high-stakes data work observable and repeatable.</p>
+          <p className="career__footnote">Earlier: two years of data consulting, including an automation that reduced a multiweek process to 10 minutes.</p>
         </section>
 
         <section id="contact" className="section contact" aria-labelledby="contact-title">
-          <div className="journey-heading"><div><p className="eyebrow">05 / Next system</p><h2 id="contact-title">Building a healthcare GTM data system?</h2></div><DataRelay id="contact" variant="dispatch" /></div>
-          <p>Let’s talk about the source data, signal contracts, routing, and reliability work that makes an activation layer useful.</p>
+          <div className="journey-heading"><div><p className="eyebrow">05 / Next system</p><h2 id="contact-title">Hiring a data-native healthcare GTM engineer?</h2></div><DataRelay id="contact" variant="dispatch" /></div>
+          <p>I’m interested in teams where better targeting, activation, and growth depend on better data systems.</p>
           <div className="contact__links"><a className="button" href={`mailto:${portfolio.person.email}`}>Email Ryan</a><a className="text-link" href={portfolio.person.linkedIn} target="_blank" rel="noreferrer">Professional profile</a></div>
         </section>
       </main>

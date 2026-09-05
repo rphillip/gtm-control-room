@@ -18,26 +18,25 @@ describe('CaseStudy', () => {
     const user = userEvent.setup()
     render(<CaseStudy study={snapshotPortfolio.caseStudies[0]} index={0} />)
 
-    expect(screen.getAllByText('11').length).toBeGreaterThan(0)
+    expect(screen.getAllByText('60').length).toBeGreaterThan(0)
     expect(screen.getByText('Observed aggregate evidence; samples are labeled.')).toBeInTheDocument()
     expect(screen.getByRole('figure', { name: /Multi-Signal Account Engine evidence mobile/i })).toBeInTheDocument()
-    expect(screen.getByText(/normalized company identity/i)).not.toBeVisible()
+    expect(screen.getByText(/company identity and domain the join contract/i)).not.toBeVisible()
 
-    await user.click(screen.getByText(/open full case file/i))
+    await user.click(screen.getByText(/see the decisions, failure, and next production step/i))
 
-    expect(screen.getByText(/normalized company identity/i)).toBeVisible()
+    expect(screen.getByText(/company identity and domain the join contract/i)).toBeVisible()
     expect(screen.getByRole('figure', { name: /Multi-Signal Account Engine animated system machine/i })).toBeVisible()
   })
 
   it('presents failures without converting samples into global rates', () => {
     render(<CaseStudy study={portfolio.caseStudies[1]} index={1} />)
 
-    expect(screen.getByText(/ten-row CMS sample/i)).toBeInTheDocument()
+    expect(screen.getByText(/parent-identity gaps/i)).toBeInTheDocument()
     expect(screen.queryByText(/match rate/i)).not.toBeInTheDocument()
   })
 
-  it('renders optional local evidence media from a content entry', () => {
-    vi.stubEnv('BASE_URL', '/gtm-control-room/')
+  it('keeps optional schematic media out of the hiring-manager case file', () => {
     render(
       <CaseStudy
         index={0}
@@ -55,13 +54,7 @@ describe('CaseStudy', () => {
       />,
     )
 
-    expect(screen.getByRole('img', { name: /anonymized account-engine topology/i })).toHaveAttribute(
-      'src',
-      '/gtm-control-room/evidence/account-engine-topology.svg',
-    )
-    expect(screen.getByRole('img', { name: /anonymized account-engine topology/i })).toHaveAttribute('width', '1600')
-    expect(screen.getByRole('img', { name: /anonymized account-engine topology/i })).toHaveAttribute('height', '900')
-    expect(screen.getByText(/optional portfolio-safe topology asset/i)).toBeInTheDocument()
+    expect(screen.queryByRole('img', { name: /anonymized account-engine topology/i })).not.toBeInTheDocument()
   })
 
   it.each(portfolio.caseStudies.map((study, index) => [study.title, study, index] as const))(

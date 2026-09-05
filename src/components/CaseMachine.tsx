@@ -102,6 +102,7 @@ export function CaseMachine({ study }: { study: CaseStudyContent }) {
   const machineRef = useRef<HTMLElement>(null)
   const Machine = machineBySlug[study.slug as keyof typeof machineBySlug] ?? AccountMachine
   const physicsProfile = caseMachineProfiles[study.slug] ?? caseMachineProfiles['multi-signal-account-engine']
+  const featuredMetrics = study.metrics.filter(({ provenance }) => provenance !== 'unavailable').slice(0, 3)
   useMatterMachine(machineRef, physicsProfile)
 
   return (
@@ -109,7 +110,7 @@ export function CaseMachine({ study }: { study: CaseStudyContent }) {
       <div className="case-machine__canvas">
         <Machine />
         <div className="case-machine__hotspots">
-          {study.metrics.map((metric, index) => {
+          {featuredMetrics.map((metric, index) => {
             const descriptionId = `${study.slug}-metric-${index}`
             return (
               <button
@@ -131,7 +132,7 @@ export function CaseMachine({ study }: { study: CaseStudyContent }) {
       <figcaption className="case-machine__caption">
         <p className="eyebrow">Observed aggregate evidence · samples are labeled</p>
         <dl>
-          {study.metrics.map((metric) => (
+          {featuredMetrics.map((metric) => (
             <div key={metric.label}>
               <dt>{metric.label}</dt>
               <dd>{metric.value}</dd>

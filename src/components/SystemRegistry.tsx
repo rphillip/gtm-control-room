@@ -44,18 +44,18 @@ export function SystemRegistry({ snapshot }: { snapshot?: PublicClaySnapshot }) 
 
   return (
     <section id="registry" className="section system-registry" aria-labelledby="registry-title">
-      <div className="journey-heading"><div><p className="eyebrow">03 / Les archives</p><h2 id="registry-title">The systems behind the work.</h2></div><DataRelay id="registry" variant="archive" /></div>
-      <p className="system-registry__intro">A sanitized, build-time view of the tables, signals, functions, and workflows I assembled in Clay.</p>
+      <div className="journey-heading"><div><p className="eyebrow">Appendix / Les archives</p><h2 id="registry-title">Technical proof, when you want it.</h2></div><DataRelay id="registry" variant="archive" /></div>
+      <p className="system-registry__intro">Optional implementation evidence: a sanitized view of the tables, signals, functions, and workflows behind the featured systems.</p>
       <details className="registry-disclosure">
-        <summary><span>Open the registry</span><span className="disclosure-plus" aria-hidden="true">+</span></summary>
+        <summary><span>Inspect the Clay implementation</span><span className="disclosure-plus" aria-hidden="true">+</span></summary>
         <div className="registry-disclosure__body">
           <div className="system-registry__tabs" role="group" aria-label="System registry views">
             {tabs.map((tab) => <button key={tab} type="button" aria-pressed={selected === tab} onClick={() => setSelected(tab)}><span className="system-registry__selected-marker" aria-hidden="true">✓</span>{tab}</button>)}
           </div>
           <div className="system-registry__panel" role="region" aria-live="polite" aria-label={`${selected} registry`}>
             {selected === 'Tables' && <div className="registry-grid">
-              <article><p className="eyebrow">Week 2 / Account engine</p><h3>Source + scoring inventory</h3><p>{aggregate(snapshot, 'scoredAccounts')} scored accounts · normalized identity, public signals, Tally feedback, BLS injury tiers, and composite-score outputs.</p></article>
-              <article><p className="eyebrow">Week 3 / Healthcare map</p><h3>Facility + system pipeline</h3><p>{aggregate(snapshot, 'cmsFacilities')} CMS facility rows · {aggregate(snapshot, 'chspSystems')} CHSP health-system records · {aggregate(snapshot, 'healthSystemWorkingRows')} Turquoise Health Systems working rows.</p></article>
+              <article><p className="eyebrow">Account engine</p><h3>Source + scoring inventory</h3><p>{aggregate(snapshot, 'scoredAccounts')} scored accounts · normalized identity, public signals, feedback, BLS injury tiers, and composite-score outputs.</p></article>
+              <article><p className="eyebrow">Healthcare market map</p><h3>Facility + system pipeline</h3><p>{aggregate(snapshot, 'cmsFacilities')} CMS facility rows · {aggregate(snapshot, 'chspSystems')} CHSP health-system records · {aggregate(snapshot, 'healthSystemWorkingRows')} health-system working rows.</p></article>
             </div>}
             {selected === 'Signals' && <div className="registry-list">
               <p>{aggregate(snapshot, 'signalsActive')} active · {aggregate(snapshot, 'signalsErrored')} errored. Status is observed at the sanitized snapshot boundary.</p>

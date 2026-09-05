@@ -19,8 +19,9 @@ describe('CaseMachine', () => {
       expect(container.querySelector('[data-physics-spin]')).toBeInTheDocument()
       expect(container.querySelector('[data-physics-launcher]')).toBeInTheDocument()
       expect(container.querySelector('.case-machine__return-track')).toBeInTheDocument()
-      expect(within(figure).getAllByRole('button', { name: /evidence:/i })).toHaveLength(study.metrics.length)
-      for (const metric of study.metrics) {
+      const featuredMetrics = study.metrics.filter(({ provenance }) => provenance !== 'unavailable').slice(0, 3)
+      expect(within(figure).getAllByRole('button', { name: /evidence:/i })).toHaveLength(featuredMetrics.length)
+      for (const metric of featuredMetrics) {
         expect(within(figure).getByText(metric.value, { selector: 'dd' })).toBeInTheDocument()
         expect(within(figure).getByText(metric.label, { selector: 'dt' })).toBeInTheDocument()
       }

@@ -50,7 +50,7 @@ function CaseSelectorButton({ study, index, selected, onSelect }: {
       <span className="case-selector__number">{String(index + 1).padStart(2, '0')}</span>
       <CaseSelectorGlyph slug={study.slug} />
       <span className="case-selector__label">{study.title}</span>
-      <span className="case-selector__state">{selected ? 'Now viewing' : 'Select machine'}</span>
+      <span className="case-selector__state">{selected ? 'Now viewing' : index < 2 ? 'Featured case' : 'Supporting prototype'}</span>
     </button>
   )
 }
@@ -66,10 +66,10 @@ export function SelectedSystems({ studies }: { studies: CaseStudyContent[] }) {
       <div className="selected-systems__intro">
         <div>
           <p className="eyebrow">02 / Les systèmes</p>
-          <h2 id="work-title">Three machines. Real evidence.</h2>
+          <h2 id="work-title">Two core systems. One activation prototype.</h2>
           <DataRelay id="work" variant="switchboard" />
         </div>
-        <p>Choose a mechanism. Open its case file for the build logs, failures, and production reflection.</p>
+        <p>Start with the business problem and result. Open a case file for the decisions, failure modes, and next production step.</p>
       </div>
 
       <div className="case-selector" role="group" aria-label="Choose a case file">

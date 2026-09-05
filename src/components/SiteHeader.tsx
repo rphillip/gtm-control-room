@@ -1,8 +1,8 @@
 const links = [
-  ['Control Room', '#control-room'],
-  ['Work', '#work'],
-  ['Registry', '#registry'],
-  ['About', '#about'],
+  ['Approach', '#control-room'],
+  ['Case studies', '#work'],
+  ['Technical proof', '#registry'],
+  ['Experience', '#about'],
   ['Contact', '#contact'],
 ] as const
 

@@ -5,8 +5,8 @@ export const hero = {
   eyebrow: 'Ryan Sulapas · Healthcare GTM data systems',
   title: 'Healthcare GTM problems are usually data problems first.',
   lede:
-    'I build the signals, models, integrations, and automation that turn fragmented healthcare data into action.',
-  proof: '4+ years building production cloud data systems across startup and digital-health teams.',
+    'I build the signals, models, integrations, and automation that turn fragmented healthcare data into qualified accounts and reliable GTM action.',
+  proof: 'Data-native GTM engineering, backed by 4+ years building production cloud data systems across startup and digital-health teams.',
 }
 
 const caseStudyTitles = [
@@ -27,14 +27,14 @@ export const portfolio: PortfolioContent = validatePortfolio({
       title: caseStudyTitles[0],
       problem: 'A static construction account list could not distinguish durable fit from timely reasons to engage.',
       summary:
-        'A reusable account-prioritization system that turns fit, timing, feedback, and risk signals into an observable queue.',
+        'A reusable prioritization system that combines fit, timing, feedback, and risk signals into an observable account queue.',
       metrics: [
+        { label: 'Scored accounts', value: '60', provenance: 'observed' },
+        { label: 'New-hire events', value: '27', provenance: 'observed' },
         { label: 'High score tier', value: '11', provenance: 'observed' },
         { label: 'Medium / low score tiers', value: '40 / 9', provenance: 'observed' },
         { label: 'Intent tiers · high / medium / low / without tier', value: '9 / 37 / 7 / 7', provenance: 'observed' },
         { label: 'Injury tiers · high / medium / low', value: '20 / 12 / 28', provenance: 'observed' },
-        { label: 'Scored accounts', value: '60', provenance: 'observed' },
-        { label: 'New-hire events', value: '27', provenance: 'observed' },
         { label: 'Sampled action health', value: 'Unavailable', provenance: 'unavailable' },
       ],
       stages: ['Normalize identity', 'Detect signals', 'Join BLS + feedback', 'AutoTier dimensions', 'Write composite score'],
@@ -47,14 +47,12 @@ export const portfolio: PortfolioContent = validatePortfolio({
         height: 420,
       },
       buildLog: [
-        'Normalized company identity and domain so account and event sources could be joined without treating inconsistent names as different businesses.',
-        'Detected new-hire, job-posting, and company-topic-intent events; then added qualitative Tally feedback alongside the account context.',
-        'Joined BLS industry injury-rate data and normalized every scoring dimension into a reusable input for AutoTier.',
-        'Applied AutoTier before composing the score, then wrote the resulting priority and its component tiers downstream.',
+        'Made company identity and domain the join contract across account and event sources.',
+        'Combined hiring, intent, feedback, and industry-risk evidence instead of relying on a static fit score.',
+        'Preserved component tiers and failure states beside the composite priority so an operator could understand the result.',
       ],
       failures: [
-        'Sampled action health is published only through the build-time snapshot and is never a workspace-wide error rate.',
-        'A missing tier is not neutral: without an explicit null contract, an otherwise green pipeline can quietly distort prioritization.',
+        'A missing tier is not neutral: without an explicit null contract, an apparently healthy pipeline can quietly distort prioritization.',
       ],
       reflection:
         'I would make the missing-data contract, retry behavior, and write-time observability explicit. Scoring is only dependable when its failure states travel with the score.',
@@ -75,14 +73,12 @@ export const portfolio: PortfolioContent = validatePortfolio({
       ],
       stages: ['Import CMS facilities', 'Resolve system + parent', 'Join CHSP attributes', 'Score fit + scale', 'Keep best company row', 'Segment output'],
       buildLog: [
-        'Imported 5,419 CMS facility records from an HTTP source and started a separate health-system and corporate-parent identity lookup.',
-        'Sent matched facilities to a 922-row Turquoise Health Systems working layer and joined the 639-record CHSP health-system dataset.',
-        'Derived scale, geography, facility, fit, executive-density, role-density, and total scores from the integrated attributes.',
-        'Enriched company identity, generated a match key, detected duplicates, and retained the Is Best Row / maximum-score-per-company result before segmentation.',
+        'Separated facility, health-system, and corporate-parent identity instead of treating each source row as an account.',
+        'Joined CMS and CHSP attributes into a working healthcare-system layer with explicit unresolved states.',
+        'Created match keys, detected duplicates, and retained the best company-level row before segmentation.',
       ],
       failures: [
-        'In a ten-row CMS sample, two rows lacked a health-system lookup and therefore also lacked the downstream send step. This is indicative sample health, not a global match-rate claim.',
-        'Public healthcare records carry parent-identity gaps, duplicate company matches, and facility-to-system ambiguity that must remain visible.',
+        'Public healthcare records carry parent-identity gaps, duplicate matches, and facility-to-system ambiguity that must remain visible.',
       ],
       reflection:
         'I would preserve match confidence and unresolved-parent states as first-class fields, then give operators a review queue instead of hiding ambiguity behind a single score.',
@@ -92,7 +88,7 @@ export const portfolio: PortfolioContent = validatePortfolio({
       title: caseStudyTitles[2],
       problem: 'A scored account is not useful until it can be routed into repeatable research and activation with safe missing-data handling.',
       summary:
-        'Safe routing from scored audiences into repeatable research and prepared activation outputs.',
+        'A supporting prototype for routing scored audiences into repeatable research and prepared activation outputs.',
       metrics: [
         { label: 'Immature conditional workflow nodes', value: '5', provenance: 'observed' },
         { label: 'Operator Enrichment linear workflow nodes', value: '4', provenance: 'observed' },
@@ -100,12 +96,12 @@ export const portfolio: PortfolioContent = validatePortfolio({
       ],
       stages: ['Select segment', 'Check identifier', 'Research public activity', 'Write contextual message', 'Persist prepared output'],
       buildLog: [
-        'Built Turquoise Immature as a five-node conditional: start from an audience, test the company identifier, mark missing identifiers, or find contacts and save them to Clay Audiences.',
-        'Built Turquoise Operator Enrichment as a four-node linear flow: start from an audience, research public professional activity, draft a contextual LinkedIn message, and save the prepared output.',
+        'Made identifier availability an explicit branch before research or contact discovery.',
+        'Separated research, message preparation, and persistence so each stage could be inspected independently.',
+        'Stopped the claim at prepared activation because campaign delivery and business outcomes were not yet represented.',
       ],
       failures: [
-        'The missing-identifier branch is deliberately visible rather than an exception to hide.',
-        'Campaign execution outcomes are not represented here, so the system stops at prepared activation output and claims no business outcome.',
+        'Campaign execution outcomes are not represented, so the system stops at prepared activation and claims no business outcome.',
       ],
       reflection:
         'I would add owner-visible queues, retry policy, and delivery-state telemetry before calling this an activation system. A branch for incomplete inputs is a product decision, not an edge case.',

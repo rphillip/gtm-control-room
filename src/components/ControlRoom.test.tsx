@@ -56,7 +56,7 @@ describe('ControlRoom', () => {
   it('explains each selected stage with inputs, transformations, outputs, and failure modes', async () => {
     const user = userEvent.setup()
     render(<ControlRoom snapshot={sanitizedSnapshot} />)
-    await user.click(screen.getByText(/open machine notes/i))
+    await user.click(screen.getByText(/inspect the operating logic/i))
 
     const telemetry = screen.getByLabelText('Control Room telemetry')
     const stageInputs = [
@@ -102,30 +102,26 @@ describe('ControlRoom', () => {
     }
   })
 
-  it('renders the snapshot workflow nodes, edges, and topology shape', () => {
+  it('keeps production judgment visible without duplicating the workflow registry', () => {
     render(<ControlRoom snapshot={sanitizedSnapshot} />)
 
-    screen.getByText(/open machine notes/i).click()
+    screen.getByText(/inspect the operating logic/i).click()
 
-    const workflows = screen.getByLabelText('Workflow topologies')
-    expect(workflows).toHaveTextContent(/Turquoise Immature.*Conditional branch/i)
-    expect(workflows).toHaveTextContent(/Has company identifier\?.*conditional/i)
-    expect(workflows).toHaveTextContent(/Segment → Has company identifier\?/i)
-    expect(workflows).toHaveTextContent(/Turquoise Operator Enrichment.*Linear sequence/i)
-    expect(workflows).toHaveTextContent(/Operator Send Research → Write LinkedIn Message/i)
+    expect(screen.getByRole('heading', { name: /production judgment/i })).toBeInTheDocument()
+    expect(screen.getByText(/owned states—not silent drops/i)).toBeInTheDocument()
+    expect(screen.queryByText(/Turquoise Immature/i)).not.toBeInTheDocument()
   })
 
   it('renders authored unavailable states instead of false zeroes for incomplete snapshots', () => {
     const incompleteSnapshot = { aggregates: {}, signals: [] }
     render(<ControlRoom snapshot={incompleteSnapshot} />)
 
-    screen.getByText(/open machine notes/i).click()
+    screen.getByText(/inspect the operating logic/i).click()
 
     expect(screen.getByLabelText('Control Room telemetry')).toHaveTextContent(/Signal status unavailable/i)
     expect(screen.getByLabelText('Control Room telemetry')).toHaveTextContent(/Tier contract unavailable/i)
     expect(screen.getByLabelText('Control Room telemetry')).toHaveTextContent(/Campaign state unavailable/i)
-    expect(screen.getByLabelText('Reliability and workflow telemetry')).toHaveTextContent(/Sampled action health unavailable/i)
-    expect(screen.getByLabelText('Workflow topologies')).toHaveTextContent(/Workflow topology unavailable/i)
+    expect(screen.getByLabelText('Reliability telemetry')).toHaveTextContent(/Sampled action health unavailable/i)
     expect(screen.queryByText(/0 active · 0 errored/i)).not.toBeInTheDocument()
   })
 
@@ -135,10 +131,10 @@ describe('ControlRoom', () => {
     changedSnapshot.aggregates.sampledActionHealth = { sampled: 10, succeeded: 8, errored: 2 }
     render(<ControlRoom snapshot={changedSnapshot} />)
 
-    screen.getByText(/open machine notes/i).click()
+    screen.getByText(/inspect the operating logic/i).click()
 
     expect(screen.getByLabelText('Control Room telemetry')).toHaveTextContent(/3 · not yet shipped/i)
-    expect(screen.getByLabelText('Reliability and workflow telemetry')).toHaveTextContent(
+    expect(screen.getByLabelText('Reliability telemetry')).toHaveTextContent(
       /8 of 10 actions succeeded; 2 AutoTier intent actions errored/i,
     )
   })
@@ -148,9 +144,9 @@ describe('ControlRoom', () => {
     inconsistentSnapshot.aggregates.sampledActionHealth = { sampled: 10, succeeded: 9, errored: 2 }
     render(<ControlRoom snapshot={inconsistentSnapshot} />)
 
-    screen.getByText(/open machine notes/i).click()
+    screen.getByText(/inspect the operating logic/i).click()
 
-    expect(screen.getByLabelText('Reliability and workflow telemetry')).toHaveTextContent(
+    expect(screen.getByLabelText('Reliability telemetry')).toHaveTextContent(
       /Sampled action health unavailable/i,
     )
     expect(screen.queryByText(/one AutoTier intent action errored/i)).not.toBeInTheDocument()

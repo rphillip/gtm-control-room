@@ -27,9 +27,9 @@ for (const viewport of [
     )
     expect(overflow).toBeLessThanOrEqual(1)
 
-    await page.getByRole('link', { name: 'Start the machine' }).click()
-    await expect(page.locator('#control-room')).toBeInViewport()
-    await page.getByRole('navigation', { name: 'Portfolio sections' }).getByRole('link', { name: 'Registry' }).click()
+    await page.getByRole('link', { name: 'See the case studies' }).click()
+    await expect(page.locator('#work')).toBeInViewport()
+    await page.getByRole('navigation', { name: 'Portfolio sections' }).getByRole('link', { name: 'Technical proof' }).click()
     await expect(page.locator('#registry')).toBeInViewport()
   })
 }
@@ -104,12 +104,12 @@ test('reduced motion and forced colors preserve usable state changes', async ({ 
     Number.parseFloat(getComputedStyle(element).animationDuration) || 0,
   )).toBeLessThan(0.01)
 
-  await page.getByText('Open full case file', { exact: true }).first().click()
+  await page.getByText('See the decisions, failure, and next production step', { exact: true }).first().click()
   expect(await page.locator('[data-case-ball]').first().evaluate((element) =>
     Number.parseFloat(getComputedStyle(element).animationDuration) || 0,
   )).toBeLessThan(0.01)
 
-  await page.getByText('Open the registry', { exact: true }).click()
+  await page.getByText('Inspect the Clay implementation', { exact: true }).click()
   const signalsView = page.getByRole('button', { name: 'Signals', exact: true })
   await signalsView.click()
   await expect(signalsView).toHaveAttribute('aria-pressed', 'true')
@@ -118,7 +118,7 @@ test('reduced motion and forced colors preserve usable state changes', async ({ 
 
 test('case machines expose evidence on focus and retain a permanent caption', async ({ page }) => {
   await page.goto(sitePath)
-  await page.getByText('Open full case file', { exact: true }).first().click()
+  await page.getByText('See the decisions, failure, and next production step', { exact: true }).first().click()
 
   const machine = page.getByRole('figure', { name: 'Multi-Signal Account Engine animated system machine' })
   await expect(machine).toBeVisible()
@@ -149,7 +149,7 @@ test('Matter.js advances the ball and triggers collision-specific machine states
   test.setTimeout(60_000)
   await page.setViewportSize({ width: 1280, height: 900 })
   await page.goto(sitePath)
-  await page.getByRole('link', { name: 'Start the machine' }).click()
+  await page.getByRole('navigation', { name: 'Portfolio sections' }).getByRole('link', { name: 'Approach' }).click()
 
   const machine = page.locator('.contraption[data-physics-engine="matter-js"]')
   await expect(machine).toHaveAttribute('data-physics-state', 'running')
@@ -471,11 +471,11 @@ test('content remains usable at 200% text zoom', async ({ page }) => {
     () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
   )
   expect(overflow).toBeLessThanOrEqual(1)
-  await page.getByRole('link', { name: 'Start the machine' }).click()
+  await page.getByRole('navigation', { name: 'Portfolio sections' }).getByRole('link', { name: 'Approach' }).click()
   await expect(page.locator('#control-room')).toBeInViewport()
 })
 
-test('rendered case-study evidence loads beneath the Pages base without layout instability', async ({ page }) => {
+test('the focused case file expands without layout instability or horizontal overflow', async ({ page }) => {
   await page.addInitScript(() => {
     const state = window as typeof window & { __layoutShift: number }
     state.__layoutShift = 0
@@ -486,16 +486,13 @@ test('rendered case-study evidence loads beneath the Pages base without layout i
     }).observe({ type: 'layout-shift', buffered: true })
   })
   await page.goto(sitePath)
-  await page.getByText('Open full case file', { exact: true }).first().click()
-  const image = page.getByRole('img', { name: /public signals.*observable account queue/i })
+  await page.getByText('See the decisions, failure, and next production step', { exact: true }).first().click()
+  const machine = page.getByRole('figure', { name: /Multi-Signal Account Engine animated system machine/i })
 
-  await image.scrollIntoViewIfNeeded()
-  await expect(image).toBeVisible()
-  await expect.poll(() => image.evaluate((element) => (element as HTMLImageElement).naturalWidth)).toBeGreaterThan(0)
-  const src = await image.getAttribute('src')
-  expect(new URL(src!, page.url()).pathname).toBe('/gtm-control-room/evidence/multi-signal-account-engine.svg')
-  await expect(image).toHaveAttribute('width', '960')
-  await expect(image).toHaveAttribute('height', '420')
+  await machine.scrollIntoViewIfNeeded()
+  await expect(machine).toBeVisible()
+  await expect(machine).toHaveAttribute('data-physics-engine', 'matter-js')
+  await expect(page.getByRole('heading', { name: 'Three build decisions' })).toBeVisible()
 
   const pageMetrics = await page.evaluate(() => ({
     layoutShift: (window as typeof window & { __layoutShift: number }).__layoutShift,
