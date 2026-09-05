@@ -40,6 +40,8 @@ main:focus-visible { outline: none; }
 .hero, .section { width: min(100% - 2rem, var(--measure)); margin-inline: auto; overflow-wrap: anywhere; }
 .hero { display: grid; grid-template-columns: minmax(0, 1.04fr) minmax(22rem, 0.96fr); gap: clamp(2rem, 6vw, 6rem); padding: clamp(3.5rem, 9vw, 8rem) 0 var(--space-4); }
 .hero__copy { align-self: center; }
+.hero__title-stage { position: relative; }
+.hero__title-stage > .data-relay { position: absolute; right: 0.25rem; bottom: 0.15rem; width: clamp(8rem, 12vw, 10rem); }
 .eyebrow, .hero__system-label, .metric-strip__label, .provenance { margin: 0; color: var(--blue); font-size: 0.65rem; font-weight: 600; letter-spacing: 0.11em; line-height: 1.45; text-transform: uppercase; }
 h1, h2 { max-width: 18ch; margin: var(--space-2) 0 0; font-family: var(--serif); font-weight: 520; letter-spacing: -0.055em; text-wrap: balance; }
 h1 { font-size: clamp(3.35rem, 7.8vw, 7.4rem); line-height: 0.83; }
@@ -457,7 +459,7 @@ details[open] > summary .disclosure-plus { color: var(--paper); background: var(
 .data-ball-journey__ball { --journey-loop-scale: 1; position: absolute; inset: 0; border: 2px solid var(--ink); border-radius: 50%; opacity: 1; background: var(--red); box-shadow: 3px 3px 0 var(--ink); transition: opacity 100ms ease-out, --journey-loop-scale 160ms ease-out; will-change: transform, opacity; }
 .data-ball-journey[data-jump='true'] .data-ball-journey__ball { opacity: 0.25; }
 .data-ball-journey__ball i { position: absolute; top: 50%; left: 50%; width: 0.7rem; height: 2px; background: var(--paper); transform: translate(-50%, -50%) rotate(24deg); }
-.data-ball-journey[data-scroll-mode='handoff'] .data-ball-journey__ball { --journey-loop-scale: 0; }
+.data-ball-journey:not([data-scroll-mode='loop']) .data-ball-journey__ball { --journey-loop-scale: 0; }
 .data-ball-journey[data-scroll-owner='hero'] .data-ball-journey__ball { animation: journey-intake-loop 3.2s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
 .data-ball-journey[data-scroll-owner='control-room'] .data-ball-journey__ball { animation: journey-refinery-loop 3.4s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
 .data-ball-journey[data-scroll-owner='work'] .data-ball-journey__ball { animation: journey-switchboard-loop 3.1s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
@@ -465,8 +467,7 @@ details[open] > summary .disclosure-plus { color: var(--paper); background: var(
 .data-ball-journey[data-scroll-owner='about'] .data-ball-journey__ball { animation: journey-elevator-loop 3.3s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
 .data-ball-journey[data-scroll-owner='contact'] .data-ball-journey__ball { animation: journey-dispatch-loop 3s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
 .data-ball-journey[data-motion='reduced'] { display: none; }
-.hero__eyebrow-row, .journey-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 1.5rem; }
-.hero__eyebrow-row { align-items: center; }
+.journey-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 1.5rem; }
 .journey-heading > div { min-width: 0; }
 .data-relay { position: relative; flex: 0 0 auto; width: 8.5rem; color: var(--ink); }
 .data-relay svg { display: block; width: 100%; height: auto; overflow: visible; }
@@ -540,6 +541,7 @@ details[open] > summary .disclosure-plus { color: var(--paper); background: var(
 
 @media (max-width: 940px) {
   .hero { grid-template-columns: 1fr; }
+  .hero__title-stage > .data-relay { right: clamp(0rem, 8vw, 5rem); }
   .hero__system { width: min(100%, 42rem); justify-self: end; }
   .control-room__layout { grid-template-columns: 1fr; }
   .control-room__telemetry { width: min(100%, 32rem); justify-self: end; }
@@ -554,6 +556,7 @@ details[open] > summary .disclosure-plus { color: var(--paper); background: var(
 @media (max-width: 720px) {
   .site-header { align-items: flex-start; padding: 0.65rem 0; }
   .site-header__nav { gap: 0 0.8rem; }
+  .hero__title-stage > .data-relay { position: relative; right: auto; bottom: auto; width: 7.25rem; margin: 1rem 0 0 auto; }
   .control-room__heading, .selected-systems__intro { align-items: flex-start; flex-direction: column; }
   .journey-heading { align-items: flex-start; }
   .data-relay { width: 7.25rem; }
@@ -593,8 +596,6 @@ details[open] > summary .disclosure-plus { color: var(--paper); background: var(
 @media (max-width: 520px) {
   .hero, .section, .site-header { width: min(100% - 1.2rem, var(--measure)); }
   .hero { padding-top: 3.5rem; }
-  .hero__eyebrow-row { align-items: flex-start; }
-  .hero__eyebrow-row .eyebrow { max-width: 20ch; }
   .data-relay { width: 6.5rem; }
   .data-ball-journey__carrier { width: 1rem; height: 1rem; }
   h1 { font-size: clamp(3.05rem, 16vw, 5rem); }

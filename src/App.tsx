@@ -31,8 +31,11 @@ export function PortfolioPage({ snapshot }: { snapshot?: unknown }) {
       <main id="main" tabIndex={-1}>
         <section className="hero" aria-labelledby="hero-title">
           <div className="hero__copy">
-            <div className="hero__eyebrow-row"><p className="eyebrow">{hero.eyebrow}</p><DataRelay id="hero" variant="intake" label /></div>
-            <h1 id="hero-title"><span>Healthcare GTM problems</span> <em>are usually</em> <span><span className="hero__accent-word">data</span> problems first.</span></h1>
+            <p className="eyebrow">{hero.eyebrow}</p>
+            <div className="hero__title-stage">
+              <h1 id="hero-title"><span>Healthcare GTM problems</span> <em>are usually</em> <span><span className="hero__accent-word">data</span> problems first.</span></h1>
+              <DataRelay id="hero" variant="intake" label />
+            </div>
             <p className="hero__lede">{hero.lede}</p>
             <p className="hero__proof">{hero.proof}</p>
             <div className="hero__actions">

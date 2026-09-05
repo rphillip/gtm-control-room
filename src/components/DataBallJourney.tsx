@@ -54,6 +54,8 @@ export function DataBallJourney() {
     let jumpFrame = 0
     let previousScroll = window.scrollY
     let previousOwner = ''
+    let previousSegment = -1
+    let previousProgress = 0
     let ownerIndex = -1
     let ballHalfWidth = 10
     let ballHalfHeight = 10
@@ -109,55 +111,97 @@ export function DataBallJourney() {
       const direction = deltaScroll === 0 ? layer.dataset.scrollDirection ?? 'down' : deltaScroll < 0 ? 'up' : 'down'
       let jumped = Math.abs(deltaScroll) > viewportHeight * 1.25
 
-      if (ownerIndex < 0 || ownerIndex >= stops.length || (ownerIndex !== lowerIndex && ownerIndex !== Math.min(lowerIndex + 1, stops.length - 1)) || jumped) {
+      const ownerNeedsRebase = ownerIndex < 0 || ownerIndex >= stops.length || (ownerIndex !== lowerIndex && ownerIndex !== Math.min(lowerIndex + 1, stops.length - 1))
+      if (ownerNeedsRebase || jumped) {
+        if (ownerIndex >= 0 && ownerNeedsRebase) jumped = true
         ownerIndex = rawProgress < 0.5 ? lowerIndex : Math.min(lowerIndex + 1, stops.length - 1)
       }
 
-      const forwardLaunchAt = 0.78
-      const reverseLaunchUntil = 0.22
-      let mode: 'loop' | 'handoff' = 'loop'
-      let routeFrom = stops[ownerIndex]
-      let routeTo = routeFrom
+      const launchStart = 0.08
+      const launchEnd = 0.18
+      const arrivalStart = 0.82
+      const arrivalEnd = 0.995
+      const upperIndex = Math.min(lowerIndex + 1, stops.length - 1)
+      const lowerX = lower.x - window.scrollX
+      const lowerY = lower.y - scrollY
+      const upperX = upper.x - window.scrollX
+      const upperY = upper.y - scrollY
+      const exitsRight = lowerIndex % 2 === 0
+      const launchEdgeX = exitsRight ? window.innerWidth + ballHalfWidth + 16 : -ballHalfWidth - 16
+      const arrivalEdgeX = exitsRight ? -ballHalfWidth - 16 : window.innerWidth + ballHalfWidth + 16
+      let mode: 'loop' | 'launch' | 'offscreen' | 'flight' = 'loop'
+      let x = stops[ownerIndex].x - window.scrollX
+      let y = stops[ownerIndex].y - scrollY
       let routeProgress = 0
+      let activeIndex = ownerIndex
 
-      if (lower !== upper && ownerIndex === lowerIndex && rawProgress >= forwardLaunchAt) {
-        mode = 'handoff'
-        routeFrom = lower
-        routeTo = upper
-        routeProgress = Math.min(1, Math.max(0, (rawProgress - forwardLaunchAt) / (1 - forwardLaunchAt)))
-        if (rawProgress >= 0.995) {
-          if (Number.parseFloat(window.getComputedStyle(ball).getPropertyValue('--journey-loop-scale')) > 0.15) jumped = true
-          ownerIndex = Math.min(lowerIndex + 1, stops.length - 1)
+      if (previousSegment === lowerIndex) {
+        const skippedForward = previousProgress < launchEnd && rawProgress >= arrivalStart
+        const skippedBackward = previousProgress > arrivalStart && rawProgress <= launchEnd
+        if (skippedForward || skippedBackward) jumped = true
+      }
+
+      if (lower !== upper && ownerIndex === lowerIndex) {
+        if (rawProgress < launchStart) {
           mode = 'loop'
-          routeFrom = stops[ownerIndex]
-          routeTo = routeFrom
-          routeProgress = 0
+        } else if (rawProgress < launchEnd) {
+          mode = 'launch'
+          routeProgress = Math.min(1, Math.max(0, (rawProgress - launchStart) / (launchEnd - launchStart)))
+          const progress = routeProgress * routeProgress * (3 - 2 * routeProgress)
+          x = lowerX + (launchEdgeX - lowerX) * progress
+          y = lowerY - Math.sin(Math.PI * progress) * Math.min(110, viewportHeight * 0.13)
+        } else if (rawProgress < arrivalStart) {
+          mode = 'offscreen'
+          routeProgress = (rawProgress - launchEnd) / (arrivalStart - launchEnd)
+          x = arrivalEdgeX
+          y = -ballHalfHeight - 24
+        } else if (rawProgress < arrivalEnd) {
+          mode = 'flight'
+          routeProgress = Math.min(1, Math.max(0, (rawProgress - arrivalStart) / (arrivalEnd - arrivalStart)))
+          const progress = routeProgress * routeProgress * (3 - 2 * routeProgress)
+          x = arrivalEdgeX + (upperX - arrivalEdgeX) * progress
+          y = upperY - (1 - progress) * Math.min(120, viewportHeight * 0.14) - Math.sin(Math.PI * progress) * Math.min(70, viewportHeight * 0.08)
+          activeIndex = upperIndex
+        } else {
+          if (Number.parseFloat(window.getComputedStyle(ball).getPropertyValue('--journey-loop-scale')) > 0.15) jumped = true
+          ownerIndex = upperIndex
+          mode = 'loop'
+          activeIndex = ownerIndex
+          x = upperX
+          y = upperY
         }
-      } else if (lower !== upper && ownerIndex === lowerIndex + 1 && rawProgress <= reverseLaunchUntil) {
-        mode = 'handoff'
-        routeFrom = lower
-        routeTo = upper
-        routeProgress = Math.min(1, Math.max(0, rawProgress / reverseLaunchUntil))
-        if (rawProgress <= 0.005) {
+      } else if (lower !== upper && ownerIndex === upperIndex) {
+        if (rawProgress > arrivalEnd) {
+          mode = 'loop'
+        } else if (rawProgress > arrivalStart) {
+          mode = 'launch'
+          routeProgress = Math.min(1, Math.max(0, (rawProgress - arrivalStart) / (arrivalEnd - arrivalStart)))
+          const progress = routeProgress * routeProgress * (3 - 2 * routeProgress)
+          x = arrivalEdgeX + (upperX - arrivalEdgeX) * progress
+          y = upperY - (1 - progress) * Math.min(120, viewportHeight * 0.14) - Math.sin(Math.PI * progress) * Math.min(70, viewportHeight * 0.08)
+        } else if (rawProgress > launchEnd) {
+          mode = 'offscreen'
+          routeProgress = (rawProgress - launchEnd) / (arrivalStart - launchEnd)
+          x = launchEdgeX
+          y = -ballHalfHeight - 24
+        } else if (rawProgress > launchStart) {
+          mode = 'flight'
+          routeProgress = Math.min(1, Math.max(0, (rawProgress - launchStart) / (launchEnd - launchStart)))
+          const progress = routeProgress * routeProgress * (3 - 2 * routeProgress)
+          x = lowerX + (launchEdgeX - lowerX) * progress
+          y = lowerY - Math.sin(Math.PI * progress) * Math.min(110, viewportHeight * 0.13)
+          activeIndex = lowerIndex
+        } else {
           if (Number.parseFloat(window.getComputedStyle(ball).getPropertyValue('--journey-loop-scale')) > 0.15) jumped = true
           ownerIndex = lowerIndex
           mode = 'loop'
-          routeFrom = stops[ownerIndex]
-          routeTo = routeFrom
-          routeProgress = 0
+          activeIndex = ownerIndex
+          x = lowerX
+          y = lowerY
         }
       }
-
-      const progress = routeProgress * routeProgress * (3 - 2 * routeProgress)
-      const arc = Math.sin(Math.PI * progress)
-      const arcDirection = lowerIndex % 2 === 0 ? 1 : -1
-      const arcX = Math.min(150, window.innerWidth * 0.13) * arc * arcDirection
-      const arcY = Math.min(90, viewportHeight * 0.1) * arc
-      const documentX = routeFrom.x + (routeTo.x - routeFrom.x) * progress + arcX
-      const documentY = routeFrom.y + (routeTo.y - routeFrom.y) * progress - arcY
-      const x = documentX - window.scrollX
-      const y = documentY - scrollY
       const owner = stops[ownerIndex]
+      const activeStop = stops[activeIndex]
 
       if (jumped) {
         layer.dataset.jump = 'true'
@@ -177,18 +221,21 @@ export function DataBallJourney() {
         })
       }
       previousScroll = scrollY
+      previousSegment = lowerIndex
+      previousProgress = rawProgress
       carrier.style.transform = `translate3d(${(x - ballHalfWidth).toFixed(2)}px, ${(y - ballHalfHeight).toFixed(2)}px, 0)`
       layer.dataset.scrollOwner = owner.id
       layer.dataset.scrollDirection = direction
       layer.dataset.scrollProgress = rawProgress.toFixed(3)
       layer.dataset.scrollMode = mode
       layer.dataset.handoffProgress = routeProgress.toFixed(3)
+      layer.dataset.scrollTarget = activeStop.id
       layer.dataset.scrollX = x.toFixed(2)
       layer.dataset.scrollY = y.toFixed(2)
 
-      if (previousOwner !== owner.id) {
-        for (const stop of stops) stop.element.dataset.active = String(stop.id === owner.id)
-        previousOwner = owner.id
+      if (previousOwner !== activeStop.id) {
+        for (const stop of stops) stop.element.dataset.active = String(stop.id === activeStop.id)
+        previousOwner = activeStop.id
       }
     }
 
@@ -236,7 +283,9 @@ export function DataBallJourney() {
     const resizeObserver = new ResizeObserver(scheduleMeasure)
     for (const id of stopIds) {
       const section = document.querySelector<HTMLElement>(id === 'hero' ? '.hero' : `#${id}`)
+      const relay = document.querySelector<HTMLElement>(`[data-data-relay="${id}"]`)
       if (section) resizeObserver.observe(section)
+      if (relay) resizeObserver.observe(relay)
     }
 
     window.addEventListener('scroll', scheduleRender, { passive: true })
