@@ -260,6 +260,70 @@ test('every rendered data word receives the themed red highlight', async ({ page
   expect(counts.highlighted).toBeGreaterThan(10)
 })
 
+test('the data ball hands off through every section in both scroll directions', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 })
+  await page.goto(sitePath)
+  const journey = page.locator('[data-scroll-ball]')
+  const stops = ['hero', 'control-room', 'work', 'registry', 'about', 'contact']
+
+  await expect(journey).toHaveCount(1)
+  for (const id of stops) {
+    await page.locator(`[data-data-relay="${id}"]`).evaluate((element) => element.scrollIntoView({ behavior: 'instant', block: 'center' }))
+    await page.evaluate(() => new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve()))))
+    await expect(journey).toHaveAttribute('data-scroll-owner', id)
+    const point = await journey.evaluate((element) => [Number(element.dataset.scrollX), Number(element.dataset.scrollY)])
+    expect(point.every(Number.isFinite)).toBe(true)
+  }
+
+  for (const id of [...stops].reverse()) {
+    await page.locator(`[data-data-relay="${id}"]`).evaluate((element) => element.scrollIntoView({ behavior: 'instant', block: 'center' }))
+    await page.evaluate(() => new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve()))))
+    await expect(journey).toHaveAttribute('data-scroll-owner', id)
+  }
+  await expect(journey).toHaveAttribute('data-scroll-direction', 'up')
+})
+
+test('the data journey becomes static when reduced motion is requested', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  await page.goto(sitePath)
+
+  const journey = page.locator('[data-scroll-ball]')
+  await expect(journey).toHaveAttribute('data-motion', 'reduced')
+  await expect(journey).toBeHidden()
+
+  await page.emulateMedia({ reducedMotion: 'no-preference' })
+  await expect(journey).toHaveAttribute('data-motion', 'full')
+  await expect(journey).toBeVisible()
+  await expect(journey).toHaveAttribute('data-scroll-owner', 'hero')
+})
+
+test('the data journey remeasures its docks after an expanded machine changes layout', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 })
+  await page.goto(sitePath)
+  const registryDock = page.locator('[data-data-relay="registry"] [data-data-catch]')
+  const before = await registryDock.evaluate((element) => element.getBoundingClientRect().top + window.scrollY)
+
+  await page.locator('.machine-notes > summary').click()
+  await page.evaluate(() => new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve()))))
+  const after = await registryDock.evaluate((element) => element.getBoundingClientRect().top + window.scrollY)
+  expect(after).toBeGreaterThan(before)
+
+  await registryDock.evaluate((element) => {
+    const rect = element.getBoundingClientRect()
+    window.scrollTo({ top: rect.top + window.scrollY - window.innerHeight * 0.38, behavior: 'instant' })
+  })
+  await page.evaluate(() => new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve()))))
+
+  const journey = page.locator('[data-scroll-ball]')
+  await expect(journey).toHaveAttribute('data-scroll-owner', 'registry')
+  const alignment = await page.evaluate(() => {
+    const dock = document.querySelector('[data-data-relay="registry"] [data-data-catch]')!.getBoundingClientRect()
+    const journey = document.querySelector<HTMLElement>('[data-scroll-ball]')!
+    return Math.hypot(Number(journey.dataset.scrollX) - (dock.left + dock.width / 2), Number(journey.dataset.scrollY) - (dock.top + dock.height / 2))
+  })
+  expect(alignment).toBeLessThan(3)
+})
+
 test('content remains usable at 200% text zoom', async ({ page }) => {
   await page.setViewportSize({ width: 640, height: 900 })
   await page.goto(sitePath)

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import type { ClaySnapshot, PublicClaySnapshot } from '../content/types'
+import { DataRelay } from './DataBallJourney'
 
 const tabs = ['Tables', 'Signals', 'Function', 'Workflows'] as const
 type Tab = (typeof tabs)[number]
@@ -43,8 +44,7 @@ export function SystemRegistry({ snapshot }: { snapshot?: PublicClaySnapshot }) 
 
   return (
     <section id="registry" className="section system-registry" aria-labelledby="registry-title">
-      <p className="eyebrow">03 / Les archives</p>
-      <h2 id="registry-title">The systems behind the work.</h2>
+      <div className="journey-heading"><div><p className="eyebrow">03 / Les archives</p><h2 id="registry-title">The systems behind the work.</h2></div><DataRelay id="registry" variant="archive" /></div>
       <p className="system-registry__intro">A sanitized, build-time view of the tables, signals, functions, and workflows I assembled in Clay.</p>
       <details className="registry-disclosure">
         <summary><span>Open the registry</span><span className="disclosure-plus" aria-hidden="true">+</span></summary>

@@ -2,6 +2,7 @@ import { useRef, useState } from 'react'
 import type { CaseStudyContent } from '../content/types'
 import { selectorMachineProfiles, useMatterMachine } from '../hooks/useMatterMachine'
 import { CaseStudy } from './CaseStudy'
+import { DataRelay } from './DataBallJourney'
 
 function CaseSelectorGlyph({ slug }: { slug: string }) {
   const profile = selectorMachineProfiles[slug] ?? selectorMachineProfiles['multi-signal-account-engine']
@@ -66,6 +67,7 @@ export function SelectedSystems({ studies }: { studies: CaseStudyContent[] }) {
         <div>
           <p className="eyebrow">02 / Les systèmes</p>
           <h2 id="work-title">Three machines. Real evidence.</h2>
+          <DataRelay id="work" variant="switchboard" />
         </div>
         <p>Choose a mechanism. Open its case file for the build logs, failures, and production reflection.</p>
       </div>

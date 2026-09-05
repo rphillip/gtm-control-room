@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react'
 import { mainMachineProfile, useMatterMachine } from '../hooks/useMatterMachine'
+import { DataRelay } from './DataBallJourney'
 
 const stages = [
   {
@@ -213,6 +214,7 @@ export function ControlRoom({ snapshot }: { snapshot: unknown }) {
         <div>
           <p className="eyebrow">01 / La machine</p>
           <h2 id="control-room-title">A very serious data machine.</h2>
+          <DataRelay id="control-room" variant="refinery" />
         </div>
         <p className="control-room__intro">
           Choose a source. The contraption shows how raw evidence becomes an accountable GTM action—and where the gears can jam.

@@ -1,6 +1,7 @@
 import claySnapshot from 'virtual:public-clay-snapshot'
 import { useRef } from 'react'
 import { ControlRoom } from './components/ControlRoom'
+import { DataBallJourney, DataRelay } from './components/DataBallJourney'
 import { SelectedSystems } from './components/SelectedSystems'
 import { SiteHeader } from './components/SiteHeader'
 import { SystemRegistry } from './components/SystemRegistry'
@@ -26,10 +27,11 @@ export function PortfolioPage({ snapshot }: { snapshot?: unknown }) {
         Skip to main content
       </a>
       <SiteHeader />
+      <DataBallJourney />
       <main id="main" tabIndex={-1}>
         <section className="hero" aria-labelledby="hero-title">
           <div className="hero__copy">
-            <p className="eyebrow">{hero.eyebrow}</p>
+            <div className="hero__eyebrow-row"><p className="eyebrow">{hero.eyebrow}</p><DataRelay id="hero" variant="intake" label /></div>
             <h1 id="hero-title"><span>Healthcare GTM problems</span> <em>are usually</em> <span><span className="hero__accent-word">data</span> problems first.</span></h1>
             <p className="hero__lede">{hero.lede}</p>
             <p className="hero__proof">{hero.proof}</p>
@@ -88,8 +90,7 @@ export function PortfolioPage({ snapshot }: { snapshot?: unknown }) {
         <SystemRegistry snapshot={publicSnapshot} />
 
         <section id="about" className="section career" aria-labelledby="about-title">
-          <p className="eyebrow">04 / Le parcours</p>
-          <h2 id="about-title">Data platforms first. Healthcare GTM systems next.</h2>
+          <div className="journey-heading"><div><p className="eyebrow">04 / Le parcours</p><h2 id="about-title">Data platforms first. Healthcare GTM systems next.</h2></div><DataRelay id="about" variant="elevator" /></div>
           <p className="career__lead">4+ years building cloud data platforms across startup and digital-health environments.</p>
           <div className="career__evidence">
             <details><summary><span><strong>BetterHelp</strong>Lifecycle systems built on dependable data contracts.</span><span className="disclosure-plus" aria-hidden="true">+</span></summary><p>Connected Snowflake, dbt, and Fivetran models to AWS-backed operational views in Looker, Python, and Google Sheets—giving Iterable lifecycle segmentation a dependable data contract.</p></details>
@@ -100,8 +101,7 @@ export function PortfolioPage({ snapshot }: { snapshot?: unknown }) {
         </section>
 
         <section id="contact" className="section contact" aria-labelledby="contact-title">
-          <p className="eyebrow">05 / Next system</p>
-          <h2 id="contact-title">Building a healthcare GTM data system?</h2>
+          <div className="journey-heading"><div><p className="eyebrow">05 / Next system</p><h2 id="contact-title">Building a healthcare GTM data system?</h2></div><DataRelay id="contact" variant="dispatch" /></div>
           <p>Let’s talk about the source data, signal contracts, routing, and reliability work that makes an activation layer useful.</p>
           <div className="contact__links"><a className="button" href={`mailto:${portfolio.person.email}`}>Email Ryan</a><a className="text-link" href={portfolio.person.linkedIn} target="_blank" rel="noreferrer">Professional profile</a></div>
         </section>
