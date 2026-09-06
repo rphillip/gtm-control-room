@@ -143,6 +143,14 @@ test('Signal Convergence deep link reloads and teaches all three signals without
   await expect(status).toContainText('0 of 3 signals')
   for (const signal of await page.getByRole('checkbox').all()) await signal.check()
   await expect(page.locator('[data-artifact-data-ball]')).toHaveCSS('animation-name', 'signal-ball-hypothesis')
+  await expect(page.locator('[data-artifact-data-ball]')).toHaveCSS('animation-duration', '4.8s')
+  await expect(page.locator('.convergence-diagram__gate')).toHaveCSS('animation-name', 'signal-gate-cycle')
+  await expect(page.locator('.convergence-diagram__gate')).toHaveCSS('animation-duration', '4.8s')
+  await expect(page.locator('.convergence-diagram__spring')).toHaveCSS('animation-name', 'signal-spring-cycle')
+  await expect(page.locator('.convergence-diagram__spring')).toHaveCSS('animation-duration', '4.8s')
+  for (const ticket of await page.locator('.convergence-diagram__ticket').all()) {
+    await expect(ticket).toHaveCSS('animation-duration', '4.8s')
+  }
   await expect(status).toContainText('3 of 3 signals')
   await expect(status).toContainText('Strong convergence — investigate now')
   await expect(status).toContainText('None of these proves buying intent')
@@ -160,7 +168,7 @@ test('Signal Convergence supports keyboard controls, reduced motion, and forced 
   await page.keyboard.press('Space')
   await expect(firstSignal).toBeChecked()
   await expect(page.getByRole('status')).toContainText('1 of 3 signals')
-  expect(await page.locator('.convergence-diagram__ball').first().evaluate((element) =>
+  expect(await page.locator('.convergence-diagram__ticket').first().evaluate((element) =>
     Number.parseFloat(getComputedStyle(element).animationDuration) || 0,
   )).toBeLessThan(0.01)
   expect(await page.locator('[data-artifact-data-ball]').evaluate((element) =>

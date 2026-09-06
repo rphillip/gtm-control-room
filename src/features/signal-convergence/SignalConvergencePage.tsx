@@ -129,17 +129,19 @@ export function SignalConvergencePage() {
             <div className="convergence-machine">
               <div className={`convergence-diagram convergence-diagram--${activeCount}`} aria-hidden="true">
                 <span className="convergence-diagram__return-rail" />
+                <span className="convergence-diagram__chute" />
                 <div className="convergence-diagram__signals">
                   {playgroundSignals.map(({ key, shortLabel }, index) => (
                     <div className={active[key] ? 'is-active' : ''} key={key}>
-                      <span className={`convergence-diagram__ball convergence-diagram__ball--${index + 1}`} />
+                      <span className={`convergence-diagram__ticket convergence-diagram__ticket--${index + 1}`}>0{index + 1}</span>
                       <span>{shortLabel}</span>
                     </div>
                   ))}
                 </div>
-                <span className="convergence-diagram__account">Account</span>
-                <span className="convergence-diagram__gate">Σ</span>
-                <span className="convergence-diagram__output">Ask<br />next</span>
+                <span className="convergence-diagram__account"><small>Join</small>Account</span>
+                <span className="convergence-diagram__checkpoint">1 clue</span>
+                <span className="convergence-diagram__gate"><small>Threshold</small>Σ</span>
+                <span className="convergence-diagram__output"><small>Research</small>Ask next</span>
                 <span className="convergence-diagram__spring" />
                 <span className="convergence-diagram__data-ball" data-artifact-data-ball />
               </div>
