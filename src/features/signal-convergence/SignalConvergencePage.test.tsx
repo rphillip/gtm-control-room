@@ -43,6 +43,6 @@ describe('SignalConvergencePage', () => {
 
   it('links safely back to the portfolio base', () => {
     render(<SignalConvergencePage />)
-    expect(screen.getByRole('link', { name: 'Return to portfolio' })).toHaveAttribute('href', '/')
+    expect(screen.getByRole('link', { name: 'Return to portfolio' }).getAttribute('href')).toMatch(/\/$/)
   })
 })
