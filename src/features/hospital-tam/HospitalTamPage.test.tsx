@@ -76,6 +76,20 @@ describe('HospitalTamPage', () => {
     expect(within(passport).getByText('CO001')).toBeVisible()
   })
 
+  it('reroutes the same account when its commercial thesis or evidence changes', async () => {
+    const user = userEvent.setup()
+    render(<HospitalTamPage />)
+    const filters = screen.getByRole('heading', { name: /Filters should reflect/i }).closest('section') as HTMLElement
+
+    expect(within(filters).getByRole('status')).toHaveTextContent(/routed to include in this audience/i)
+    await user.click(within(filters).getByRole('switch', { name: 'Change commercial thesis' }))
+    expect(within(filters).getByRole('status')).toHaveTextContent(/routed to outside this thesis/i)
+
+    await user.selectOptions(within(filters).getByRole('combobox', { name: /Rural-care operating evidence/i }), 'missing')
+    expect(within(filters).getByRole('status')).toHaveTextContent(/routed to hold for review/i)
+    expect(within(filters).getByRole('heading', { name: 'Hold for review' }).closest('aside')).toHaveTextContent(/Missing evidence is a research task/i)
+  })
+
   it('uses base-safe links to both portfolio destinations', () => {
     render(<HospitalTamPage />)
     expect(screen.getByRole('link', { name: 'Return to portfolio' }).getAttribute('href')).toMatch(/\/$/)

@@ -6,6 +6,7 @@ import { HospitalTamWalkthrough } from './HospitalTamWalkthrough'
 import { IdentityPassportMachine } from './IdentityPassportMachine'
 import { ScoreSystemBuilder } from './ScoreSystemBuilder'
 import { TamChecklist } from './TamChecklist'
+import { ThesisCalibrationMachine } from './ThesisCalibrationMachine'
 
 const failureModes = [
   ['Double-counted TAM', 'Multiple hospitals appear as separate prospects even when one system controls contracting.'],
@@ -13,24 +14,6 @@ const failureModes = [
   ['Bad scoring', 'Facility size, system scale, and company complexity become one misleading number.'],
   ['Wrong buyer', 'A local administrator is enriched when the buying decision lives centrally.'],
   ['Broken reporting', 'Pipeline looks larger because duplicate entities were never resolved.'],
-] as const
-
-const filterGroups = [
-  {
-    title: 'Hospital type',
-    examples: 'Acute care · Critical access · Psychiatric · Rural emergency · Children’s · Long-term · Federal',
-    note: 'The label describes the facility. It is not a universal verdict on account fit.',
-  },
-  {
-    title: 'Ownership',
-    examples: 'Voluntary nonprofit · Proprietary · District / authority · Local / state government · Federal',
-    note: 'Ownership matters only when the commercial thesis gives it a reason to matter.',
-  },
-  {
-    title: 'Likely review or disqualification',
-    examples: 'Federal / VA / military · Low complexity · Minimal commercial-payer exposure · Closed / acquired / duplicate',
-    note: 'Missing public evidence belongs in a review state—not an automatic exclusion.',
-  },
 ] as const
 
 const buildSteps = [
@@ -95,7 +78,7 @@ export function HospitalTamPage() {
           <p className="eyebrow">04 / Qualifier l'univers</p>
           <h2 id="filters-title">Filters should reflect the GTM thesis.</h2>
           <p>For this hypothetical healthcare pricing and payer-contracting motion, commercial-payer complexity mattered more than “is this technically a hospital?” These are decision prompts, not universal hard filters.</p>
-          <div>{filterGroups.map((group) => <details key={group.title}><summary><span>{group.title}</span><span className="disclosure-plus" aria-hidden="true">+</span></summary><div><strong>{group.examples}</strong><p>{group.note}</p></div></details>)}</div>
+          <ThesisCalibrationMachine />
         </section>
 
         <section className="section tam-scoring" aria-labelledby="scoring-title">
