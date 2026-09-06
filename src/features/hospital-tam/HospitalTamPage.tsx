@@ -3,6 +3,7 @@ import { ArtifactAudienceGuide } from '../../components/ArtifactAudienceGuide'
 import { portfolio } from '../../content/portfolio'
 import { useDataWordHighlight } from '../../hooks/useDataWordHighlight'
 import { HospitalTamWalkthrough } from './HospitalTamWalkthrough'
+import { IdentityPassportMachine } from './IdentityPassportMachine'
 import { ScoreSystemBuilder } from './ScoreSystemBuilder'
 import { TamChecklist } from './TamChecklist'
 
@@ -12,16 +13,6 @@ const failureModes = [
   ['Bad scoring', 'Facility size, system scale, and company complexity become one misleading number.'],
   ['Wrong buyer', 'A local administrator is enriched when the buying decision lives centrally.'],
   ['Broken reporting', 'Pipeline looks larger because duplicate entities were never resolved.'],
-] as const
-
-const pipeline = [
-  'Public data',
-  'Facility',
-  'System resolution',
-  'Company resolution',
-  'Account scoring',
-  'Buyer-function evidence',
-  'Qualified GTM audience',
 ] as const
 
 const filterGroups = [
@@ -90,10 +81,7 @@ export function HospitalTamPage() {
         <section id="pipeline" className="section tam-pipeline-section" aria-labelledby="pipeline-title">
           <p className="eyebrow">02 / La chaîne d'identité</p>
           <h2 id="pipeline-title">The hospital is the facility. The TAM is the buying organization.</h2>
-          <ol className="tam-pipeline">{pipeline.map((stage, index) => <li key={stage}><span>0{index + 1}</span><strong>{stage}</strong></li>)}</ol>
-          <div className="tam-join-contract">
-            <div><span>CMS</span><strong>facility_id</strong><small>Store as text</small></div><b aria-hidden="true">=</b><div><span>AHRQ linkage</span><strong>ccn</strong><small>Preserve leading zeroes</small></div><i aria-hidden="true">→</i><div><span>System key</span><strong>health_sys_id</strong><small>Dedupe here, then again by company</small></div>
-          </div>
+          <IdentityPassportMachine />
           <p className="tam-pipeline-note">Entity resolution is not just cleanup. It changes the size and meaning of the TAM—and imperfect matches, acquisitions, stale records, and missing domains still need review.</p>
         </section>
 

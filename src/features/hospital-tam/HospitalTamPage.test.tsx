@@ -54,6 +54,28 @@ describe('HospitalTamPage', () => {
     expect(screen.getByText(/Recommended action: investigate the account/i)).toBeVisible()
   })
 
+  it('traces an identity passport and diverts ambiguous records to review', async () => {
+    const user = userEvent.setup()
+    render(<HospitalTamPage />)
+    const passport = screen.getByLabelText('Identity passport for Hospital A').closest('.tam-passport-machine') as HTMLElement
+    const advance = within(passport).getByRole('button', { name: /Advance record/i })
+
+    await user.click(advance)
+    await user.click(advance)
+    expect(within(passport).getByRole('status')).toHaveTextContent(/Identity station 3 of 7: System resolution/i)
+    expect(within(passport).getByText('SYS001')).toBeVisible()
+
+    await user.click(within(passport).getByRole('switch', { name: /Introduce ambiguity/i }))
+    expect(within(passport).getByRole('status')).toHaveTextContent(/held for human review/i)
+    expect(within(passport).getByText('CONFLICT')).toBeVisible()
+    expect(within(passport).getByText('HUMAN REVIEW')).toBeVisible()
+    expect(within(passport).getByRole('button', { name: /Held for human review/i })).toBeDisabled()
+
+    await user.click(within(passport).getByRole('switch', { name: /Introduce ambiguity/i }))
+    await user.click(within(passport).getByRole('button', { name: /Advance record/i }))
+    expect(within(passport).getByText('CO001')).toBeVisible()
+  })
+
   it('uses base-safe links to both portfolio destinations', () => {
     render(<HospitalTamPage />)
     expect(screen.getByRole('link', { name: 'Return to portfolio' }).getAttribute('href')).toMatch(/\/$/)
