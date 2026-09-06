@@ -141,10 +141,63 @@
 .tam-filters details > div strong { color: var(--blue); font-size: 0.68rem; line-height: 1.7; }
 .tam-filters details > div p { margin: 0; font-family: var(--serif); line-height: 1.5; }
 .tam-scoring > div { display: grid; grid-template-columns: repeat(4, 1fr); margin-top: 2.5rem; border: 2px solid var(--ink); }
-.tam-scoring article { min-height: 10rem; padding: 1.2rem; border-right: 1px solid var(--ink); }
+.tam-scoring article { display: grid; grid-template-rows: auto auto 1fr; min-width: 0; min-height: 18rem; padding: 1.2rem; border-right: 1px solid var(--ink); overflow: hidden; }
 .tam-scoring article:last-child { border: 0; }
 .tam-scoring h3 { font-family: var(--serif); font-size: 1.2rem; }
 .tam-scoring article p { color: var(--muted); font-size: 0.65rem; line-height: 1.6; }
+.tam-score-machine { position: relative; align-self: end; height: 9rem; margin: 1rem -0.4rem -0.4rem; border-top: 1px solid var(--ink); overflow: hidden; }
+.tam-score-machine::before { position: absolute; inset: 0.8rem 0.3rem 1.8rem; border: 1px dashed var(--soft-line); content: ''; }
+.tam-score-machine__rail { position: absolute; right: 0.6rem; bottom: 2.6rem; left: 0.6rem; height: 2px; background: var(--ink); }
+.tam-score-machine__ball { position: absolute; z-index: 4; bottom: 2.55rem; left: 0.8rem; width: 0.95rem; height: 0.95rem; border: 2px solid var(--ink); border-radius: 50%; background: var(--red); box-shadow: 2px 2px 0 var(--ink); font-style: normal; }
+.tam-score-machine small { position: absolute; right: 0.4rem; bottom: 0; left: 0.4rem; color: var(--blue); font-size: 0.45rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; }
+.tam-score-machine--size { display: flex; align-items: end; justify-content: center; gap: 0.5rem; padding-bottom: 2.7rem; }
+.tam-score-machine--size > b { z-index: 2; display: grid; place-items: end center; width: 2.6rem; border: 1px solid var(--ink); background: var(--paper); font: 500 0.48rem var(--mono); }
+.tam-score-machine--size > b:first-of-type { height: 1.6rem; }
+.tam-score-machine--size > b:nth-of-type(2) { height: 2.7rem; }
+.tam-score-machine--size > b:nth-of-type(3) { height: 4rem; }
+.tam-score-machine--size > b span { padding: 0.2rem; }
+.tam-score-machine--size .tam-score-machine__ball { animation: score-ball-size 6s cubic-bezier(0.35, 0, 0.2, 1) infinite; }
+.tam-score-machine--size > b:first-of-type { animation: score-size-one 6s ease infinite; }
+.tam-score-machine--size > b:nth-of-type(2) { animation: score-size-two 6s ease infinite; }
+.tam-score-machine--size > b:nth-of-type(3) { animation: score-size-three 6s ease infinite; }
+.tam-score-machine--geography { display: flex; align-items: center; justify-content: center; gap: 0.55rem; padding-bottom: 1.2rem; }
+.tam-score-machine--geography > b { z-index: 2; display: grid; place-items: center; width: 2.8rem; height: 3.4rem; border: 1px solid var(--ink); background: var(--paper); font: 500 0.5rem var(--mono); }
+.tam-score-machine--geography > b:nth-of-type(2) { transform: translateY(-0.6rem) rotate(3deg); }
+.tam-score-machine--geography > b:nth-of-type(3) { transform: translateY(0.25rem) rotate(-2deg); }
+.tam-score-machine--geography .tam-score-machine__ball { animation: score-ball-geography 6s cubic-bezier(0.35, 0, 0.2, 1) infinite; }
+.tam-score-machine--geography > b:first-of-type { animation: score-state-one 6s ease infinite; }
+.tam-score-machine--geography > b:nth-of-type(2) { animation: score-state-two 6s ease infinite; }
+.tam-score-machine--geography > b:nth-of-type(3) { animation: score-state-three 6s ease infinite; }
+.tam-score-machine--facility .tam-score-machine__rail { right: 46%; }
+.tam-score-machine--facility .tam-score-machine__rail::after { position: absolute; right: -4.4rem; bottom: -1.25rem; width: 4.7rem; height: 2px; background: var(--ink); content: ''; transform: rotate(28deg); transform-origin: 0 50%; }
+.tam-score-machine--facility .tam-score-machine__gate { position: absolute; z-index: 2; bottom: 2.7rem; left: 48%; display: grid; place-items: center; width: 3.3rem; height: 2rem; border: 1px solid var(--ink); background: var(--paper); font: 500 0.45rem var(--mono); text-transform: uppercase; transform-origin: 0 100%; animation: score-facility-gate 6s ease infinite; }
+.tam-score-machine__accepted, .tam-score-machine__diverted { position: absolute; z-index: 2; display: grid; place-items: center; width: 2.4rem; height: 1.5rem; border: 1px solid var(--ink); background: var(--paper); font: 500 0.43rem var(--mono); text-transform: uppercase; }
+.tam-score-machine__accepted { right: 0.8rem; bottom: 2.8rem; color: var(--red); animation: score-facility-count 6s ease infinite; }
+.tam-score-machine__diverted { right: 1.2rem; bottom: 0.85rem; color: var(--muted); transform: rotate(4deg); }
+.tam-score-machine--facility .tam-score-machine__ball { animation: score-ball-facility 6s cubic-bezier(0.35, 0, 0.2, 1) infinite; }
+.tam-score-machine--function { display: flex; align-items: center; justify-content: center; gap: 0.35rem; padding-bottom: 1rem; }
+.tam-score-machine--function > b { z-index: 2; display: grid; place-items: center; width: 2.1rem; height: 2.8rem; border: 1px solid var(--blue); color: var(--blue); background: var(--paper); font: 500 0.43rem var(--mono); transform-origin: 50% 0; }
+.tam-score-machine--function .tam-score-machine__ball { animation: score-ball-function 6s cubic-bezier(0.35, 0, 0.2, 1) infinite; }
+.tam-score-machine--function > b:first-of-type { animation: score-function-one 6s ease infinite; }
+.tam-score-machine--function > b:nth-of-type(2) { animation: score-function-two 6s ease infinite; }
+.tam-score-machine--function > b:nth-of-type(3) { animation: score-function-three 6s ease infinite; }
+.tam-score-machine--function > b:nth-of-type(4) { animation: score-function-four 6s ease infinite; }
+@keyframes score-ball-size { 0%, 8%, 100% { left: 2%; transform: translateY(0) rotate(0); } 24% { left: 27%; transform: translateY(-1.1rem) rotate(220deg); } 46% { left: 51%; transform: translateY(-2.2rem) rotate(440deg); } 68% { left: 76%; transform: translateY(-3.5rem) rotate(680deg); } 78% { left: 90%; transform: translateY(-5.2rem) rotate(820deg); } 88% { left: 2%; transform: translateY(-5.2rem) rotate(1080deg); } }
+@keyframes score-size-one { 0%, 16%, 34%, 100% { background: var(--paper); } 22%, 29% { color: var(--paper); background: var(--ink); } }
+@keyframes score-size-two { 0%, 38%, 56%, 100% { background: var(--paper); } 44%, 51% { color: var(--paper); background: var(--ink); } }
+@keyframes score-size-three { 0%, 60%, 78%, 100% { background: var(--paper); } 66%, 73% { color: var(--paper); background: var(--ink); } }
+@keyframes score-ball-geography { 0%, 8%, 100% { left: 3%; transform: translateY(0) rotate(0); } 27% { left: 26%; transform: translateY(-1.5rem) rotate(220deg); } 49% { left: 50%; transform: translateY(-2rem) rotate(440deg); } 70% { left: 75%; transform: translateY(-1.2rem) rotate(660deg); } 79% { left: 91%; transform: translateY(-4.8rem) rotate(820deg); } 89% { left: 3%; transform: translateY(-4.8rem) rotate(1080deg); } }
+@keyframes score-state-one { 0%, 18%, 37%, 100% { box-shadow: none; } 25%, 32% { box-shadow: 3px 3px 0 var(--red); } }
+@keyframes score-state-two { 0%, 40%, 59%, 100% { box-shadow: none; transform: translateY(-0.6rem) rotate(3deg); } 47%, 54% { box-shadow: 3px 3px 0 var(--red); transform: translateY(-0.6rem) rotate(3deg); } }
+@keyframes score-state-three { 0%, 61%, 80%, 100% { box-shadow: none; transform: translateY(0.25rem) rotate(-2deg); } 68%, 75% { box-shadow: 3px 3px 0 var(--red); transform: translateY(0.25rem) rotate(-2deg); } }
+@keyframes score-ball-facility { 0%, 10%, 100% { left: 3%; transform: translateY(0) rotate(0); } 38% { left: 47%; transform: translateY(0) rotate(360deg); } 55% { left: 67%; transform: translateY(-0.6rem) rotate(540deg); } 68% { left: 83%; transform: translateY(-0.6rem) rotate(680deg); } 78% { left: 91%; transform: translateY(-4.8rem) rotate(820deg); } 89% { left: 3%; transform: translateY(-4.8rem) rotate(1080deg); } }
+@keyframes score-facility-gate { 0%, 29%, 57%, 100% { transform: rotate(0); } 38%, 50% { transform: rotate(-24deg); } }
+@keyframes score-facility-count { 0%, 51%, 72%, 100% { color: var(--red); background: var(--paper); transform: scale(1); } 59%, 67% { color: var(--paper); background: var(--red); transform: scale(1.1); } }
+@keyframes score-ball-function { 0%, 8%, 100% { left: 2%; transform: translateY(0) rotate(0); } 22% { left: 23%; transform: translateY(-1rem) rotate(180deg); } 38% { left: 43%; transform: translateY(-1rem) rotate(360deg); } 54% { left: 62%; transform: translateY(-1rem) rotate(540deg); } 70% { left: 80%; transform: translateY(-1rem) rotate(720deg); } 79% { left: 91%; transform: translateY(-4.8rem) rotate(840deg); } 89% { left: 2%; transform: translateY(-4.8rem) rotate(1080deg); } }
+@keyframes score-function-one { 0%, 14%, 31%, 100% { transform: rotate(0); } 20%, 27% { color: var(--paper); background: var(--blue); transform: rotate(-8deg); } }
+@keyframes score-function-two { 0%, 30%, 47%, 100% { transform: rotate(0); } 36%, 43% { color: var(--paper); background: var(--blue); transform: rotate(8deg); } }
+@keyframes score-function-three { 0%, 46%, 63%, 100% { transform: rotate(0); } 52%, 59% { color: var(--paper); background: var(--blue); transform: rotate(-8deg); } }
+@keyframes score-function-four { 0%, 62%, 79%, 100% { transform: rotate(0); } 68%, 75% { color: var(--paper); background: var(--blue); transform: rotate(8deg); } }
 .tam-hard-part > p:not(.eyebrow) { max-width: 70ch; font-family: var(--serif); font-size: 1.1rem; line-height: 1.55; }
 .tam-hard-part blockquote { display: grid; grid-template-columns: repeat(4, 1fr); margin: 3rem 0; border-block: 2px solid var(--ink); }
 .tam-hard-part blockquote > * { min-height: 10rem; padding: 1.2rem; border-right: 1px solid var(--ink); font-family: var(--serif); font-size: clamp(1.15rem, 2vw, 1.7rem); line-height: 1.15; }

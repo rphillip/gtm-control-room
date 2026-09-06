@@ -95,6 +95,12 @@ test('Hospital TAM deep link reloads with honest synthetic and source framing', 
   await expect(machine.locator('.tam-collapse-gauge__spring span').nth(1)).toHaveCSS('animation-name', 'tam-counter-two')
   await expect(machine.locator('.tam-collapse-gauge__spring span').nth(2)).toHaveCSS('animation-name', 'tam-counter-three')
   await expect(page.getByText(/review queue—not force them/i)).toBeVisible()
+  const scoreMachines = page.locator('.tam-score-machine')
+  await expect(scoreMachines).toHaveCount(4)
+  for (const [index, animationName] of ['score-ball-size', 'score-ball-geography', 'score-ball-facility', 'score-ball-function'].entries()) {
+    await expect(scoreMachines.nth(index).locator('.tam-score-machine__ball')).toHaveCSS('animation-name', animationName)
+    await expect(scoreMachines.nth(index).locator('.tam-score-machine__ball')).toHaveCSS('animation-duration', '6s')
+  }
   await expect(page.locator('body')).not.toContainText(/guaranteed buyer|will convert|real patient/i)
   const pageOrigin = new URL(page.url()).origin
   expect(requestedUrls.every((url) => new URL(url).origin === pageOrigin)).toBe(true)
@@ -112,6 +118,7 @@ test('Hospital TAM supports keyboard controls, reduced motion, forced colors, an
   await page.keyboard.press('Enter')
   await expect(page.getByRole('button', { name: /Join to health systems/i })).toHaveAttribute('aria-current', 'step')
   expect(await page.locator('[data-artifact-data-ball]').evaluate((element) => Number.parseFloat(getComputedStyle(element).animationDuration) || 0)).toBeLessThan(0.01)
+  expect(await page.locator('.tam-score-machine__ball').first().evaluate((element) => Number.parseFloat(getComputedStyle(element).animationDuration) || 0)).toBeLessThan(0.01)
 
   const firstCheck = page.locator('#checklist input[type="checkbox"]').first()
   await firstCheck.focus()

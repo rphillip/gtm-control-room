@@ -42,11 +42,53 @@ const filterGroups = [
 ] as const
 
 const scoringDimensions = [
-  ['System size', '1–2 hospitals · 3–9 hospitals · 10+ hospitals'],
-  ['Geographic complexity', '1 state · 2 states · 3+ states'],
-  ['Facility complexity', 'Acute-care hospital count'],
-  ['Buying-function evidence', 'Managed Care · Payer Contracting · Revenue Cycle · Reimbursement · Pricing Strategy'],
+  { name: 'System size', values: '1–2 hospitals · 3–9 hospitals · 10+ hospitals', machine: 'size' },
+  { name: 'Geographic complexity', values: '1 state · 2 states · 3+ states', machine: 'geography' },
+  { name: 'Facility complexity', values: 'Acute-care hospital count', machine: 'facility' },
+  { name: 'Buying-function evidence', values: 'Managed Care · Payer Contracting · Revenue Cycle · Reimbursement · Pricing Strategy', machine: 'function' },
 ] as const
+
+type ScoreMachine = (typeof scoringDimensions)[number]['machine']
+
+function ScoreDimensionMachine({ machine }: { machine: ScoreMachine }) {
+  if (machine === 'size') return (
+    <div className="tam-score-machine tam-score-machine--size" aria-hidden="true">
+      <span className="tam-score-machine__rail" />
+      <i className="tam-score-machine__ball" />
+      <b><span>1–2</span></b><b><span>3–9</span></b><b><span>10+</span></b>
+      <small>Count hospitals → choose a tier</small>
+    </div>
+  )
+
+  if (machine === 'geography') return (
+    <div className="tam-score-machine tam-score-machine--geography" aria-hidden="true">
+      <span className="tam-score-machine__rail" />
+      <i className="tam-score-machine__ball" />
+      <b>TX</b><b>LA</b><b>OK</b>
+      <small>Cross a border → add complexity</small>
+    </div>
+  )
+
+  if (machine === 'facility') return (
+    <div className="tam-score-machine tam-score-machine--facility" aria-hidden="true">
+      <span className="tam-score-machine__rail" />
+      <i className="tam-score-machine__ball" />
+      <b className="tam-score-machine__gate">Acute</b>
+      <span className="tam-score-machine__accepted">+1</span>
+      <span className="tam-score-machine__diverted">Other</span>
+      <small>Sort facility type → count acute care</small>
+    </div>
+  )
+
+  return (
+    <div className="tam-score-machine tam-score-machine--function" aria-hidden="true">
+      <span className="tam-score-machine__rail" />
+      <i className="tam-score-machine__ball" />
+      <b>MC</b><b>PC</b><b>RC</b><b>PS</b>
+      <small>Collect evidence → investigate the function</small>
+    </div>
+  )
+}
 
 const buildSteps = [
   'Define the actual buying unit.',
@@ -120,7 +162,7 @@ export function HospitalTamPage() {
           <p className="eyebrow">05 / Scorer après résolution</p>
           <h2 id="scoring-title">Score the system you can actually sell to.</h2>
           <p>These are illustrative signals for this specific commercial thesis—not universal healthcare scoring rules and not a purchase-intent model. Role titles are evidence to investigate, not proof of authority, budget, or responsibility.</p>
-          <div>{scoringDimensions.map(([name, values]) => <article key={name}><h3>{name}</h3><p>{values}</p></article>)}</div>
+          <div>{scoringDimensions.map(({ name, values, machine }) => <article key={name}><h3>{name}</h3><p>{values}</p><ScoreDimensionMachine machine={machine} /></article>)}</div>
         </section>
 
         <section className="section tam-hard-part" aria-labelledby="hard-part-title">

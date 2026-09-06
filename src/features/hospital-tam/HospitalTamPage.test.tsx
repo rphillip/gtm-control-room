@@ -18,6 +18,8 @@ describe('HospitalTamPage', () => {
     expect(screen.getByText('No data background needed.')).toBeVisible()
     expect(screen.getByText(/pile of mailing labels/i)).toBeVisible()
     expect(document.querySelector('[data-artifact-data-ball]')).toBeInTheDocument()
+    expect(document.querySelectorAll('.tam-score-machine')).toHaveLength(4)
+    expect(document.querySelectorAll('.tam-score-machine__ball')).toHaveLength(4)
     expect(screen.getByRole('link', { name: /CMS Hospital General Information/i })).toHaveAttribute('rel', expect.stringContaining('noreferrer'))
   })
 
