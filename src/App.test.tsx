@@ -43,6 +43,10 @@ describe('portfolio shell', () => {
       'https://www.linkedin.com/in/ryan-s-75366514/',
     )
     expect(screen.queryByText(/713.?679.?4960/)).not.toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Open the playground' })).toHaveAttribute(
+      'href',
+      '/signal-convergence/',
+    )
   })
 
   it('provides focusable skip content, stable section anchors, and a hero email action', () => {

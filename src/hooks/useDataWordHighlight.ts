@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, type RefObject } from 'react'
 
 type HighlightRegistry = {
   delete(name: string): void
@@ -16,11 +16,11 @@ type HighlightCSS = typeof CSS & {
 const highlightName = 'themed-data'
 const dataWord = /\bdata\b/gi
 
-export function useDataWordHighlight() {
+export function useDataWordHighlight(rootRef?: RefObject<HTMLElement | null>) {
   useEffect(() => {
     const HighlightConstructor = (window as HighlightWindow).Highlight
     const registry = (CSS as HighlightCSS).highlights
-    const root = document.body
+    const root = rootRef?.current ?? document.body
     if (!HighlightConstructor || !registry || !root) return
 
     let animationFrame = 0
@@ -31,7 +31,7 @@ export function useDataWordHighlight() {
       const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
         acceptNode(node) {
           const parent = node.parentElement
-          if (!parent || parent.closest('script, style, noscript, textarea')) return NodeFilter.FILTER_REJECT
+          if (!parent || parent.closest('script, style, noscript, textarea, [data-data-highlight-ignore]')) return NodeFilter.FILTER_REJECT
           dataWord.lastIndex = 0
           return dataWord.test(node.textContent ?? '') ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT
         },
@@ -58,7 +58,11 @@ export function useDataWordHighlight() {
       if (!animationFrame) animationFrame = window.requestAnimationFrame(refresh)
     }
 
-    const observer = new MutationObserver(scheduleRefresh)
+    const observer = new MutationObserver((mutations) => {
+      if (mutations.some(({ target }) => !(target instanceof Element ? target : target.parentElement)?.closest('[data-data-highlight-ignore]'))) {
+        scheduleRefresh()
+      }
+    })
     observer.observe(root, { childList: true, characterData: true, subtree: true })
     refresh()
 
@@ -67,5 +71,5 @@ export function useDataWordHighlight() {
       if (animationFrame) window.cancelAnimationFrame(animationFrame)
       registry.delete(highlightName)
     }
-  }, [])
+  }, [rootRef])
 }

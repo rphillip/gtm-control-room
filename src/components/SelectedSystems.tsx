@@ -105,6 +105,18 @@ export function SelectedSystems({ studies }: { studies: CaseStudyContent[] }) {
           <CaseStudy study={selectedStudy} index={selectedIndex} />
         </div>
       ) : null}
+
+      <aside id="playground" className="artifact-callout" aria-labelledby="artifact-callout-title">
+        <div>
+          <p className="eyebrow">Interactive field artifact · Synthetic data</p>
+          <h3 id="artifact-callout-title">Signal Convergence Playground</h3>
+          <p>One signal can be noise. Combine three different evidence streams and watch the GTM hypothesis change—without pretending a hand-built score is predictive science.</p>
+        </div>
+        <div className="artifact-callout__machine" aria-hidden="true">
+          <span>LOOKING</span><i /><span>INVESTING</span><i /><span>CHANGING</span><b>Σ</b>
+        </div>
+        <a className="button" href={`${import.meta.env.BASE_URL}signal-convergence/`}>Open the playground</a>
+      </aside>
     </section>
   )
 }

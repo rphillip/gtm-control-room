@@ -10,4 +10,11 @@ describe('Vitest workspace isolation', () => {
 
     expect(config.test.exclude).toContain('.worktrees/**')
   })
+
+  it('emits a directly addressable Signal Convergence page', () => {
+    const config = createViteConfig()
+    const input = config.build.rollupOptions.input
+
+    expect(input.signalConvergence).toMatch(/signal-convergence\/index\.html$/)
+  })
 })

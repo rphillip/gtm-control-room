@@ -1,4 +1,4 @@
-export function renderSiteUrlMetadata(siteUrl?: string): string {
+export function renderSiteUrlMetadata(siteUrl?: string, route = ''): string {
   if (!siteUrl) return ''
 
   const url = new URL(siteUrl)
@@ -9,6 +9,7 @@ export function renderSiteUrlMetadata(siteUrl?: string): string {
   url.search = ''
   url.hash = ''
   if (!url.pathname.endsWith('/')) url.pathname += '/'
+  if (route) url.pathname += `${route.replace(/^\/+|\/+$/g, '')}/`
 
   const canonicalUrl = url.href
   return [

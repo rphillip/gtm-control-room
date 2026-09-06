@@ -82,8 +82,9 @@ export function createViteConfig({
       publicSnapshotPlugin(snapshotPath),
       {
         name: 'verified-site-url-metadata',
-        transformIndexHtml(html: string) {
-          const metadata = renderSiteUrlMetadata(siteUrl)
+        transformIndexHtml(html: string, context: { path: string }) {
+          const route = context.path.includes('/signal-convergence/') ? 'signal-convergence' : ''
+          const metadata = renderSiteUrlMetadata(siteUrl, route)
           return html.replace(
             '    <!-- SITE_URL_METADATA -->',
             metadata ? `    ${metadata}` : '',
@@ -91,6 +92,14 @@ export function createViteConfig({
         },
       },
     ],
+    build: {
+      rollupOptions: {
+        input: {
+          main: resolve(process.cwd(), 'index.html'),
+          signalConvergence: resolve(process.cwd(), 'signal-convergence/index.html'),
+        },
+      },
+    },
     test: {
       environment: 'jsdom',
       exclude: [...configDefaults.exclude, 'e2e/**', '.worktrees/**'],

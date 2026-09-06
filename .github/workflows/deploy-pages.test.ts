@@ -36,4 +36,13 @@ describe('GitHub Actions supply-chain pins', () => {
     expect(browserInstall).toBeGreaterThan(-1)
     expect(unitTests).toBeGreaterThan(browserInstall)
   })
+
+  it('runs the end-to-end suite before the deploy build', async () => {
+    const workflow = await readFile('.github/workflows/deploy-pages.yml', 'utf8')
+    const browserTests = workflow.indexOf('run: npm run test:e2e')
+    const configurePages = workflow.indexOf('uses: actions/configure-pages@')
+
+    expect(browserTests).toBeGreaterThan(-1)
+    expect(configurePages).toBeGreaterThan(browserTests)
+  })
 })

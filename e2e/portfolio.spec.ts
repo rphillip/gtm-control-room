@@ -1,6 +1,7 @@
 import { expect, test, type Locator, type Page } from '@playwright/test'
 
 const sitePath = '/gtm-control-room/'
+const convergencePath = `${sitePath}signal-convergence/`
 
 async function tabTo(page: Page, target: Locator, maximumTabs = 50) {
   for (let index = 0; index < maximumTabs; index += 1) {
@@ -33,6 +34,68 @@ for (const viewport of [
     await expect(page.locator('#registry')).toBeInViewport()
   })
 }
+
+for (const viewport of [
+  { width: 320, height: 800 },
+  { width: 390, height: 844 },
+  { width: 768, height: 900 },
+  { width: 1280, height: 900 },
+]) {
+  test(`Signal Convergence has no horizontal overflow at ${viewport.width}px`, async ({ page }) => {
+    await page.setViewportSize(viewport)
+    const response = await page.goto(convergencePath)
+
+    expect(response?.status()).toBe(200)
+    await expect(page.getByRole('heading', { level: 1, name: 'Signal Convergence Playground' })).toBeVisible()
+    expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1)
+
+    for (const signal of await page.getByRole('checkbox').all()) await signal.check()
+    await page.getByRole('radio', { name: 'Custom weight' }).check()
+    expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1)
+  })
+}
+
+test('Signal Convergence deep link reloads and teaches all three signals without predictive claims', async ({ page }) => {
+  await page.goto(convergencePath)
+  await page.reload()
+  await expect(page).toHaveTitle(/Signal Convergence Playground/)
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', 'https://rphillip.github.io/gtm-control-room/signal-convergence/')
+  await expect(page.getByText('100% synthetic')).toBeVisible()
+
+  const status = page.getByRole('status')
+  await expect(status).toContainText('0 of 3 signals')
+  for (const signal of await page.getByRole('checkbox').all()) await signal.check()
+  await expect(status).toContainText('3 of 3 signals')
+  await expect(status).toContainText('Strong convergence — investigate now')
+  await expect(status).toContainText('None of these proves buying intent')
+  await expect(page.getByRole('meter')).toHaveAttribute('value', '100')
+  await expect(page.locator('body')).not.toContainText(/ready to buy|high purchase intent|will convert/i)
+  await expect(page.getByRole('link', { name: 'Return to portfolio' })).toHaveAttribute('href', sitePath)
+})
+
+test('Signal Convergence supports keyboard controls, reduced motion, and forced colors', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce', forcedColors: 'active' })
+  await page.goto(convergencePath)
+
+  const firstSignal = page.getByRole('checkbox').first()
+  await firstSignal.focus()
+  await page.keyboard.press('Space')
+  await expect(firstSignal).toBeChecked()
+  await expect(page.getByRole('status')).toContainText('1 of 3 signals')
+  expect(await page.locator('.convergence-diagram__ball').first().evaluate((element) =>
+    Number.parseFloat(getComputedStyle(element).animationDuration) || 0,
+  )).toBeLessThan(0.01)
+
+  const customMode = page.getByRole('radio', { name: 'Custom weight' })
+  await customMode.focus()
+  await page.keyboard.press('Space')
+  await expect(customMode).toBeChecked()
+  expect(await customMode.locator('..').evaluate((label) => getComputedStyle(label, '::after').content)).toContain('✓')
+  const firstWeight = page.getByRole('slider').first()
+  await firstWeight.focus()
+  await page.keyboard.press('ArrowRight')
+  await expect(firstWeight).toHaveValue('36')
+})
 
 test('keyboard traversal activates the Control Room and registry', async ({ page }) => {
   await page.goto(sitePath)

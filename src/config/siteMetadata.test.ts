@@ -21,4 +21,10 @@ describe('renderSiteUrlMetadata', () => {
       'VITE_SITE_URL must be an HTTPS URL',
     )
   })
+
+  it('appends a safe project route to the verified deployment URL', () => {
+    expect(renderSiteUrlMetadata('https://example.github.io/portfolio/', '/signal-convergence/')).toContain(
+      'https://example.github.io/portfolio/signal-convergence/',
+    )
+  })
 })

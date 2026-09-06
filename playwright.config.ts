@@ -11,7 +11,7 @@ export default defineConfig({
     trace: 'retain-on-failure',
   },
   webServer: {
-    command: 'GITHUB_REPOSITORY=local/gtm-control-room npm run build && GITHUB_REPOSITORY=local/gtm-control-room npm run preview -- --host 127.0.0.1 --port 4173',
+    command: 'GITHUB_REPOSITORY=local/gtm-control-room VITE_SITE_URL=https://rphillip.github.io/gtm-control-room npm run build && GITHUB_REPOSITORY=local/gtm-control-room npm run preview -- --host 127.0.0.1 --port 4173',
     url: 'http://127.0.0.1:4173/gtm-control-room/',
     reuseExistingServer: false,
   },
