@@ -70,10 +70,10 @@ function FinalCount() {
 
 const stepPanels = [<FacilityRows />, <SystemGroups />, <CompanyGroups />, <FinalCount />]
 const machineCaptions = [
-  'The hopper feeds ten hospital records onto the rail, one record at a time.',
-  'The two jaws close when a hospital record finds the health system it belongs to.',
-  'The paired rollers pull system names together under the same parent company.',
-  'The ball taps 1, 2, 3—counting final sales accounts—then the spring sends it back.',
+  'The hopper tips exactly when a hospital row drops, then the return arm reloads it.',
+  'A blue system key meets the hospital row; the jaws close only when the two join.',
+  'The rollers turn only when the resolved system enters, grouping it under one company.',
+  'The ball taps 1, 2, 3—counting final sales accounts—then compresses the spring and returns.',
 ] as const
 
 export function HospitalTamWalkthrough() {
@@ -97,8 +97,10 @@ export function HospitalTamWalkthrough() {
 
       <div className="tam-collapse-gauge" data-step={step + 1} aria-hidden="true">
         <span className="tam-collapse-gauge__rail" />
+        <span className="tam-collapse-gauge__lifter" />
         <i className="tam-collapse-gauge__hopper">10</i>
         <i className="tam-collapse-gauge__join"><span /><span /><em>join</em></i>
+        <span className="tam-collapse-gauge__join-key">System key</span>
         <i className="tam-collapse-gauge__rollers">4</i>
         <i className="tam-collapse-gauge__spring"><span>1</span><span>2</span><span>3</span></i>
         <b className="tam-collapse-gauge__ball" data-artifact-data-ball />

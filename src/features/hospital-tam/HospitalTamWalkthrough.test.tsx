@@ -13,12 +13,14 @@ describe('HospitalTamWalkthrough', () => {
     const previous = screen.getByRole('button', { name: /Previous layer/i })
     const next = screen.getByRole('button', { name: /Next layer/i })
     expect(previous).toBeDisabled()
+    expect(document.querySelectorAll('[data-artifact-data-ball]')).toHaveLength(1)
+    expect(screen.getByText('System key')).toBeInTheDocument()
     expect(screen.getByRole('status')).toHaveTextContent('Step 1 of 4')
     expect(screen.getAllByText(/CMS facility · Synthetic/i)).toHaveLength(10)
 
     await user.click(next)
     expect(screen.getByRole('status')).toHaveTextContent('Step 2 of 4: Join to health systems')
-    expect(screen.getByText(/two jaws close/i)).toBeVisible()
+    expect(screen.getByText(/blue system key.*jaws close/i)).toBeVisible()
     expect(screen.getByText('Example Health System')).toBeVisible()
 
     await user.click(screen.getByRole('button', { name: /Resolve to GTM companies/i }))
