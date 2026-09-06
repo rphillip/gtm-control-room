@@ -34,8 +34,10 @@
 .signal-control dl div { display: grid; grid-template-columns: 5.7rem 1fr; gap: 0.5rem; padding-top: 0.55rem; border-top: 1px solid var(--soft-line); }
 .signal-control dt { color: var(--blue); font-size: 0.52rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
 .signal-control dd { margin: 0; font-family: var(--serif); font-size: 0.84rem; line-height: 1.35; }
+.convergence-machine { display: grid; grid-template-rows: minmax(20rem, 1fr) auto; min-width: 0; background: var(--paper); }
 .convergence-diagram { position: relative; display: grid; grid-template-rows: 1fr auto auto; place-items: center; min-width: 0; overflow: hidden; background: var(--paper); }
 .convergence-diagram::before { position: absolute; inset: 1rem; border: 1px dashed var(--soft-line); content: ''; }
+.convergence-diagram__return-rail { position: absolute; z-index: 0; top: 1.2rem; right: 1.2rem; left: 1.2rem; height: 2.5rem; border: 1px dashed var(--soft-line); border-bottom: 0; border-radius: 50% 50% 0 0; }
 .convergence-diagram__signals { z-index: 1; display: grid; align-self: stretch; width: 100%; padding: 1.5rem 0; }
 .convergence-diagram__signals > div { position: relative; display: grid; place-items: center; min-height: 4rem; color: var(--muted); font-size: 0.5rem; letter-spacing: 0.08em; text-transform: uppercase; }
 .convergence-diagram__signals > div::after { position: absolute; z-index: -1; right: 0; left: 0; top: 50%; height: 1px; background: var(--soft-line); content: ''; }
@@ -49,7 +51,23 @@
 .convergence-diagram__account { width: 7rem; min-height: 3.2rem; font-size: 0.62rem; }
 .convergence-diagram__gate { width: 2.6rem; height: 2.6rem; margin-top: 1.5rem; border-radius: 50%; color: var(--paper); background: var(--ink); font-family: var(--serif); font-size: 1.5rem; }
 .convergence-diagram__output { width: 5.2rem; min-height: 3.5rem; margin: 1.5rem 0; border-color: var(--red); color: var(--red); font-size: 0.58rem; }
+.convergence-diagram__spring { position: absolute; z-index: 2; right: 12%; bottom: 1.15rem; width: 1.8rem; height: 2.8rem; border: 2px solid var(--ink); border-top: 0; clip-path: polygon(0 0, 100% 0, 70% 20%, 100% 40%, 70% 60%, 100% 80%, 70% 100%, 0 100%, 30% 80%, 0 60%, 30% 40%, 0 20%); transform-origin: 50% 100%; }
+.convergence-diagram__data-ball { position: absolute; z-index: 5; top: 35%; left: 8%; width: 1.15rem; height: 1.15rem; border: 2px solid var(--ink); border-radius: 50%; background: var(--red); box-shadow: 2px 2px 0 var(--ink); }
+.convergence-diagram--0 .convergence-diagram__data-ball { animation: signal-ball-idle 1.7s ease-in-out infinite alternate; }
+.convergence-diagram--1 .convergence-diagram__data-ball { animation: signal-ball-clue 3s cubic-bezier(0.35, 0, 0.2, 1) infinite; }
+.convergence-diagram--2 .convergence-diagram__data-ball { animation: signal-ball-context 3.4s cubic-bezier(0.35, 0, 0.2, 1) infinite; }
+.convergence-diagram--3 .convergence-diagram__data-ball { animation: signal-ball-hypothesis 4s cubic-bezier(0.35, 0, 0.2, 1) infinite; }
+.convergence-diagram--3 .convergence-diagram__gate { animation: signal-gate 900ms ease-in-out infinite alternate; }
+.convergence-diagram--3 .convergence-diagram__spring { animation: signal-spring 700ms cubic-bezier(0.2, 0, 0, 1) infinite alternate; }
+.convergence-machine-caption { margin: 0; padding: 0.75rem; border-top: 1px solid var(--ink); color: var(--muted); font-size: 0.56rem; line-height: 1.5; }
+.convergence-machine-caption strong { color: var(--red); text-transform: uppercase; }
 @keyframes convergence-ball { 0%, 15% { transform: translateX(-3.5rem) rotate(0); } 68%, 100% { transform: translateX(3.5rem) rotate(1turn); } }
+@keyframes signal-ball-idle { to { transform: translateY(-0.7rem) rotate(90deg); } }
+@keyframes signal-ball-clue { 0%, 12%, 100% { top: 24%; left: 8%; transform: rotate(0); } 55% { top: 43%; left: 44%; transform: rotate(360deg); } 76% { top: 51%; left: 44%; transform: rotate(500deg); } 88% { top: 24%; left: 8%; transform: rotate(650deg); } }
+@keyframes signal-ball-context { 0%, 10%, 100% { top: 40%; left: 8%; transform: rotate(0); } 45% { top: 58%; left: 48%; transform: rotate(380deg); } 70% { top: 67%; left: 58%; transform: rotate(540deg); } 88% { top: 40%; left: 8%; transform: rotate(720deg); } }
+@keyframes signal-ball-hypothesis { 0%, 8%, 100% { top: 58%; left: 8%; transform: rotate(0); } 34% { top: 66%; left: 47%; transform: rotate(330deg); } 52% { top: 76%; left: 56%; transform: rotate(500deg); } 68% { top: 82%; left: 78%; transform: rotate(700deg); } 78% { top: 7%; left: 78%; transform: rotate(880deg); } 90% { top: 7%; left: 12%; transform: rotate(1080deg); } }
+@keyframes signal-gate { to { transform: rotate(18deg); } }
+@keyframes signal-spring { to { transform: scaleY(0.65); } }
 .hypothesis-panel { min-width: 0; padding: clamp(1rem, 3vw, 2rem); background: var(--ink); color: var(--paper); }
 .hypothesis-panel header { display: flex; align-items: start; justify-content: space-between; gap: 1rem; padding-bottom: 1rem; border-bottom: 1px solid rgb(243 240 231 / 45%); }
 .hypothesis-panel .eyebrow { color: #8bb8dc; }
@@ -148,5 +166,6 @@
   .signal-control.is-active, .synthetic-stamp, .vibe-note, .convergence-diagram__output { outline: 2px solid Highlight; box-shadow: none; }
   .signal-control__toggle, .priority-meter__track, .weight-mode { border-color: CanvasText; }
   .convergence-diagram__ball, .convergence-diagram__gate { forced-color-adjust: none; color: Canvas; background: CanvasText; }
+  .convergence-diagram__data-ball { forced-color-adjust: none; border-color: CanvasText; background: Highlight; box-shadow: none; }
   .weight-mode label:has(input:checked) { outline: 2px solid Highlight; outline-offset: -3px; }
 }

@@ -2,6 +2,8 @@
 
 “5,000 Hospitals Don’t Mean 5,000 Prospects” is an independent portfolio exercise inspired by a hypothetical provider-side healthcare pricing and payer-contracting motion. It was not performed for, sponsored by, or endorsed by Turquoise Health, CMS, AHRQ, Clay, LinkedIn, or any depicted organization.
 
+The page offers a plain-English mailing-label metaphor alongside a hiring-manager view of the entity contracts. A lightweight red data-ball machine changes behavior at the facility, system, company, and account stages while remaining static when reduced motion is requested.
+
 ## Business problem
 
 The source system and a GTM team may describe different entities. CMS Hospital General Information lists hospitals registered with Medicare and uses a six-character Facility ID. The AHRQ Compendium Hospital Linkage File maps hospital identifiers into health systems under AHRQ’s documented definition. Company and domain enrichment introduces another identity layer, while a sales team still needs to choose the organization it believes controls the relevant buying decision.

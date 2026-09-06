@@ -89,7 +89,15 @@ export function HospitalTamWalkthrough() {
         ))}
       </nav>
 
-      <div className="tam-collapse-gauge" data-step={step + 1} aria-hidden="true"><span /><i /><b /></div>
+      <div className="tam-collapse-gauge" data-step={step + 1} aria-hidden="true">
+        <span className="tam-collapse-gauge__rail" />
+        <i className="tam-collapse-gauge__hopper">10</i>
+        <i className="tam-collapse-gauge__join">=</i>
+        <i className="tam-collapse-gauge__rollers">4</i>
+        <i className="tam-collapse-gauge__spring">3</i>
+        <b className="tam-collapse-gauge__ball" data-artifact-data-ball />
+      </div>
+      <p className="tam-machine-caption"><strong>The red ball is data.</strong> Each step changes what one record means; the return rail keeps the evidence available for another pass.</p>
 
       <div className="tam-walkthrough__stage" role="region" aria-labelledby="current-step-title" key={step}>
         <header><span>Step {step + 1} of 4</span><h3 id="current-step-title">{current.title}</h3></header>

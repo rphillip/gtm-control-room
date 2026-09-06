@@ -11,6 +11,12 @@ describe('SignalConvergencePage', () => {
     render(<SignalConvergencePage />)
 
     expect(screen.getByText('100% synthetic')).toBeInTheDocument()
+    expect(screen.getByText('Plain-English tour')).toBeVisible()
+    expect(screen.getByText('For the hiring manager')).toBeVisible()
+    expect(screen.getByText(/each signal as one clue/i)).toBeVisible()
+    await user.click(screen.getByText('For the hiring manager'))
+    expect(screen.getByText(/account-level signal normalization/i)).toBeVisible()
+    expect(document.querySelector('[data-artifact-data-ball]')).toBeInTheDocument()
     expect(screen.getAllByText(/Evidence · Synthetic/i)).toHaveLength(3)
     expect(screen.getByRole('status')).toHaveTextContent('0 of 3 signals')
     expect(screen.getByRole('status')).toHaveTextContent('Baseline — no current reason to prioritize')
@@ -44,5 +50,6 @@ describe('SignalConvergencePage', () => {
   it('links safely back to the portfolio base', () => {
     render(<SignalConvergencePage />)
     expect(screen.getByRole('link', { name: 'Return to portfolio' }).getAttribute('href')).toMatch(/\/$/)
+    expect(screen.getByRole('link', { name: /Explore the hospital TAM/i }).getAttribute('href')).toMatch(/\/hospital-tam\/$/)
   })
 })

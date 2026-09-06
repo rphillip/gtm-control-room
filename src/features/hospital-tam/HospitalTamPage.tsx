@@ -1,4 +1,5 @@
 import { useRef } from 'react'
+import { ArtifactAudienceGuide } from '../../components/ArtifactAudienceGuide'
 import { portfolio } from '../../content/portfolio'
 import { useDataWordHighlight } from '../../hooks/useDataWordHighlight'
 import { HospitalTamWalkthrough } from './HospitalTamWalkthrough'
@@ -85,6 +86,11 @@ export function HospitalTamPage() {
         </section>
 
         <p className="tam-disclosure"><strong>Independent portfolio exercise.</strong> Public-data concepts, synthetic examples, and no patient or private company information. Not work performed for, sponsored by, or endorsed by Turquoise Health, CMS, AHRQ, Clay, LinkedIn, or any depicted organization.</p>
+
+        <ArtifactAudienceGuide
+          plainEnglish="A hospital list is like a pile of mailing labels: several labels can belong to one family, and several families can share one parent company. Follow the red data ball as ten records are sorted into the three organizations a seller could actually approach."
+          hiringManager="This artifact demonstrates source-grain analysis, normalized string identifiers, facility-to-system crosswalks, parent-company resolution, multi-layer deduplication, explicit unresolved states, lineage, and scoring only after the account model is stable."
+        />
 
         <HospitalTamWalkthrough />
 

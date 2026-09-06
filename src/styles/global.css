@@ -585,6 +585,23 @@ details[open] > summary .disclosure-plus { color: var(--paper); background: var(
   84% { transform: translate(calc(var(--journey-loop-scale) * 5.5rem), 0) rotate(590deg); }
 }
 
+.artifact-audience-guide { width: min(100% - 2rem, var(--measure)); margin: 0 auto clamp(3rem, 7vw, 6rem); padding-block: 1.5rem; border-block: 2px solid var(--ink); }
+.artifact-audience-guide > header { display: grid; grid-template-columns: minmax(10rem, 0.35fr) 1fr; align-items: end; gap: 2rem; }
+.artifact-audience-guide h2 { max-width: 18ch; font-size: clamp(1.8rem, 4vw, 3.6rem); }
+.artifact-audience-guide > div { display: grid; grid-template-columns: 1fr 1fr; margin-top: 1.5rem; border: 1px solid var(--ink); background: var(--ink); gap: 1px; }
+.artifact-audience-guide details { min-width: 0; background: var(--paper); }
+.artifact-audience-guide summary { position: relative; display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 0.3rem 1rem; min-height: 5rem; padding: 1rem 3.4rem 1rem 1rem; cursor: pointer; list-style: none; }
+.artifact-audience-guide summary::-webkit-details-marker { display: none; }
+.artifact-audience-guide summary span { font-family: var(--serif); font-size: 1.25rem; font-weight: 600; }
+.artifact-audience-guide summary small { grid-column: 1; color: var(--blue); font-size: 0.55rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }
+.artifact-audience-guide summary b { position: absolute; right: 1rem; display: grid; place-items: center; width: 2rem; height: 2rem; border: 1px solid var(--ink); border-radius: 50%; color: var(--red); font-size: 1rem; transition: transform 180ms ease; }
+.artifact-audience-guide details[open] summary b { transform: rotate(45deg); }
+.artifact-audience-guide details > p { margin: 0; padding: 0 1rem 1.2rem; color: var(--muted); font-family: var(--serif); font-size: 1rem; line-height: 1.55; }
+.artifact-audience-guide details:first-child[open] { box-shadow: inset 5px 0 0 var(--red); }
+.artifact-audience-guide details:last-child[open] { color: var(--paper); background: var(--ink); }
+.artifact-audience-guide details:last-child[open] summary small, .artifact-audience-guide details:last-child[open] > p { color: var(--paper-deep); }
+.artifact-audience-guide details:last-child[open] summary b { border-color: var(--paper); }
+
 @media (max-width: 940px) {
   .hero { grid-template-columns: 1fr; }
   .hero__title-stage > .data-relay { right: clamp(0rem, 8vw, 5rem); }
@@ -607,6 +624,7 @@ details[open] > summary .disclosure-plus { color: var(--paper); background: var(
   .control-room__heading, .selected-systems__intro { align-items: flex-start; flex-direction: column; }
   .journey-heading { align-items: flex-start; }
   .data-relay { width: 7.25rem; }
+  .artifact-audience-guide > header, .artifact-audience-guide > div { grid-template-columns: 1fr; }
   .case-selector button { min-height: 8.5rem; padding: 0.65rem; }
   .case-selector__glyph { width: 3.8rem; height: 3rem; }
   .case-selector__label { font-size: 0.82rem; }
@@ -696,4 +714,5 @@ details[open] > summary .disclosure-plus { color: var(--paper); background: var(
   .contraption__tracks, .hero__atelier { stroke: CanvasText; }
   .data-ball-journey__ball { border-color: CanvasText; background: Highlight; box-shadow: none; }
   .data-relay__catch { fill: Canvas; stroke: CanvasText; }
+  .artifact-audience-guide details[open] { outline: 2px solid Highlight; outline-offset: -3px; }
 }

@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react'
+import { ArtifactAudienceGuide } from '../../components/ArtifactAudienceGuide'
 import { portfolio } from '../../content/portfolio'
 import { useDataWordHighlight } from '../../hooks/useDataWordHighlight'
 import { calculatePriorityScore, playgroundSignals, priorityByCount, signalStory, type SignalKey } from './model'
@@ -76,6 +77,11 @@ export function SignalConvergencePage() {
           </aside>
         </section>
 
+        <ArtifactAudienceGuide
+          plainEnglish="Think of each signal as one clue. A job posting alone may mean very little. When different clues point toward the same change, the red data ball gets enough momentum to reach a better next question—not a guaranteed sale."
+          hiringManager="This artifact demonstrates account-level signal normalization, evidence lineage, explicit uncertainty, tunable scoring assumptions, accessible interaction design, and the feedback loop required to improve a GTM model with observed outcomes."
+        />
+
         <section id="playground" className="convergence-workbench" aria-labelledby="playground-title">
           <header className="convergence-workbench__header">
             <div>
@@ -114,18 +120,24 @@ export function SignalConvergencePage() {
               ))}
             </fieldset>
 
-            <div className={`convergence-diagram convergence-diagram--${activeCount}`} aria-hidden="true">
-              <div className="convergence-diagram__signals">
-                {playgroundSignals.map(({ key, shortLabel }, index) => (
-                  <div className={active[key] ? 'is-active' : ''} key={key}>
-                    <span className={`convergence-diagram__ball convergence-diagram__ball--${index + 1}`} />
-                    <span>{shortLabel}</span>
-                  </div>
-                ))}
+            <div className="convergence-machine">
+              <div className={`convergence-diagram convergence-diagram--${activeCount}`} aria-hidden="true">
+                <span className="convergence-diagram__return-rail" />
+                <div className="convergence-diagram__signals">
+                  {playgroundSignals.map(({ key, shortLabel }, index) => (
+                    <div className={active[key] ? 'is-active' : ''} key={key}>
+                      <span className={`convergence-diagram__ball convergence-diagram__ball--${index + 1}`} />
+                      <span>{shortLabel}</span>
+                    </div>
+                  ))}
+                </div>
+                <span className="convergence-diagram__account">Account</span>
+                <span className="convergence-diagram__gate">Σ</span>
+                <span className="convergence-diagram__output">Ask<br />next</span>
+                <span className="convergence-diagram__spring" />
+                <span className="convergence-diagram__data-ball" data-artifact-data-ball />
               </div>
-              <span className="convergence-diagram__account">Account</span>
-              <span className="convergence-diagram__gate">Σ</span>
-              <span className="convergence-diagram__output">Ask<br />next</span>
+              <p className="convergence-machine-caption"><strong>The red ball is data.</strong> Evidence gives it momentum; the gate sends it to a human question, not directly to a sales claim.</p>
             </div>
 
             <section className="hypothesis-panel" aria-labelledby="hypothesis-title" data-data-highlight-ignore>
@@ -213,6 +225,7 @@ export function SignalConvergencePage() {
           <p>The pattern is tool-independent. Inputs can come from Clay, CRM data, a warehouse and dbt, APIs, enrichment providers, product telemetry, or intent sources.</p>
           <div className="replication__footer">
             <a className="button" href={baseUrl}>Return to portfolio</a>
+            <a className="text-link" href={`${baseUrl}hospital-tam/`}>Explore the hospital TAM</a>
             <a className="text-link" href={`mailto:${portfolio.person.email}`}>Discuss a GTM data system</a>
           </div>
         </section>
