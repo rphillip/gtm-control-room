@@ -2,7 +2,7 @@
 
 “5,000 Hospitals Don’t Mean 5,000 Prospects” is an independent portfolio exercise inspired by a hypothetical provider-side healthcare pricing and payer-contracting motion. It was not performed for, sponsored by, or endorsed by Turquoise Health, CMS, AHRQ, Clay, LinkedIn, or any depicted organization.
 
-The page offers a plain-English mailing-label metaphor alongside a hiring-manager view of the entity contracts. A lightweight red data-ball machine changes behavior at the facility, system, company, and account stages while remaining static when reduced motion is requested.
+The page uses a plain-English mailing-label metaphor for readers with no data background. A lightweight red data-ball machine releases records from a hopper, closes a joining clamp, groups names through paired rollers, and taps three numbered counters before returning; it remains static when reduced motion is requested.
 
 ## Business problem
 

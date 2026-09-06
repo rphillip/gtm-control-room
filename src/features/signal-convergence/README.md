@@ -1,6 +1,6 @@
 # Signal Convergence Playground
 
-The page offers two explicit reading depths: a plain-English clue metaphor for readers without a data background and a concise engineering-proof summary for GTM hiring managers. Its red data ball gains reach as independent evidence converges, passes through a human-investigation gate, and loops back without implying a guaranteed purchase.
+The page is written for a curious reader with no data background. Its red clue balls visibly join at the account, then the combined data ball travels only as far as the available evidence supports: a nudge for one clue, the question gate for two, and “Ask next” for three—never a guaranteed purchase.
 
 This interactive portfolio artifact teaches a practical GTM engineering idea: one signal may be noise, while different evidence streams agreeing can justify investigating an account. It grew from Ryan Sulapas's employer-account analysis for a hypothetical MSK healthcare GTM motion. It does not represent work for, an affiliation with, or outcomes from Hinge Health.
 

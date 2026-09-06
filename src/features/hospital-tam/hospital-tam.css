@@ -31,28 +31,40 @@
 .tam-collapse-gauge__rail::after { position: absolute; right: 0; bottom: -0.38rem; width: 0.8rem; height: 0.8rem; border: 2px solid var(--ink); border-radius: 50%; background: var(--paper); content: ''; }
 .tam-collapse-gauge i { position: absolute; z-index: 1; bottom: 1.45rem; display: grid; place-items: center; width: 2rem; height: 2rem; border: 2px solid var(--ink); color: var(--ink); background: var(--paper); font: 600 0.58rem var(--mono); font-style: normal; transform-origin: 50% 100%; }
 .tam-collapse-gauge__hopper { left: 3%; clip-path: polygon(0 0, 100% 0, 67% 100%, 33% 100%); }
-.tam-collapse-gauge__join { left: 34%; border-radius: 50%; }
+.tam-collapse-gauge__join { left: 34%; width: 2.8rem !important; border: 0 !important; background: transparent !important; }
+.tam-collapse-gauge__join span { position: absolute; top: 0.15rem; width: 0.85rem; height: 1.55rem; border: 2px solid var(--ink); background: var(--paper); }
+.tam-collapse-gauge__join span:first-child { left: 0; border-right: 0; border-radius: 1rem 0 0 1rem; }
+.tam-collapse-gauge__join span:nth-child(2) { right: 0; border-left: 0; border-radius: 0 1rem 1rem 0; }
+.tam-collapse-gauge__join em { position: absolute; top: -1rem; left: 0; width: 100%; color: var(--blue); font: 600 0.42rem var(--mono); font-style: normal; letter-spacing: 0.06em; text-align: center; text-transform: uppercase; }
 .tam-collapse-gauge__rollers { left: 64%; border-radius: 50%; box-shadow: 1.45rem 0 0 -2px var(--paper), 1.45rem 0 0 0 var(--ink); }
-.tam-collapse-gauge__spring { right: 3%; height: 2.6rem !important; border-top: 0 !important; clip-path: polygon(0 0, 100% 0, 75% 25%, 100% 50%, 75% 75%, 100% 100%, 0 100%, 25% 75%, 0 50%, 25% 25%); }
+.tam-collapse-gauge__spring { right: 3%; display: flex !important; align-items: end; justify-content: end; gap: 0.2rem; width: 7rem !important; height: 2.8rem !important; border: 0 !important; background: transparent !important; }
+.tam-collapse-gauge__spring span { display: grid; place-items: center; width: 1.25rem; height: 1.25rem; border: 1px solid var(--ink); border-radius: 50%; background: var(--paper); font-size: 0.48rem; }
+.tam-collapse-gauge__spring::after { width: 1.1rem; height: 2.3rem; border: 2px solid var(--ink); border-top: 0; clip-path: polygon(0 0, 100% 0, 65% 20%, 100% 40%, 65% 60%, 100% 80%, 65% 100%, 0 100%, 35% 80%, 0 60%, 35% 40%, 0 20%); content: ''; transform-origin: 50% 100%; }
 .tam-collapse-gauge__ball { position: absolute; z-index: 3; bottom: 1.25rem; left: 4%; width: 1.15rem; height: 1.15rem; border: 2px solid var(--ink); border-radius: 50%; background: var(--red); box-shadow: 2px 2px 0 var(--ink); transform-origin: center; }
 .tam-collapse-gauge[data-step='1'] .tam-collapse-gauge__ball { animation: tam-ball-facility 2.7s cubic-bezier(0.35, 0, 0.2, 1) infinite; }
 .tam-collapse-gauge[data-step='2'] .tam-collapse-gauge__ball { animation: tam-ball-system 2.5s cubic-bezier(0.35, 0, 0.2, 1) infinite; }
 .tam-collapse-gauge[data-step='3'] .tam-collapse-gauge__ball { animation: tam-ball-company 2.6s cubic-bezier(0.35, 0, 0.2, 1) infinite; }
 .tam-collapse-gauge[data-step='4'] .tam-collapse-gauge__ball { animation: tam-ball-account 3s cubic-bezier(0.35, 0, 0.2, 1) infinite; }
 .tam-collapse-gauge[data-step='1'] .tam-collapse-gauge__hopper { animation: tam-hopper 900ms ease-in-out infinite alternate; }
-.tam-collapse-gauge[data-step='2'] .tam-collapse-gauge__join { animation: tam-clamp 850ms ease-in-out infinite alternate; }
+.tam-collapse-gauge[data-step='2'] .tam-collapse-gauge__join span:first-child { animation: tam-jaw-left 850ms ease-in-out infinite alternate; }
+.tam-collapse-gauge[data-step='2'] .tam-collapse-gauge__join span:nth-child(2) { animation: tam-jaw-right 850ms ease-in-out infinite alternate; }
 .tam-collapse-gauge[data-step='3'] .tam-collapse-gauge__rollers { animation: tam-rollers 1.3s linear infinite; }
-.tam-collapse-gauge[data-step='4'] .tam-collapse-gauge__spring { animation: tam-spring 900ms cubic-bezier(0.2, 0, 0, 1) infinite alternate; }
+.tam-collapse-gauge[data-step='4'] .tam-collapse-gauge__spring::after { animation: tam-spring 900ms cubic-bezier(0.2, 0, 0, 1) infinite alternate; }
+.tam-collapse-gauge[data-step='4'] .tam-collapse-gauge__spring span { animation: tam-counter-tap 3s ease-out infinite; }
+.tam-collapse-gauge[data-step='4'] .tam-collapse-gauge__spring span:nth-child(2) { animation-delay: 180ms; }
+.tam-collapse-gauge[data-step='4'] .tam-collapse-gauge__spring span:nth-child(3) { animation-delay: 360ms; }
 .tam-machine-caption { margin: 0 0 1.2rem; padding: 0.55rem 0.7rem; border-bottom: 1px solid var(--ink); color: var(--muted); font-size: 0.58rem; line-height: 1.5; }
 .tam-machine-caption strong { color: var(--red); text-transform: uppercase; }
 @keyframes tam-ball-facility { 0%, 12%, 100% { left: 4%; transform: translateY(-1.7rem) rotate(0); } 34% { left: 4%; transform: translateY(0) rotate(90deg); } 72% { left: 24%; transform: translateY(0) rotate(420deg); } 84% { left: 18%; transform: translateY(-1.2rem) rotate(520deg); } }
 @keyframes tam-ball-system { 0%, 12%, 100% { left: 25%; transform: translateY(0) rotate(0); } 48% { left: 35%; transform: translateY(-0.7rem) rotate(200deg); } 68% { left: 35%; transform: translateY(0.15rem) rotate(290deg); } 88% { left: 51%; transform: translateY(0) rotate(540deg); } }
 @keyframes tam-ball-company { 0%, 10%, 100% { left: 52%; transform: translateY(0) rotate(0); } 45% { left: 65%; transform: translateY(-0.9rem) rotate(240deg); } 62% { left: 68%; transform: translateY(0.1rem) rotate(330deg); } 88% { left: 78%; transform: translateY(0) rotate(540deg); } }
-@keyframes tam-ball-account { 0%, 10%, 100% { left: 78%; transform: translateY(0) rotate(0); } 48% { left: 91%; transform: translateY(0) rotate(300deg); } 62% { left: 94%; transform: translateY(-2.7rem) rotate(430deg); } 76% { left: 80%; transform: translateY(-3.4rem) rotate(600deg); } 90% { left: 78%; transform: translateY(0) rotate(720deg); } }
+@keyframes tam-ball-account { 0%, 8%, 100% { left: 78%; transform: translateY(0) rotate(0); } 24% { left: 84%; transform: translateY(-0.8rem) rotate(150deg); } 34% { left: 84%; transform: translateY(0) rotate(210deg); } 46% { left: 88.5%; transform: translateY(-0.8rem) rotate(330deg); } 56% { left: 88.5%; transform: translateY(0) rotate(390deg); } 68% { left: 93%; transform: translateY(-0.8rem) rotate(510deg); } 76% { left: 94%; transform: translateY(-2.8rem) rotate(620deg); } 88% { left: 78%; transform: translateY(-3.4rem) rotate(800deg); } }
 @keyframes tam-hopper { to { transform: rotate(5deg); } }
-@keyframes tam-clamp { to { transform: scale(0.78) rotate(45deg); } }
+@keyframes tam-jaw-left { to { transform: translateX(0.55rem); } }
+@keyframes tam-jaw-right { to { transform: translateX(-0.55rem); } }
 @keyframes tam-rollers { to { transform: rotate(1turn); } }
 @keyframes tam-spring { to { transform: scaleY(0.7); } }
+@keyframes tam-counter-tap { 0%, 18%, 100% { color: var(--ink); background: var(--paper); transform: translateY(0); } 24%, 32% { color: var(--paper); background: var(--red); transform: translateY(-0.35rem); } }
 .tam-walkthrough__stage { min-height: 34rem; padding: 1rem; border: 2px solid var(--ink); background: var(--paper); animation: tam-stage-in 360ms cubic-bezier(0.2, 0, 0, 1) both; }
 .tam-walkthrough__stage > header { display: flex; align-items: end; justify-content: space-between; gap: 1rem; padding-bottom: 0.8rem; border-bottom: 1px solid var(--ink); }
 .tam-walkthrough__stage > header span { color: var(--blue); font-size: 0.58rem; text-transform: uppercase; }

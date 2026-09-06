@@ -69,6 +69,12 @@ function FinalCount() {
 }
 
 const stepPanels = [<FacilityRows />, <SystemGroups />, <CompanyGroups />, <FinalCount />]
+const machineCaptions = [
+  'The hopper feeds ten hospital records onto the rail, one record at a time.',
+  'The two jaws close when a hospital record finds the health system it belongs to.',
+  'The paired rollers pull system names together under the same parent company.',
+  'The ball taps 1, 2, 3—counting final sales accounts—then the spring sends it back.',
+] as const
 
 export function HospitalTamWalkthrough() {
   const [step, setStep] = useState(0)
@@ -92,12 +98,12 @@ export function HospitalTamWalkthrough() {
       <div className="tam-collapse-gauge" data-step={step + 1} aria-hidden="true">
         <span className="tam-collapse-gauge__rail" />
         <i className="tam-collapse-gauge__hopper">10</i>
-        <i className="tam-collapse-gauge__join">=</i>
+        <i className="tam-collapse-gauge__join"><span /><span /><em>join</em></i>
         <i className="tam-collapse-gauge__rollers">4</i>
-        <i className="tam-collapse-gauge__spring">3</i>
+        <i className="tam-collapse-gauge__spring"><span>1</span><span>2</span><span>3</span></i>
         <b className="tam-collapse-gauge__ball" data-artifact-data-ball />
       </div>
-      <p className="tam-machine-caption"><strong>The red ball is data.</strong> Each step changes what one record means; the return rail keeps the evidence available for another pass.</p>
+      <p className="tam-machine-caption" aria-live="polite"><strong>The red ball is data.</strong> {machineCaptions[step]}</p>
 
       <div className="tam-walkthrough__stage" role="region" aria-labelledby="current-step-title" key={step}>
         <header><span>Step {step + 1} of 4</span><h3 id="current-step-title">{current.title}</h3></header>

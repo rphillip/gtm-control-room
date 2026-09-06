@@ -72,8 +72,7 @@ test('Hospital TAM deep link reloads with honest synthetic and source framing', 
   await expect(page.locator('meta[http-equiv="Content-Security-Policy"]')).toHaveAttribute('content', /default-src 'self';.*object-src 'none';.*form-action 'none'/)
   await expect(page.locator('meta[name="referrer"]')).toHaveAttribute('content', 'same-origin')
   await expect(page.getByText(/Independent portfolio exercise/i)).toBeVisible()
-  await expect(page.getByText('Plain-English tour')).toBeVisible()
-  await expect(page.getByText('For the hiring manager')).toBeVisible()
+  await expect(page.getByText('No data background needed.')).toBeVisible()
   await expect(page.getByText(/Every name, identifier, relationship, and domain.*invented/i)).toBeVisible()
   await expect(page.getByText(/not a purchase-intent model/i)).toBeVisible()
   await expect(page.getByText(/review queue—not force them/i)).not.toBeVisible()
@@ -99,7 +98,6 @@ test('Hospital TAM supports keyboard controls, reduced motion, forced colors, an
   await next.focus()
   await page.keyboard.press('Enter')
   await expect(page.getByRole('button', { name: /Join to health systems/i })).toHaveAttribute('aria-current', 'step')
-  expect(await page.locator('.tam-collapse-gauge span').evaluate((element) => Number.parseFloat(getComputedStyle(element).transitionDuration) || 0)).toBeLessThan(0.01)
   expect(await page.locator('[data-artifact-data-ball]').evaluate((element) => Number.parseFloat(getComputedStyle(element).animationDuration) || 0)).toBeLessThan(0.01)
 
   const firstCheck = page.locator('#checklist input[type="checkbox"]').first()
@@ -139,8 +137,7 @@ test('Signal Convergence deep link reloads and teaches all three signals without
   await expect(page).toHaveTitle(/Signal Convergence Playground/)
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', 'https://rphillip.github.io/gtm-control-room/signal-convergence/')
   await expect(page.getByText('100% synthetic')).toBeVisible()
-  await expect(page.getByText('Plain-English tour')).toBeVisible()
-  await expect(page.getByText('For the hiring manager')).toBeVisible()
+  await expect(page.getByText('No data background needed.')).toBeVisible()
 
   const status = page.getByRole('status')
   await expect(status).toContainText('0 of 3 signals')

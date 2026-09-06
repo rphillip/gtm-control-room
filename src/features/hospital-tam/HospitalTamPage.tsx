@@ -89,7 +89,6 @@ export function HospitalTamPage() {
 
         <ArtifactAudienceGuide
           plainEnglish="A hospital list is like a pile of mailing labels: several labels can belong to one family, and several families can share one parent company. Follow the red data ball as ten records are sorted into the three organizations a seller could actually approach."
-          hiringManager="This artifact demonstrates source-grain analysis, normalized string identifiers, facility-to-system crosswalks, parent-company resolution, multi-layer deduplication, explicit unresolved states, lineage, and scoring only after the account model is stable."
         />
 
         <HospitalTamWalkthrough />

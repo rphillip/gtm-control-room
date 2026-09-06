@@ -7,8 +7,7 @@ import { tamChecklist } from './TamChecklist'
 afterEach(cleanup)
 
 describe('HospitalTamPage', () => {
-  it('frames the project, audiences, sources, limitations, and non-endorsement honestly', async () => {
-    const user = userEvent.setup()
+  it('frames the project, audience, sources, limitations, and non-endorsement honestly', () => {
     render(<HospitalTamPage />)
 
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('5,000 Hospitals Don’t Mean 5,000 Prospects')
@@ -16,11 +15,8 @@ describe('HospitalTamPage', () => {
     expect(screen.getByText(/Not work performed for, sponsored by, or endorsed/i)).toBeVisible()
     expect(screen.getByText(/CMS lists hospitals registered with Medicare/i)).toBeVisible()
     expect(screen.getByText(/not a purchase-intent model/i)).toBeVisible()
-    expect(screen.getByText('Plain-English tour')).toBeVisible()
-    expect(screen.getByText('For the hiring manager')).toBeVisible()
+    expect(screen.getByText('No data background needed.')).toBeVisible()
     expect(screen.getByText(/pile of mailing labels/i)).toBeVisible()
-    await user.click(screen.getByText('For the hiring manager'))
-    expect(screen.getByText(/facility-to-system crosswalks/i)).toBeVisible()
     expect(document.querySelector('[data-artifact-data-ball]')).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /CMS Hospital General Information/i })).toHaveAttribute('rel', expect.stringContaining('noreferrer'))
   })

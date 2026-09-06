@@ -33,6 +33,13 @@ const replicationSteps = [
   'Record outcomes, then revisit the weights and assumptions.',
 ]
 
+const machineCaptions = [
+  'No clues are loaded, so the ball waits at the account.',
+  'One clue drops into the account, but the ball only nudges forward.',
+  'Two clues join at the account and push the ball as far as the question gate.',
+  'Three clues join, the Σ gate opens, and the ball reaches “Ask next” before the spring returns it.',
+] as const
+
 export function SignalConvergencePage() {
   const mainRef = useRef<HTMLElement>(null)
   useDataWordHighlight(mainRef)
@@ -79,7 +86,6 @@ export function SignalConvergencePage() {
 
         <ArtifactAudienceGuide
           plainEnglish="Think of each signal as one clue. A job posting alone may mean very little. When different clues point toward the same change, the red data ball gets enough momentum to reach a better next question—not a guaranteed sale."
-          hiringManager="This artifact demonstrates account-level signal normalization, evidence lineage, explicit uncertainty, tunable scoring assumptions, accessible interaction design, and the feedback loop required to improve a GTM model with observed outcomes."
         />
 
         <section id="playground" className="convergence-workbench" aria-labelledby="playground-title">
@@ -137,7 +143,7 @@ export function SignalConvergencePage() {
                 <span className="convergence-diagram__spring" />
                 <span className="convergence-diagram__data-ball" data-artifact-data-ball />
               </div>
-              <p className="convergence-machine-caption"><strong>The red ball is data.</strong> Evidence gives it momentum; the gate sends it to a human question, not directly to a sales claim.</p>
+              <p className="convergence-machine-caption" aria-live="polite"><strong>The red ball is data.</strong> {machineCaptions[activeCount]}</p>
             </div>
 
             <section className="hypothesis-panel" aria-labelledby="hypothesis-title" data-data-highlight-ignore>

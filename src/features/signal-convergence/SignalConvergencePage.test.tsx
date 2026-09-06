@@ -11,11 +11,8 @@ describe('SignalConvergencePage', () => {
     render(<SignalConvergencePage />)
 
     expect(screen.getByText('100% synthetic')).toBeInTheDocument()
-    expect(screen.getByText('Plain-English tour')).toBeVisible()
-    expect(screen.getByText('For the hiring manager')).toBeVisible()
+    expect(screen.getByText('No data background needed.')).toBeVisible()
     expect(screen.getByText(/each signal as one clue/i)).toBeVisible()
-    await user.click(screen.getByText('For the hiring manager'))
-    expect(screen.getByText(/account-level signal normalization/i)).toBeVisible()
     expect(document.querySelector('[data-artifact-data-ball]')).toBeInTheDocument()
     expect(screen.getAllByText(/Evidence · Synthetic/i)).toHaveLength(3)
     expect(screen.getByRole('status')).toHaveTextContent('0 of 3 signals')
@@ -27,6 +24,7 @@ describe('SignalConvergencePage', () => {
 
     expect(screen.getByRole('status')).toHaveTextContent('3 of 3 signals')
     expect(screen.getByRole('status')).toHaveTextContent('Strong convergence — investigate now')
+    expect(screen.getByText(/three clues join.*gate opens/i)).toBeVisible()
     expect(screen.getByRole('meter')).toHaveValue(100)
     expect(screen.getByRole('status')).toHaveTextContent(/None of these proves buying intent/i)
   })
