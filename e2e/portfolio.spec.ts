@@ -2,6 +2,7 @@ import { expect, test, type Locator, type Page } from '@playwright/test'
 
 const sitePath = '/gtm-control-room/'
 const convergencePath = `${sitePath}signal-convergence/`
+const hospitalTamPath = `${sitePath}hospital-tam/`
 
 async function tabTo(page: Page, target: Locator, maximumTabs = 50) {
   for (let index = 0; index < maximumTabs; index += 1) {
@@ -34,6 +35,79 @@ for (const viewport of [
     await expect(page.locator('#registry')).toBeInViewport()
   })
 }
+
+for (const viewport of [
+  { width: 320, height: 800 },
+  { width: 390, height: 844 },
+  { width: 768, height: 900 },
+  { width: 1280, height: 900 },
+]) {
+  test(`Hospital TAM has no horizontal overflow at ${viewport.width}px`, async ({ page }) => {
+    await page.setViewportSize(viewport)
+    const response = await page.goto(hospitalTamPath)
+
+    expect(response?.status()).toBe(200)
+    await expect(page.getByRole('heading', { level: 1 })).toContainText('5,000 Hospitals')
+    expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1)
+
+    const walkthrough = page.locator('#walkthrough')
+    for (const label of ['Join to health systems', 'Resolve to GTM companies', 'Now count prospects']) {
+      await walkthrough.getByRole('button', { name: new RegExp(label, 'i') }).click()
+      expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1)
+    }
+    await expect(walkthrough.locator('.tam-final-count > div').nth(0)).toContainText('10')
+    await expect(walkthrough.locator('.tam-final-count > div').nth(1)).toContainText('4')
+    await expect(walkthrough.locator('.tam-final-count > div').nth(2)).toContainText('3')
+  })
+}
+
+test('Hospital TAM deep link reloads with honest synthetic and source framing', async ({ page }) => {
+  const requestedUrls: string[] = []
+  page.on('request', (request) => requestedUrls.push(request.url()))
+  await page.goto(hospitalTamPath)
+  await page.reload()
+
+  await expect(page).toHaveTitle(/5,000 Hospitals Don’t Mean 5,000 Prospects/)
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', 'https://rphillip.github.io/gtm-control-room/hospital-tam/')
+  await expect(page.locator('meta[http-equiv="Content-Security-Policy"]')).toHaveAttribute('content', /default-src 'self';.*object-src 'none';.*form-action 'none'/)
+  await expect(page.locator('meta[name="referrer"]')).toHaveAttribute('content', 'same-origin')
+  await expect(page.getByText(/Independent portfolio exercise/i)).toBeVisible()
+  await expect(page.getByText(/Every name, identifier, relationship, and domain.*invented/i)).toBeVisible()
+  await expect(page.getByText(/not a purchase-intent model/i)).toBeVisible()
+  await expect(page.getByText(/review queue—not force them/i)).not.toBeVisible()
+  await expect(page.getByRole('link', { name: 'CMS Hospital General Information' })).toHaveAttribute('href', 'https://data.cms.gov/provider-data/dataset/xubh-q36u')
+  await expect(page.getByRole('link', { name: /AHRQ 2023 linkage documentation/i })).toHaveAttribute('rel', /noreferrer/)
+
+  await page.locator('#walkthrough').getByRole('button', { name: /Now count prospects/i }).click()
+  await expect(page.getByText(/review queue—not force them/i)).toBeVisible()
+  await expect(page.locator('body')).not.toContainText(/guaranteed buyer|will convert|real patient/i)
+  const pageOrigin = new URL(page.url()).origin
+  expect(requestedUrls.every((url) => new URL(url).origin === pageOrigin)).toBe(true)
+})
+
+test('Hospital TAM supports keyboard controls, reduced motion, forced colors, and 200% zoom', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce', forcedColors: 'active' })
+  await page.setViewportSize({ width: 640, height: 800 })
+  await page.goto(hospitalTamPath)
+
+  const walkthrough = page.locator('#walkthrough')
+  await expect(walkthrough).toBeVisible()
+  const next = walkthrough.getByRole('button', { name: /Next layer/i })
+  await next.focus()
+  await page.keyboard.press('Enter')
+  await expect(page.getByRole('button', { name: /Join to health systems/i })).toHaveAttribute('aria-current', 'step')
+  expect(await page.locator('.tam-collapse-gauge span').evaluate((element) => Number.parseFloat(getComputedStyle(element).transitionDuration) || 0)).toBeLessThan(0.01)
+
+  const firstCheck = page.locator('#checklist input[type="checkbox"]').first()
+  await firstCheck.focus()
+  await page.keyboard.press('Space')
+  await expect(firstCheck).toBeChecked()
+  await expect(page.locator('#checklist').getByRole('status')).toContainText('1 of 10 TAM checks complete')
+  expect(await firstCheck.locator('..').evaluate((label) => getComputedStyle(label).cursor)).toBe('pointer')
+
+  await page.evaluate(() => { document.documentElement.style.zoom = '2' })
+  expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1)
+})
 
 for (const viewport of [
   { width: 320, height: 800 },

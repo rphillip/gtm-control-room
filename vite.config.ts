@@ -16,6 +16,10 @@ export function pagesBase(repository = process.env.GITHUB_REPOSITORY) {
   return repositoryName ? `/${repositoryName}/` : '/'
 }
 
+export function routeForHtmlPath(path: string) {
+  return (['signal-convergence', 'hospital-tam'] as const).find((route) => path.includes(`/${route}/`)) ?? ''
+}
+
 function invalidatePublicSnapshot(server: ViteDevServer) {
   const module = server.moduleGraph.getModuleById(resolvedPublicSnapshotModule)
   if (module) server.moduleGraph.invalidateModule(module)
@@ -83,7 +87,7 @@ export function createViteConfig({
       {
         name: 'verified-site-url-metadata',
         transformIndexHtml(html: string, context: { path: string }) {
-          const route = context.path.includes('/signal-convergence/') ? 'signal-convergence' : ''
+          const route = routeForHtmlPath(context.path)
           const metadata = renderSiteUrlMetadata(siteUrl, route)
           return html.replace(
             '    <!-- SITE_URL_METADATA -->',
@@ -97,6 +101,7 @@ export function createViteConfig({
         input: {
           main: resolve(process.cwd(), 'index.html'),
           signalConvergence: resolve(process.cwd(), 'signal-convergence/index.html'),
+          hospitalTam: resolve(process.cwd(), 'hospital-tam/index.html'),
         },
       },
     },

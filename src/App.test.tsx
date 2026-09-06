@@ -46,6 +46,9 @@ describe('portfolio shell', () => {
     expect(screen.getByRole('link', { name: 'Open the playground' }).getAttribute('href')).toMatch(
       /\/signal-convergence\/$/,
     )
+    expect(screen.getByRole('link', { name: 'Explore the hospital TAM' }).getAttribute('href')).toMatch(
+      /\/hospital-tam\/$/,
+    )
   })
 
   it('provides focusable skip content, stable section anchors, and a hero email action', () => {

@@ -2,7 +2,7 @@
 
 import { describe, expect, it } from 'vitest'
 
-import { createViteConfig } from '../../vite.config'
+import { createViteConfig, routeForHtmlPath } from '../../vite.config'
 
 describe('Vitest workspace isolation', () => {
   it('does not discover tests inside Git worktrees nested under the repository', () => {
@@ -16,5 +16,12 @@ describe('Vitest workspace isolation', () => {
     const input = config.build.rollupOptions.input
 
     expect(input.signalConvergence).toMatch(/signal-convergence\/index\.html$/)
+    expect(input.hospitalTam).toMatch(/hospital-tam\/index\.html$/)
+  })
+
+  it('maps each artifact HTML path to its canonical route', () => {
+    expect(routeForHtmlPath('/signal-convergence/index.html')).toBe('signal-convergence')
+    expect(routeForHtmlPath('/hospital-tam/index.html')).toBe('hospital-tam')
+    expect(routeForHtmlPath('/index.html')).toBe('')
   })
 })

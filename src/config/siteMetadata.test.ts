@@ -27,4 +27,10 @@ describe('renderSiteUrlMetadata', () => {
       'https://example.github.io/portfolio/signal-convergence/',
     )
   })
+
+  it('renders the hospital TAM canonical under the project base', () => {
+    expect(renderSiteUrlMetadata('https://example.github.io/portfolio/', 'hospital-tam')).toContain(
+      'https://example.github.io/portfolio/hospital-tam/',
+    )
+  })
 })

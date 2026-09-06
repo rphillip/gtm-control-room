@@ -43,10 +43,15 @@ npm run preview
 - `vite.config.ts` derives the GitHub Pages base path from `GITHUB_REPOSITORY`. During deployment, the verified Pages base URL is injected into canonical and Open Graph URL metadata through `VITE_SITE_URL`.
 - `.github/workflows/deploy-pages.yml` tests, builds, uploads `dist/`, and deploys that artifact. It never contacts Clay.
 - `src/features/signal-convergence/` contains a dependency-free, synthetic teaching artifact with its own GitHub Pages entry at `signal-convergence/`.
+- `src/features/hospital-tam/` contains the synthetic facility-to-system-to-company walkthrough with its own entry at `hospital-tam/`.
 
 ## Signal Convergence Playground
 
 The playground demonstrates how different employer-account evidence streams can converge into a GTM hypothesis worth investigating without claiming predictive intent. Its fictional account and evidence are entirely synthetic, while its limitation notes document the hand-selected weights, correlation risk, missing-evidence caveat, and outcome-feedback requirement. See the [feature documentation](src/features/signal-convergence/README.md) for its origin and adaptation guidance.
+
+## Hospital TAM artifact
+
+The hospital TAM walkthrough demonstrates why a public healthcare facility row is not automatically a GTM account. Ten visibly synthetic records collapse into four fictional systems and three fictional companies, while unresolved states, source-vintage limits, probabilistic domain matching, and non-endorsement are explicit. See the [feature documentation](src/features/hospital-tam/README.md) for the data model, primary-source references, and replication guidance.
 
 If the snapshot cannot be loaded, authored content remains available and snapshot-backed registry counts fall back to an unavailable state.
 
@@ -118,4 +123,4 @@ After deployment, verify the returned public URL, all three case studies, naviga
 
 ## Current evidence
 
-The checked-in snapshot reports 5 active signals and 1 errored signal, 60 scored accounts, 27 captured new-hire events, and the documented healthcare market-map and activation workflow aggregates. These are observed workspace aggregates or explicitly labeled ten-row samples—not campaign outcomes or funnel conversion rates. The repository currently exercises 134 unit/component checks across 20 Vitest files and 25 Playwright browser checks. The release budget is less than 150 kB of compressed initial JavaScript, excluding locally bundled font files.
+The checked-in snapshot reports 5 active signals and 1 errored signal, 60 scored accounts, 27 captured new-hire events, and the documented healthcare market-map and activation workflow aggregates. These are observed workspace aggregates or explicitly labeled ten-row samples—not campaign outcomes or funnel conversion rates. The repository currently exercises 144 unit/component checks across 23 Vitest files and 31 Playwright browser checks. The release budget is less than 150 kB of compressed initial JavaScript, excluding locally bundled font files.
