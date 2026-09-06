@@ -110,7 +110,7 @@ test('Hospital TAM deep link reloads with honest synthetic and source framing', 
   await expect(passport).toContainText('CO001')
   const thesisMachine = page.locator('.tam-thesis-machine')
   await expect(thesisMachine.getByRole('status')).toContainText('include in this audience')
-  await thesisMachine.getByRole('switch', { name: 'Change commercial thesis' }).check()
+  await thesisMachine.getByRole('radio', { name: /Rural-care operations/i }).check()
   await expect(thesisMachine.getByRole('status')).toContainText('outside this thesis')
   await thesisMachine.getByRole('combobox', { name: /Rural-care operating evidence/i }).selectOption('missing')
   await expect(thesisMachine.getByRole('status')).toContainText('hold for review')

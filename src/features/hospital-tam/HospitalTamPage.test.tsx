@@ -82,7 +82,7 @@ describe('HospitalTamPage', () => {
     const filters = screen.getByRole('heading', { name: /Filters should reflect/i }).closest('section') as HTMLElement
 
     expect(within(filters).getByRole('status')).toHaveTextContent(/routed to include in this audience/i)
-    await user.click(within(filters).getByRole('switch', { name: 'Change commercial thesis' }))
+    await user.click(within(filters).getByRole('radio', { name: /Rural-care operations/i }))
     expect(within(filters).getByRole('status')).toHaveTextContent(/routed to outside this thesis/i)
 
     await user.selectOptions(within(filters).getByRole('combobox', { name: /Rural-care operating evidence/i }), 'missing')

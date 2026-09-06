@@ -70,17 +70,17 @@ export function ThesisCalibrationMachine() {
     <div className="tam-thesis-machine" data-outcome={decision.outcome}>
       <header className="tam-thesis-machine__header">
         <div><span>Resolved account · Synthetic</span><strong>Example Health</strong></div>
-        <label className="tam-thesis-switch">
-          <span><small>Commercial thesis</small><strong>{thesis === 'payer' ? 'Pricing + payer contracting' : 'Rural-care operations'}</strong></span>
-          <input
-            type="checkbox"
-            role="switch"
-            aria-label="Change commercial thesis"
-            checked={thesis === 'rural'}
-            onChange={(event) => rerun(() => setThesis(event.target.checked ? 'rural' : 'payer'))}
-          />
-          <i aria-hidden="true"><b>P</b><b>R</b></i>
-        </label>
+        <fieldset className="tam-thesis-selector">
+          <legend>GTM thesis</legend>
+          <label className={thesis === 'payer' ? 'is-selected' : ''}>
+            <input type="radio" name="gtm-thesis" value="payer" checked={thesis === 'payer'} onChange={() => rerun(() => setThesis('payer'))} />
+            <span><strong>Pricing + payer contracting</strong><small>Prioritize commercial-payer complexity</small></span>
+          </label>
+          <label className={thesis === 'rural' ? 'is-selected' : ''}>
+            <input type="radio" name="gtm-thesis" value="rural" checked={thesis === 'rural'} onChange={() => rerun(() => setThesis('rural'))} />
+            <span><strong>Rural-care operations</strong><small>Prioritize rural operating context</small></span>
+          </label>
+        </fieldset>
       </header>
 
       <div
