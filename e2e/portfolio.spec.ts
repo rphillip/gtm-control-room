@@ -137,6 +137,13 @@ test('Hospital TAM supports keyboard controls, reduced motion, forced colors, an
   await page.setViewportSize({ width: 640, height: 800 })
   await page.goto(hospitalTamPath)
 
+  const failureMachine = page.locator('.tam-break-machine')
+  await failureMachine.getByRole('button', { name: 'Break the machine' }).click()
+  await expect(failureMachine.getByRole('status')).toContainText(/all five downstream failures were triggered/i)
+  await expect(failureMachine.getByText(/keep ringing the pipeline counter/i)).toBeVisible()
+  await failureMachine.getByRole('button', { name: 'Run it correctly' }).click()
+  await expect(failureMachine.getByRole('status')).toContainText(/one stable account continues/i)
+
   const walkthrough = page.locator('#walkthrough')
   await expect(walkthrough).toBeVisible()
   const next = walkthrough.getByRole('button', { name: /Next layer/i })

@@ -2,19 +2,12 @@ import { useRef } from 'react'
 import { ArtifactAudienceGuide } from '../../components/ArtifactAudienceGuide'
 import { portfolio } from '../../content/portfolio'
 import { useDataWordHighlight } from '../../hooks/useDataWordHighlight'
+import { FailureChainMachine } from './FailureChainMachine'
 import { HospitalTamWalkthrough } from './HospitalTamWalkthrough'
 import { IdentityPassportMachine } from './IdentityPassportMachine'
 import { ScoreSystemBuilder } from './ScoreSystemBuilder'
 import { TamChecklist } from './TamChecklist'
 import { ThesisCalibrationMachine } from './ThesisCalibrationMachine'
-
-const failureModes = [
-  ['Double-counted TAM', 'Multiple hospitals appear as separate prospects even when one system controls contracting.'],
-  ['Duplicate outreach', 'Different facilities—or even different systems—resolve to the same parent company.'],
-  ['Bad scoring', 'Facility size, system scale, and company complexity become one misleading number.'],
-  ['Wrong buyer', 'A local administrator is enriched when the buying decision lives centrally.'],
-  ['Broken reporting', 'Pipeline looks larger because duplicate entities were never resolved.'],
-] as const
 
 const buildSteps = [
   'Define the actual buying unit.',
@@ -71,7 +64,7 @@ export function HospitalTamPage() {
         <section className="section tam-failures" aria-labelledby="failures-title">
           <p className="eyebrow">03 / Ce qui casse</p>
           <h2 id="failures-title">What breaks if you skip this?</h2>
-          <div>{failureModes.map(([title, description], index) => <article key={title}><span>0{index + 1}</span><h3>{title}</h3><p>{description}</p></article>)}</div>
+          <FailureChainMachine />
         </section>
 
         <section id="filters" className="section tam-filters" aria-labelledby="filters-title">

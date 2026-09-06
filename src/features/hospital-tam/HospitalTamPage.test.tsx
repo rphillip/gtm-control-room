@@ -1,10 +1,13 @@
-import { cleanup, render, screen, within } from '@testing-library/react'
+import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { HospitalTamPage } from './HospitalTamPage'
 import { tamChecklist } from './TamChecklist'
 
-afterEach(cleanup)
+afterEach(() => {
+  cleanup()
+  vi.useRealTimers()
+})
 
 describe('HospitalTamPage', () => {
   it('frames the project, audience, sources, limitations, and non-endorsement honestly', () => {
@@ -74,6 +77,22 @@ describe('HospitalTamPage', () => {
     await user.click(within(passport).getByRole('switch', { name: /Introduce ambiguity/i }))
     await user.click(within(passport).getByRole('button', { name: /Advance record/i }))
     expect(within(passport).getByText('CO001')).toBeVisible()
+  })
+
+  it('demonstrates the five linked failures caused by skipping identity resolution', () => {
+    vi.useFakeTimers()
+    render(<HospitalTamPage />)
+    const failures = screen.getByRole('heading', { name: /What breaks if you skip this/i }).closest('section') as HTMLElement
+
+    fireEvent.click(within(failures).getByRole('button', { name: 'Break the machine' }))
+    act(() => vi.advanceTimersByTime(4000))
+
+    expect(within(failures).getByRole('status')).toHaveTextContent(/all five downstream failures were triggered/i)
+    expect(within(failures).getByText(/one facility record becomes several apparent prospects/i)).toBeVisible()
+    expect(within(failures).getByText(/keep ringing the pipeline counter/i)).toBeVisible()
+
+    fireEvent.click(within(failures).getByRole('button', { name: 'Run it correctly' }))
+    expect(within(failures).getByRole('status')).toHaveTextContent(/one stable account continues/i)
   })
 
   it('reroutes the same account when its commercial thesis or evidence changes', async () => {
