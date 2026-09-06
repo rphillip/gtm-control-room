@@ -169,10 +169,49 @@ h3, h4 { margin: 0; font-weight: 600; }
 .evidence-mobile__plaque strong { font-family: var(--serif); font-size: clamp(1.45rem, 3vw, 2.5rem); font-weight: 480; font-variant-numeric: tabular-nums; line-height: 0.95; }
 .evidence-mobile__plaque > span { color: var(--blue); font-size: 0.54rem; font-weight: 600; letter-spacing: 0.05em; line-height: 1.45; text-transform: uppercase; }
 .evidence-mobile__plaque small { align-self: end; color: var(--red); font-size: 0.48rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }
+.evidence-mobile__orbit, .evidence-mobile__switch-pin { display: none; }
 @keyframes mobile-beam-main { from { transform: rotate(-2.5deg); } to { transform: rotate(2deg); } }
 @keyframes mobile-beam-left { from { transform: rotate(4deg); } to { transform: rotate(-3deg); } }
 @keyframes mobile-beam-right { from { transform: rotate(-5deg); } to { transform: rotate(3.5deg); } }
 @keyframes mobile-node-swing { from { transform: rotate(-1.8deg) translateX(-2px); } to { transform: rotate(2.2deg) translateX(2px); } }
+
+.evidence-mobile[data-mobile-variant='healthcare-market-map'] .evidence-mobile__ceiling { left: 13%; width: 24%; }
+.evidence-mobile[data-mobile-variant='healthcare-market-map'] .evidence-mobile__stem { left: 25%; height: 3.8rem; }
+.evidence-mobile[data-mobile-variant='healthcare-market-map'] .evidence-mobile__beam--main { top: 4.5rem; left: 8%; width: 78%; animation: market-mobile-main 9.6s cubic-bezier(0.45, 0, 0.55, 1) infinite alternate; }
+.evidence-mobile[data-mobile-variant='healthcare-market-map'] .evidence-mobile__beam--left { top: 9.4rem; left: 16%; width: 44%; animation: market-mobile-left 7.4s cubic-bezier(0.45, 0, 0.55, 1) -2.1s infinite alternate; }
+.evidence-mobile[data-mobile-variant='healthcare-market-map'] .evidence-mobile__beam--right { top: 13.2rem; right: 3%; width: 50%; animation: market-mobile-right 8.8s cubic-bezier(0.45, 0, 0.55, 1) -4.2s infinite alternate; }
+.evidence-mobile[data-mobile-variant='healthcare-market-map'] .evidence-mobile__node { animation-name: market-mobile-node; }
+.evidence-mobile[data-mobile-variant='healthcare-market-map'] .evidence-mobile__node--1 { top: 6.3rem; left: 0; --wire: 3.9rem; }
+.evidence-mobile[data-mobile-variant='healthcare-market-map'] .evidence-mobile__node--2 { top: 9.2rem; left: 31%; --wire: 5.6rem; }
+.evidence-mobile[data-mobile-variant='healthcare-market-map'] .evidence-mobile__node--3 { top: 13rem; right: 0; --wire: 3.4rem; }
+.evidence-mobile[data-mobile-variant='healthcare-market-map'] .evidence-mobile__counterweight { border-radius: 50%; transform: none; }
+.evidence-mobile[data-mobile-variant='healthcare-market-map'] .evidence-mobile__node--2 .evidence-mobile__counterweight { width: 1.4rem; height: 1.4rem; transform: none; }
+.evidence-mobile[data-mobile-variant='healthcare-market-map'] .evidence-mobile__orbit { position: absolute; top: 2.35rem; left: calc(25% - 1.15rem); display: block; width: 2.3rem; height: 2.3rem; border: 1px solid var(--blue); border-radius: 50%; animation: market-mobile-orbit 4.8s linear infinite; }
+.evidence-mobile[data-mobile-variant='healthcare-market-map'] .evidence-mobile__orbit::after { position: absolute; top: -0.22rem; left: 50%; width: 0.42rem; height: 0.42rem; border-radius: 50%; background: var(--red); content: ''; transform: translateX(-50%); }
+
+.evidence-mobile[data-mobile-variant='activation-workflows'] .evidence-mobile__ceiling { left: 38%; width: 24%; }
+.evidence-mobile[data-mobile-variant='activation-workflows'] .evidence-mobile__stem { left: 50%; height: 4.3rem; }
+.evidence-mobile[data-mobile-variant='activation-workflows'] .evidence-mobile__beam--main { top: 5rem; left: 24%; width: 52%; animation: activation-mobile-switch 4.6s cubic-bezier(0.2, 0, 0, 1) infinite; }
+.evidence-mobile[data-mobile-variant='activation-workflows'] .evidence-mobile__beam--left { top: 8.6rem; left: 6%; width: 43%; animation: activation-mobile-left 4.6s cubic-bezier(0.2, 0, 0, 1) infinite; }
+.evidence-mobile[data-mobile-variant='activation-workflows'] .evidence-mobile__beam--right { top: 8.6rem; right: 6%; width: 43%; animation: activation-mobile-right 4.6s cubic-bezier(0.2, 0, 0, 1) infinite; }
+.evidence-mobile[data-mobile-variant='activation-workflows'] .evidence-mobile__node { top: 6.8rem; width: 39%; animation: activation-mobile-node 4.6s cubic-bezier(0.2, 0, 0, 1) infinite; }
+.evidence-mobile[data-mobile-variant='activation-workflows'] .evidence-mobile__node--1 { left: 4%; --wire: 4.4rem; }
+.evidence-mobile[data-mobile-variant='activation-workflows'] .evidence-mobile__node--2 { right: 4%; left: auto; --wire: 7rem; animation-delay: -2.3s; }
+.evidence-mobile[data-mobile-variant='activation-workflows'] .evidence-mobile__node--3 { display: none; }
+.evidence-mobile[data-mobile-variant='activation-workflows'] .evidence-mobile__counterweight { width: 1.7rem; height: 0.9rem; border-radius: 0; transform: rotate(-8deg); }
+.evidence-mobile[data-mobile-variant='activation-workflows'] .evidence-mobile__node--2 .evidence-mobile__counterweight { width: 1.2rem; height: 1.2rem; border-radius: 50%; transform: none; }
+.evidence-mobile[data-mobile-variant='activation-workflows'] .evidence-mobile__switch-pin { position: absolute; z-index: 3; top: 4.58rem; left: calc(50% - 0.45rem); display: block; width: 0.9rem; height: 0.9rem; border: 2px solid var(--ink); border-radius: 50%; background: var(--red); animation: activation-mobile-pin 4.6s cubic-bezier(0.2, 0, 0, 1) infinite; }
+
+@keyframes market-mobile-main { from { transform: rotate(5deg); } to { transform: rotate(-4deg); } }
+@keyframes market-mobile-left { from { transform: rotate(-6deg) translateX(-3px); } to { transform: rotate(5deg) translateX(3px); } }
+@keyframes market-mobile-right { from { transform: rotate(7deg) translateX(3px); } to { transform: rotate(-5deg) translateX(-3px); } }
+@keyframes market-mobile-node { from { transform: rotate(-3deg) translate(0, -2px); } to { transform: rotate(3.5deg) translate(3px, 3px); } }
+@keyframes market-mobile-orbit { to { transform: rotate(1turn); } }
+@keyframes activation-mobile-switch { 0%, 42%, 100% { transform: rotate(-7deg); } 52%, 90% { transform: rotate(7deg); } }
+@keyframes activation-mobile-left { 0%, 42%, 100% { transform: rotate(5deg) translateY(0); } 52%, 90% { transform: rotate(-2deg) translateY(4px); } }
+@keyframes activation-mobile-right { 0%, 42%, 100% { transform: rotate(2deg) translateY(4px); } 52%, 90% { transform: rotate(-5deg) translateY(0); } }
+@keyframes activation-mobile-node { 0%, 42%, 100% { transform: translateY(0) rotate(-1deg); } 52%, 90% { transform: translateY(7px) rotate(2deg); } }
+@keyframes activation-mobile-pin { 0%, 42%, 100% { transform: translateX(-0.2rem); } 52%, 90% { transform: translateX(0.2rem); } }
 
 details > summary { list-style: none; }
 details > summary::-webkit-details-marker { display: none; }
@@ -612,6 +651,19 @@ details[open] > summary .disclosure-plus { color: var(--paper); background: var(
   .evidence-mobile__node--2 { top: 5.5rem; right: 1%; left: auto; --wire: 7.2rem; }
   .evidence-mobile__node--3 { top: 17rem; right: 7%; --wire: 4.2rem; }
   .evidence-mobile__plaque { min-height: 7.5rem; }
+  .evidence-mobile[data-mobile-variant='healthcare-market-map'] .evidence-mobile__sculpture { height: 34rem; }
+  .evidence-mobile[data-mobile-variant='healthcare-market-map'] .evidence-mobile__beam--main { top: 4.5rem; left: 6%; width: 88%; }
+  .evidence-mobile[data-mobile-variant='healthcare-market-map'] .evidence-mobile__beam--left { top: 10.5rem; left: 2%; width: 58%; }
+  .evidence-mobile[data-mobile-variant='healthcare-market-map'] .evidence-mobile__beam--right { top: 20rem; right: 2%; width: 64%; }
+  .evidence-mobile[data-mobile-variant='healthcare-market-map'] .evidence-mobile__node--1 { top: 7rem; left: 1%; --wire: 3.8rem; }
+  .evidence-mobile[data-mobile-variant='healthcare-market-map'] .evidence-mobile__node--2 { top: 10.2rem; right: 1%; left: auto; --wire: 6.2rem; }
+  .evidence-mobile[data-mobile-variant='healthcare-market-map'] .evidence-mobile__node--3 { top: 19.7rem; right: 7%; --wire: 3.6rem; }
+  .evidence-mobile[data-mobile-variant='activation-workflows'] .evidence-mobile__sculpture { height: 27rem; }
+  .evidence-mobile[data-mobile-variant='activation-workflows'] .evidence-mobile__beam--main { top: 5rem; left: 16%; width: 68%; }
+  .evidence-mobile[data-mobile-variant='activation-workflows'] .evidence-mobile__beam--left { top: 9rem; left: 2%; width: 48%; }
+  .evidence-mobile[data-mobile-variant='activation-workflows'] .evidence-mobile__beam--right { top: 9rem; right: 2%; width: 48%; }
+  .evidence-mobile[data-mobile-variant='activation-workflows'] .evidence-mobile__node--1 { top: 7rem; left: 1%; width: 46%; --wire: 4.5rem; }
+  .evidence-mobile[data-mobile-variant='activation-workflows'] .evidence-mobile__node--2 { top: 7rem; right: 1%; left: auto; width: 46%; --wire: 8rem; }
   .control-room__source { width: 100%; }
   .contact__links { align-items: stretch; flex-direction: column; }
 }

@@ -19,7 +19,7 @@ describe('CaseStudy', () => {
     render(<CaseStudy study={snapshotPortfolio.caseStudies[0]} index={0} />)
 
     expect(screen.getAllByText('60').length).toBeGreaterThan(0)
-    expect(screen.getByText('Observed aggregate evidence; samples are labeled.')).toBeInTheDocument()
+    expect(screen.getByText(/Evidence in balance/i)).toBeInTheDocument()
     expect(screen.getByRole('figure', { name: /Multi-Signal Account Engine evidence mobile/i })).toBeInTheDocument()
     expect(screen.getByText(/company identity and domain the join contract/i)).not.toBeVisible()
 

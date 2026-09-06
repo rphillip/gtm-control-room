@@ -6,6 +6,9 @@ export function CaseStudy({ study, index }: { study: CaseStudyContent; index: nu
   const titleId = `${study.slug}-title`
   const featuredMetrics = study.metrics.filter(({ provenance }) => provenance !== 'unavailable').slice(0, 3)
   const isPrototype = study.slug === 'activation-workflows'
+  const mobileVariant = study.slug === 'healthcare-market-map' || study.slug === 'activation-workflows'
+    ? study.slug
+    : 'multi-signal-account-engine'
 
   return (
     <article id={study.slug} className="case-study" aria-labelledby={titleId}>
@@ -16,7 +19,7 @@ export function CaseStudy({ study, index }: { study: CaseStudyContent; index: nu
         <p className="case-study__summary">{study.summary}</p>
       </header>
 
-      <EvidenceMobile title={study.title} metrics={featuredMetrics} />
+      <EvidenceMobile title={study.title} metrics={featuredMetrics} variant={mobileVariant} />
 
       <details className="case-study__drawer">
         <summary><span>See the decisions, failure, and next production step</span><span className="disclosure-plus" aria-hidden="true">+</span></summary>

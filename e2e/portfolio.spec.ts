@@ -132,16 +132,29 @@ test('case machines expose evidence on focus and retain a permanent caption', as
 test('the kinetic selector swaps one case and its evidence mobile without a case-study stack', async ({ page }) => {
   await page.goto(sitePath)
   const selector = page.getByRole('group', { name: 'Choose a case file' })
+  const mobile = page.locator('.selected-systems__stage .evidence-mobile')
 
   await expect(selector.getByRole('button')).toHaveCount(3)
   await expect(page.locator('.selected-systems__stage .case-study')).toHaveCount(1)
   await expect(page.getByRole('figure', { name: 'Multi-Signal Account Engine evidence mobile' })).toBeVisible()
+  await expect(mobile).toHaveAttribute('data-mobile-variant', 'multi-signal-account-engine')
+  await expect(mobile.locator('.evidence-mobile__beam--main')).toHaveCSS('animation-name', 'mobile-beam-main')
 
   const market = selector.getByRole('button', { name: /Healthcare Market Map/ })
   await market.click()
   await expect(market).toHaveAttribute('aria-pressed', 'true')
   await expect(page.getByRole('heading', { level: 3, name: 'Healthcare Market Map' })).toBeVisible()
   await expect(page.getByRole('figure', { name: 'Healthcare Market Map evidence mobile' })).toBeVisible()
+  await expect(mobile).toHaveAttribute('data-mobile-variant', 'healthcare-market-map')
+  await expect(mobile.locator('.evidence-mobile__beam--main')).toHaveCSS('animation-name', 'market-mobile-main')
+  await expect(mobile.locator('.evidence-mobile__orbit')).toBeVisible()
+
+  const activation = selector.getByRole('button', { name: /Activation Workflows/ })
+  await activation.click()
+  await expect(activation).toHaveAttribute('aria-pressed', 'true')
+  await expect(mobile).toHaveAttribute('data-mobile-variant', 'activation-workflows')
+  await expect(mobile.locator('.evidence-mobile__beam--main')).toHaveCSS('animation-name', 'activation-mobile-switch')
+  await expect(mobile.locator('.evidence-mobile__switch-pin')).toBeVisible()
   await expect(page.locator('.selected-systems__stage .case-study')).toHaveCount(1)
 })
 
