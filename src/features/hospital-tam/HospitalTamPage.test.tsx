@@ -18,8 +18,8 @@ describe('HospitalTamPage', () => {
     expect(screen.getByText('No data background needed.')).toBeVisible()
     expect(screen.getByText(/pile of mailing labels/i)).toBeVisible()
     expect(document.querySelector('[data-artifact-data-ball]')).toBeInTheDocument()
-    expect(document.querySelectorAll('.tam-score-machine')).toHaveLength(4)
-    expect(document.querySelectorAll('.tam-score-machine__ball')).toHaveLength(4)
+    expect(document.querySelectorAll('.tam-score-builder')).toHaveLength(1)
+    expect(document.querySelectorAll('.tam-score-builder__data-ball')).toHaveLength(1)
     expect(screen.getByRole('link', { name: /CMS Hospital General Information/i })).toHaveAttribute('rel', expect.stringContaining('noreferrer'))
   })
 
@@ -32,6 +32,26 @@ describe('HospitalTamPage', () => {
     expect(checks).toHaveLength(tamChecklist.length)
     await user.click(checks[0] as HTMLInputElement)
     expect(within(checklist).getByRole('status')).toHaveTextContent(/1 of 10 TAM checks complete/i)
+  })
+
+  it('builds an account profile through all four scoring stations', async () => {
+    const user = userEvent.setup()
+    render(<HospitalTamPage />)
+    const builder = document.querySelector('.tam-score-builder') as HTMLElement
+
+    await user.click(screen.getByRole('radio', { name: '10+ hospitals' }))
+    await user.click(screen.getByRole('button', { name: /Lock size and roll onward/i }))
+    expect(within(builder).getByRole('status')).toHaveTextContent(/Scoring station 2 of 4/i)
+
+    await user.click(screen.getByRole('button', { name: /Lock geography and roll onward/i }))
+    await user.click(screen.getByRole('button', { name: /Lock facility mix and roll onward/i }))
+    await user.click(screen.getByRole('checkbox', { name: 'Payer Contracting' }))
+    await user.click(screen.getByRole('button', { name: /Print the account profile/i }))
+
+    expect(screen.getByRole('heading', { name: 'Example Health' })).toBeVisible()
+    expect(screen.getByText('10+ hospitals')).toBeVisible()
+    expect(screen.getByText(/Managed Care · Payer Contracting/)).toBeVisible()
+    expect(screen.getByText(/Recommended action: investigate the account/i)).toBeVisible()
   })
 
   it('uses base-safe links to both portfolio destinations', () => {
