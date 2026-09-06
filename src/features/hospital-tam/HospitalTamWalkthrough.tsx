@@ -70,11 +70,15 @@ function FinalCount() {
 
 const stepPanels = [<FacilityRows />, <SystemGroups />, <CompanyGroups />, <FinalCount />]
 const machineCaptions = [
-  'The hopper tips exactly when a hospital row drops, then the return arm reloads it.',
-  'A blue system key meets the hospital row; the jaws close only when the two join.',
-  'The rollers turn only when the resolved system enters, grouping it under one company.',
-  'The ball taps 1, 2, 3—counting final sales accounts—then compresses the spring and returns.',
+  'Ten facility records enter the feeder as ten separate inputs.',
+  'The resolver closes four grouping cups around related facilities, producing four health-system identities.',
+  'The company gears combine two related systems and pass two through, leaving three company identities.',
+  'Three account balls strike the counter paddles one at a time. The machine stops at 03—the sellable account universe.',
 ] as const
+
+const facilityBallIds = Array.from({ length: syntheticFacilities.length }, (_, index) => index + 1)
+const systemBallIds = Array.from({ length: syntheticSystems.length }, (_, index) => index + 1)
+const companyBallIds = Array.from({ length: syntheticCompanies.length }, (_, index) => index + 1)
 
 export function HospitalTamWalkthrough() {
   const [step, setStep] = useState(0)
@@ -96,14 +100,57 @@ export function HospitalTamWalkthrough() {
       </nav>
 
       <div className="tam-collapse-gauge" data-step={step + 1} aria-hidden="true">
-        <span className="tam-collapse-gauge__rail" />
-        <span className="tam-collapse-gauge__lifter" />
-        <i className="tam-collapse-gauge__hopper">10</i>
-        <i className="tam-collapse-gauge__join"><span /><span /><em>join</em></i>
-        <span className="tam-collapse-gauge__join-key">System key</span>
-        <i className="tam-collapse-gauge__rollers">4</i>
-        <i className="tam-collapse-gauge__spring"><span>1</span><span>2</span><span>3</span></i>
-        <b className="tam-collapse-gauge__ball" data-artifact-data-ball />
+        <span className="tam-collapse-gauge__pipe" />
+
+        <div className="tam-collapse-stage tam-collapse-stage--feed">
+          <span className="tam-collapse-stage__number">01</span>
+          <span className="tam-collapse-stage__label">10 facility rows</span>
+          <div className="tam-collapse-feeder">
+            <span className="tam-collapse-feeder__rack">
+              {facilityBallIds.map((id) => <i key={id} data-artifact-data-ball={id === 1 ? '' : undefined} />)}
+            </span>
+            <span className="tam-collapse-feeder__drum" />
+            <span className="tam-collapse-feeder__chute" />
+          </div>
+        </div>
+
+        <span className="tam-collapse-transfer tam-collapse-transfer--systems"><i /><i /><i /><i /></span>
+
+        <div className="tam-collapse-stage tam-collapse-stage--systems">
+          <span className="tam-collapse-stage__number">02</span>
+          <span className="tam-collapse-stage__label">4 health systems</span>
+          <div className="tam-system-resolver">
+            <span className="tam-system-resolver__press" />
+            <span className="tam-system-resolver__cups"><i /><i /><i /><i /></span>
+            <span className="tam-system-resolver__balls">{systemBallIds.map((id) => <b key={id}>{id}</b>)}</span>
+          </div>
+        </div>
+
+        <span className="tam-collapse-transfer tam-collapse-transfer--companies"><i /><i /><i /></span>
+
+        <div className="tam-collapse-stage tam-collapse-stage--companies">
+          <span className="tam-collapse-stage__number">03</span>
+          <span className="tam-collapse-stage__label">3 GTM companies</span>
+          <div className="tam-company-resolver">
+            <span className="tam-company-resolver__inputs">{systemBallIds.map((id) => <i key={id} />)}</span>
+            <span className="tam-company-resolver__gear tam-company-resolver__gear--a" />
+            <span className="tam-company-resolver__gear tam-company-resolver__gear--b" />
+            <span className="tam-company-resolver__outputs">{companyBallIds.map((id) => <b key={id}>{id}</b>)}</span>
+          </div>
+        </div>
+
+        <span className="tam-collapse-transfer tam-collapse-transfer--counter"><i /><i /><i /></span>
+
+        <div className="tam-collapse-stage tam-collapse-stage--counter">
+          <span className="tam-collapse-stage__number">04</span>
+          <span className="tam-collapse-stage__label">3 GTM accounts</span>
+          <div className="tam-account-counter">
+            <span className="tam-account-counter__balls">{companyBallIds.map((id) => <i key={id} />)}</span>
+            <span className="tam-account-counter__paddles"><b /><b /><b /></span>
+            <span className="tam-account-counter__counted">{companyBallIds.map((id) => <b key={id} />)}</span>
+            <span className="tam-account-counter__display"><i>00</i><i>01</i><i>02</i><i>03</i></span>
+          </div>
+        </div>
       </div>
       <p className="tam-machine-caption" aria-live="polite"><strong>The red ball is data.</strong> {machineCaptions[step]}</p>
 

@@ -25,57 +25,101 @@
 .tam-step-nav button > strong { font-family: var(--serif); font-size: 1rem; line-height: 1.1; }
 .tam-step-nav button > small { align-self: end; color: var(--muted); font-size: 0.52rem; text-transform: uppercase; }
 .tam-step-nav button[aria-current='step'] > small { color: var(--paper-deep); }
-.tam-collapse-gauge { position: relative; height: 7.8rem; margin: 1.2rem 0 0; border-block: 1px solid var(--ink); overflow: hidden; background: linear-gradient(var(--paper-deep) 0 0) padding-box; }
-.tam-collapse-gauge::before { position: absolute; top: 1rem; right: 1.6rem; left: 1.6rem; height: 2.8rem; border: 1px dashed var(--soft-line); border-bottom: 0; border-radius: 50% 50% 0 0; content: ''; }
-.tam-collapse-gauge__rail { position: absolute; right: 1.2rem; bottom: 1.5rem; left: 1.2rem; height: 2px; background: var(--ink); }
-.tam-collapse-gauge__rail::after { position: absolute; right: 0; bottom: -0.38rem; width: 0.8rem; height: 0.8rem; border: 2px solid var(--ink); border-radius: 50%; background: var(--paper); content: ''; }
-.tam-collapse-gauge i { position: absolute; z-index: 1; bottom: 1.6rem; display: grid; place-items: center; width: 2rem; height: 2rem; border: 2px solid var(--ink); color: var(--ink); background: var(--paper); font: 600 0.58rem var(--mono); font-style: normal; transform-origin: 50% 100%; }
-.tam-collapse-gauge__hopper { left: 3%; clip-path: polygon(0 0, 100% 0, 67% 100%, 33% 100%); }
-.tam-collapse-gauge__join { left: 34%; width: 2.8rem !important; border: 0 !important; background: transparent !important; }
-.tam-collapse-gauge__join span { position: absolute; top: 0.15rem; width: 0.85rem; height: 1.55rem; border: 2px solid var(--ink); background: var(--paper); }
-.tam-collapse-gauge__join span:first-child { left: 0; border-right: 0; border-radius: 1rem 0 0 1rem; }
-.tam-collapse-gauge__join span:nth-child(2) { right: 0; border-left: 0; border-radius: 0 1rem 1rem 0; }
-.tam-collapse-gauge__join em { position: absolute; top: -1rem; left: 0; width: 100%; color: var(--blue); font: 600 0.42rem var(--mono); font-style: normal; letter-spacing: 0.06em; text-align: center; text-transform: uppercase; }
-.tam-collapse-gauge__join-key { position: absolute; z-index: 2; bottom: 4.2rem; left: 35%; padding: 0.18rem 0.3rem; border: 1px solid var(--blue); color: var(--blue); background: var(--paper); font-size: 0.38rem; letter-spacing: 0.05em; text-transform: uppercase; opacity: 0; }
-.tam-collapse-gauge__rollers { left: 64%; border-radius: 50%; box-shadow: 1.45rem 0 0 -2px var(--paper), 1.45rem 0 0 0 var(--ink); }
-.tam-collapse-gauge__spring { right: 3%; display: flex !important; align-items: end; justify-content: end; gap: 0.2rem; width: 7rem !important; height: 2.8rem !important; border: 0 !important; background: transparent !important; }
-.tam-collapse-gauge__spring span { display: grid; place-items: center; width: 1.25rem; height: 1.25rem; border: 1px solid var(--ink); border-radius: 50%; background: var(--paper); font-size: 0.48rem; }
-.tam-collapse-gauge__spring::after { width: 1.1rem; height: 2.3rem; border: 2px solid var(--ink); border-top: 0; clip-path: polygon(0 0, 100% 0, 65% 20%, 100% 40%, 65% 60%, 100% 80%, 65% 100%, 0 100%, 35% 80%, 0 60%, 35% 40%, 0 20%); content: ''; transform-origin: 50% 100%; }
-.tam-collapse-gauge__lifter { position: absolute; z-index: 2; bottom: 1.25rem; left: 27%; width: 2.4rem; height: 0.35rem; border: 2px solid var(--ink); border-radius: 50%; background: var(--paper); transform-origin: 100% 50%; transition: left 220ms ease; }
-.tam-collapse-gauge[data-step='2'] .tam-collapse-gauge__lifter { left: 52%; }
-.tam-collapse-gauge[data-step='3'] .tam-collapse-gauge__lifter { left: 79%; }
-.tam-collapse-gauge[data-step='4'] .tam-collapse-gauge__lifter { opacity: 0; }
-.tam-collapse-gauge__ball { position: absolute; z-index: 3; bottom: 1.4rem; left: 4%; width: 1.15rem; height: 1.15rem; border: 2px solid var(--ink); border-radius: 50%; background: var(--red); box-shadow: 2px 2px 0 var(--ink); transform-origin: center; }
-.tam-collapse-gauge[data-step='1'] .tam-collapse-gauge__ball { animation: tam-ball-facility 4.8s cubic-bezier(0.35, 0, 0.2, 1) infinite; }
-.tam-collapse-gauge[data-step='2'] .tam-collapse-gauge__ball { animation: tam-ball-system 4.8s cubic-bezier(0.35, 0, 0.2, 1) infinite; }
-.tam-collapse-gauge[data-step='3'] .tam-collapse-gauge__ball { animation: tam-ball-company 4.8s cubic-bezier(0.35, 0, 0.2, 1) infinite; }
-.tam-collapse-gauge[data-step='4'] .tam-collapse-gauge__ball { animation: tam-ball-account 4.8s cubic-bezier(0.35, 0, 0.2, 1) infinite; }
-.tam-collapse-gauge[data-step='1'] .tam-collapse-gauge__hopper { animation: tam-hopper-cycle 4.8s ease-in-out infinite; }
-.tam-collapse-gauge[data-step='1'] .tam-collapse-gauge__lifter, .tam-collapse-gauge[data-step='2'] .tam-collapse-gauge__lifter, .tam-collapse-gauge[data-step='3'] .tam-collapse-gauge__lifter { animation: tam-lifter-cycle 4.8s ease-in-out infinite; }
-.tam-collapse-gauge[data-step='2'] .tam-collapse-gauge__join span:first-child { animation: tam-jaw-left-cycle 4.8s ease-in-out infinite; }
-.tam-collapse-gauge[data-step='2'] .tam-collapse-gauge__join span:nth-child(2) { animation: tam-jaw-right-cycle 4.8s ease-in-out infinite; }
-.tam-collapse-gauge[data-step='2'] .tam-collapse-gauge__join-key { animation: tam-join-key-cycle 4.8s ease-in-out infinite; }
-.tam-collapse-gauge[data-step='3'] .tam-collapse-gauge__rollers { animation: tam-rollers-cycle 4.8s ease-in-out infinite; }
-.tam-collapse-gauge[data-step='4'] .tam-collapse-gauge__spring::after { animation: tam-spring-cycle 4.8s cubic-bezier(0.2, 0, 0, 1) infinite; }
-.tam-collapse-gauge[data-step='4'] .tam-collapse-gauge__spring span:first-child { animation: tam-counter-one 4.8s ease-out infinite; }
-.tam-collapse-gauge[data-step='4'] .tam-collapse-gauge__spring span:nth-child(2) { animation: tam-counter-two 4.8s ease-out infinite; }
-.tam-collapse-gauge[data-step='4'] .tam-collapse-gauge__spring span:nth-child(3) { animation: tam-counter-three 4.8s ease-out infinite; }
+.tam-collapse-gauge { position: relative; display: grid; grid-template-columns: repeat(4, 1fr); height: 15rem; margin: 1.2rem 0 0; border-block: 1px solid var(--ink); overflow: hidden; background: var(--paper-deep); isolation: isolate; }
+.tam-collapse-gauge__pipe { position: absolute; right: 3%; bottom: 2.35rem; left: 3%; z-index: -1; height: 2px; background: var(--ink); }
+.tam-collapse-gauge__pipe::after { position: absolute; right: -0.15rem; top: -0.4rem; width: 0.7rem; height: 0.7rem; border: 2px solid var(--ink); border-radius: 50%; background: var(--paper); content: ''; }
+.tam-collapse-stage { position: relative; min-width: 0; padding: 0.8rem; border-right: 1px dashed var(--soft-line); opacity: 0.72; transition: opacity 180ms ease, background 180ms ease; }
+.tam-collapse-stage:last-child { border-right: 0; }
+.tam-collapse-gauge[data-step='1'] .tam-collapse-stage--feed,
+.tam-collapse-gauge[data-step='2'] .tam-collapse-stage--systems,
+.tam-collapse-gauge[data-step='3'] .tam-collapse-stage--companies,
+.tam-collapse-gauge[data-step='4'] .tam-collapse-stage--counter { background: color-mix(in srgb, var(--red) 5%, transparent); opacity: 1; }
+.tam-collapse-stage__number { color: var(--red); font-size: 0.48rem; font-weight: 700; }
+.tam-collapse-stage__label { display: block; margin-top: 0.2rem; font-family: var(--serif); font-size: clamp(0.68rem, 1.25vw, 0.9rem); font-weight: 650; line-height: 1.05; }
+.tam-collapse-feeder, .tam-system-resolver, .tam-company-resolver, .tam-account-counter { position: absolute; right: 0.7rem; bottom: 2.55rem; left: 0.7rem; height: 8rem; }
+.tam-collapse-feeder__rack { position: absolute; top: 0.25rem; left: 0.35rem; display: grid; grid-template-columns: repeat(5, 0.62rem); gap: 0.28rem; padding: 0.35rem; border: 1px solid var(--ink); transform: rotate(-2deg); }
+.tam-collapse-feeder__rack i, .tam-collapse-transfer i, .tam-system-resolver__balls b, .tam-company-resolver__inputs i, .tam-company-resolver__outputs b, .tam-account-counter__balls i { display: block; width: 0.58rem; height: 0.58rem; border: 1px solid var(--ink); border-radius: 50%; background: var(--red); box-shadow: 1px 1px 0 var(--ink); font-style: normal; }
+.tam-collapse-feeder__rack i { animation: tam-feed-ball-cycle 9.6s ease-in-out infinite both; }
+.tam-collapse-feeder__rack i:nth-child(2) { animation-delay: 80ms; }
+.tam-collapse-feeder__rack i:nth-child(3) { animation-delay: 160ms; }
+.tam-collapse-feeder__rack i:nth-child(4) { animation-delay: 240ms; }
+.tam-collapse-feeder__rack i:nth-child(5) { animation-delay: 320ms; }
+.tam-collapse-feeder__rack i:nth-child(6) { animation-delay: 400ms; }
+.tam-collapse-feeder__rack i:nth-child(7) { animation-delay: 480ms; }
+.tam-collapse-feeder__rack i:nth-child(8) { animation-delay: 560ms; }
+.tam-collapse-feeder__rack i:nth-child(9) { animation-delay: 640ms; }
+.tam-collapse-feeder__rack i:nth-child(10) { animation-delay: 720ms; }
+.tam-collapse-feeder__drum { position: absolute; bottom: 0.5rem; left: 38%; width: 2.7rem; height: 2.7rem; border: 2px solid var(--ink); border-radius: 50%; background: repeating-conic-gradient(from 10deg, var(--paper) 0deg 40deg, var(--ink) 42deg 45deg); animation: tam-feed-drum-cycle 9.6s ease-in-out infinite; }
+.tam-collapse-feeder__drum::after { position: absolute; inset: 0.75rem; border: 1px solid var(--ink); border-radius: inherit; background: var(--paper); content: ''; }
+.tam-collapse-feeder__chute { position: absolute; right: -0.8rem; bottom: 1.4rem; width: 44%; height: 1.8rem; border-bottom: 2px solid var(--ink); transform: rotate(8deg); transform-origin: right bottom; }
+.tam-collapse-feeder__chute::before { position: absolute; left: -0.15rem; bottom: -0.25rem; width: 0.55rem; height: 0.55rem; border-radius: 50%; background: var(--red); box-shadow: 0 0 0 1px var(--ink); content: ''; animation: tam-feed-chute-ball 9.6s ease-in-out infinite; }
+.tam-collapse-transfer { position: absolute; bottom: 2.1rem; z-index: 5; width: 8%; height: 1rem; pointer-events: none; }
+.tam-collapse-transfer--systems { left: 21.5%; }
+.tam-collapse-transfer--companies { left: 46.5%; }
+.tam-collapse-transfer--counter { left: 71.5%; }
+.tam-collapse-transfer i { position: absolute; left: 0; opacity: 0; }
+.tam-collapse-transfer--systems i { animation: tam-transfer-systems 9.6s ease-in-out infinite; }
+.tam-collapse-transfer--companies i { animation: tam-transfer-companies 9.6s ease-in-out infinite; }
+.tam-collapse-transfer--counter i { animation: tam-transfer-counter 9.6s ease-in-out infinite; }
+.tam-collapse-transfer i:nth-child(2) { animation-delay: 120ms; }
+.tam-collapse-transfer i:nth-child(3) { animation-delay: 240ms; }
+.tam-collapse-transfer i:nth-child(4) { animation-delay: 360ms; }
+.tam-system-resolver__press { position: absolute; top: 0.25rem; left: 13%; width: 74%; height: 1.15rem; border: 2px solid var(--ink); background: var(--paper); box-shadow: 0 -0.7rem 0 -0.55rem var(--ink); transform-origin: center top; animation: tam-system-press-cycle 9.6s cubic-bezier(0.2, 0, 0, 1) infinite; }
+.tam-system-resolver__cups { position: absolute; right: 4%; bottom: 0.25rem; left: 4%; display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.3rem; }
+.tam-system-resolver__cups i { height: 2.5rem; border: 2px solid var(--ink); border-top: 0; border-radius: 0 0 1.5rem 1.5rem; background: var(--paper); transform-origin: center bottom; animation: tam-system-cup-cycle 9.6s ease-in-out infinite; }
+.tam-system-resolver__cups i:nth-child(2), .tam-system-resolver__cups i:nth-child(4) { transform: translateY(0.3rem) rotate(2deg); }
+.tam-system-resolver__balls { position: absolute; right: 8%; bottom: 0.75rem; left: 8%; display: flex; justify-content: space-between; }
+.tam-system-resolver__balls b { display: grid; place-items: center; width: 1rem; height: 1rem; color: var(--paper); font: 700 0.38rem var(--mono); opacity: 0; animation: tam-system-ball-cycle 9.6s ease-in-out infinite; }
+.tam-company-resolver__inputs { position: absolute; top: 0.5rem; left: 3%; display: flex; gap: 0.2rem; }
+.tam-company-resolver__inputs i { opacity: 0; animation: tam-company-input-cycle 9.6s ease-in-out infinite; }
+.tam-company-resolver__gear { position: absolute; top: 2.1rem; width: 3rem; height: 3rem; border: 0.5rem dotted var(--ink); border-radius: 50%; background: var(--paper); animation: tam-company-gear-a 9.6s ease-in-out infinite; }
+.tam-company-resolver__gear::after { position: absolute; inset: 0.45rem; border: 2px solid var(--ink); border-radius: inherit; content: ''; }
+.tam-company-resolver__gear--a { left: 22%; }
+.tam-company-resolver__gear--b { right: 18%; animation-name: tam-company-gear-b; }
+.tam-company-resolver__outputs { position: absolute; right: 2%; bottom: 0.15rem; display: flex; gap: 0.35rem; }
+.tam-company-resolver__outputs b { display: grid; place-items: center; width: 1rem; height: 1rem; color: var(--paper); font: 700 0.38rem var(--mono); opacity: 0; animation: tam-company-output-cycle 9.6s ease-in-out infinite; }
+.tam-account-counter__balls { position: absolute; top: 0.6rem; left: 0; display: flex; gap: 0.35rem; }
+.tam-account-counter__balls i { opacity: 0; animation: tam-counter-ball-one 9.6s cubic-bezier(0.2, 0, 0, 1) infinite; }
+.tam-account-counter__balls i:nth-child(2) { animation-name: tam-counter-ball-two; }
+.tam-account-counter__balls i:nth-child(3) { animation-name: tam-counter-ball-three; }
+.tam-account-counter__paddles { position: absolute; bottom: 0.65rem; left: 4%; display: flex; gap: 0.48rem; }
+.tam-account-counter__paddles b { width: 1.15rem; height: 0.2rem; border: 1px solid var(--ink); background: var(--paper); transform-origin: right center; }
+.tam-account-counter__paddles b:first-child { animation: tam-counter-paddle-one 9.6s ease-in-out infinite; }
+.tam-account-counter__paddles b:nth-child(2) { animation: tam-counter-paddle-two 9.6s ease-in-out infinite; }
+.tam-account-counter__paddles b:nth-child(3) { animation: tam-counter-paddle-three 9.6s ease-in-out infinite; }
+.tam-account-counter__counted { position: absolute; right: 3.45rem; bottom: 0.45rem; display: flex; gap: 0.18rem; }
+.tam-account-counter__counted b { width: 0.58rem; height: 0.58rem; border: 1px solid var(--ink); border-radius: 50%; background: var(--red); box-shadow: 1px 1px 0 var(--ink); opacity: 0; }
+.tam-account-counter__counted b:first-child { animation: tam-counted-ball-one 9.6s ease-out infinite; }
+.tam-account-counter__counted b:nth-child(2) { animation: tam-counted-ball-two 9.6s ease-out infinite; }
+.tam-account-counter__counted b:nth-child(3) { animation: tam-counted-ball-three 9.6s ease-out infinite; }
+.tam-account-counter__display { position: absolute; right: 0; bottom: 0.2rem; width: 3rem; height: 2.35rem; border: 3px double var(--ink); overflow: hidden; background: var(--ink); color: var(--paper); }
+.tam-account-counter__display::before { position: absolute; top: -0.9rem; left: 50%; width: 1px; height: 0.9rem; background: var(--ink); content: ''; }
+.tam-account-counter__display i { display: grid; place-items: center; width: 100%; height: 2.35rem; font: 700 1.4rem var(--mono); font-style: normal; animation: tam-counter-display-cycle 9.6s steps(1, end) infinite; }
 .tam-machine-caption { margin: 0 0 1.2rem; padding: 0.55rem 0.7rem; border-bottom: 1px solid var(--ink); color: var(--muted); font-size: 0.58rem; line-height: 1.5; }
 .tam-machine-caption strong { color: var(--red); text-transform: uppercase; }
-@keyframes tam-ball-facility { 0%, 14%, 100% { left: 4%; transform: translateY(-1.8rem) rotate(0); } 24% { left: 4%; transform: translateY(0) rotate(100deg); } 55% { left: 27%; transform: translateY(0) rotate(500deg); } 64% { left: 29%; transform: translateY(-3.45rem) rotate(620deg); } 84% { left: 4%; transform: translateY(-3.45rem) rotate(980deg); } }
-@keyframes tam-ball-system { 0%, 14%, 100% { left: 25%; transform: translateY(0) rotate(0) scale(1); } 34% { left: 35.5%; transform: translateY(0) rotate(180deg) scale(1); } 43% { left: 35.5%; transform: translateY(0) rotate(220deg) scaleX(0.78); } 58% { left: 52%; transform: translateY(0) rotate(500deg) scale(1); } 67% { left: 54%; transform: translateY(-3.45rem) rotate(620deg); } 86% { left: 25%; transform: translateY(-3.45rem) rotate(1050deg); } }
-@keyframes tam-ball-company { 0%, 14%, 100% { left: 52%; transform: translateY(0) rotate(0) scale(1); } 35% { left: 65%; transform: translateY(0) rotate(240deg) scale(1); } 46% { left: 67%; transform: translateY(0) rotate(360deg) scaleX(0.72); } 60% { left: 79%; transform: translateY(0) rotate(620deg) scale(1); } 69% { left: 81%; transform: translateY(-3.45rem) rotate(740deg); } 86% { left: 52%; transform: translateY(-3.45rem) rotate(1120deg); } }
-@keyframes tam-ball-account { 0%, 12%, 100% { left: 78%; transform: translateY(0) rotate(0); } 23% { left: 84%; transform: translateY(-0.9rem) rotate(150deg); } 30% { left: 84%; transform: translateY(0) rotate(220deg); } 39% { left: 88.5%; transform: translateY(-0.9rem) rotate(340deg); } 46% { left: 88.5%; transform: translateY(0) rotate(410deg); } 55% { left: 93%; transform: translateY(-0.9rem) rotate(530deg); } 63% { left: 96%; transform: translateY(0) rotate(650deg); } 70% { left: 96%; transform: translateY(-3.45rem) rotate(800deg); } 86% { left: 78%; transform: translateY(-3.45rem) rotate(1080deg); } }
-@keyframes tam-hopper-cycle { 0%, 12%, 28%, 100% { transform: rotate(0); } 18%, 23% { transform: rotate(8deg); } }
-@keyframes tam-lifter-cycle { 0%, 50%, 72%, 100% { transform: rotate(0); } 58%, 65% { transform: rotate(-34deg); } }
-@keyframes tam-jaw-left-cycle { 0%, 31%, 49%, 100% { transform: translateX(0); } 38%, 44% { transform: translateX(0.55rem); } }
-@keyframes tam-jaw-right-cycle { 0%, 31%, 49%, 100% { transform: translateX(0); } 38%, 44% { transform: translateX(-0.55rem); } }
-@keyframes tam-join-key-cycle { 0%, 16%, 53%, 100% { opacity: 0; transform: translateY(-0.8rem); } 25%, 42% { opacity: 1; transform: translateY(0); } 48% { opacity: 0; transform: translateY(1.25rem) scale(0.7); } }
-@keyframes tam-rollers-cycle { 0%, 28%, 67%, 100% { transform: rotate(0); } 40% { transform: rotate(180deg); } 58% { transform: rotate(540deg); } }
-@keyframes tam-spring-cycle { 0%, 57%, 72%, 100% { transform: scaleY(1); } 64% { transform: scaleY(0.55); } }
-@keyframes tam-counter-one { 0%, 19%, 31%, 100% { color: var(--ink); background: var(--paper); transform: translateY(0); } 23%, 28% { color: var(--paper); background: var(--red); transform: translateY(-0.35rem); } }
-@keyframes tam-counter-two { 0%, 35%, 47%, 100% { color: var(--ink); background: var(--paper); transform: translateY(0); } 39%, 44% { color: var(--paper); background: var(--red); transform: translateY(-0.35rem); } }
-@keyframes tam-counter-three { 0%, 51%, 63%, 100% { color: var(--ink); background: var(--paper); transform: translateY(0); } 55%, 60% { color: var(--paper); background: var(--red); transform: translateY(-0.35rem); } }
+@keyframes tam-feed-ball-cycle { 0%, 8%, 100% { opacity: 1; transform: translate(0) scale(1); } 17% { opacity: 1; transform: translate(0.2rem, 1rem) scale(0.85); } 24%, 92% { opacity: 0; transform: translate(2.2rem, 4.6rem) scale(0.55); } }
+@keyframes tam-feed-drum-cycle { 0%, 8%, 92%, 100% { transform: rotate(0); } 25%, 88% { transform: rotate(720deg); } }
+@keyframes tam-feed-chute-ball { 0%, 15%, 100% { opacity: 0; transform: translateX(0) rotate(0); } 19% { opacity: 1; } 28% { opacity: 1; transform: translateX(4.2rem) rotate(540deg); } 31%, 92% { opacity: 0; transform: translateX(4.2rem) rotate(540deg); } }
+@keyframes tam-transfer-systems { 0%, 20%, 100% { opacity: 0; transform: translate(0, -0.2rem); } 24% { opacity: 1; } 34% { opacity: 1; transform: translate(4.2rem, 0.15rem) rotate(480deg); } 37%, 92% { opacity: 0; transform: translate(4.2rem, 0.15rem) rotate(480deg); } }
+@keyframes tam-system-press-cycle { 0%, 24%, 42%, 100% { transform: translateY(0); } 31%, 37% { transform: translateY(2.6rem); } }
+@keyframes tam-system-cup-cycle { 0%, 25%, 43%, 100% { transform: scaleX(1); } 33%, 38% { transform: scaleX(0.78); } }
+@keyframes tam-system-ball-cycle { 0%, 29%, 100% { opacity: 0; transform: translateY(-1rem) scale(0.5); } 36%, 44% { opacity: 1; transform: translateY(0) scale(1); } 50%, 92% { opacity: 0; transform: translate(2rem, 0.3rem) scale(0.75); } }
+@keyframes tam-transfer-companies { 0%, 42%, 100% { opacity: 0; transform: translate(0, -0.2rem); } 47% { opacity: 1; } 57% { opacity: 1; transform: translate(4.2rem, 0.15rem) rotate(480deg); } 60%, 92% { opacity: 0; transform: translate(4.2rem, 0.15rem) rotate(480deg); } }
+@keyframes tam-company-input-cycle { 0%, 43%, 100% { opacity: 0; transform: translateX(-1.5rem); } 48%, 57% { opacity: 1; transform: translateX(0); } 63%, 92% { opacity: 0; transform: translate(3rem, 2.2rem) scale(0.45); } }
+@keyframes tam-company-gear-a { 0%, 43%, 70%, 100% { transform: rotate(0); } 64% { transform: rotate(540deg); } }
+@keyframes tam-company-gear-b { 0%, 43%, 70%, 100% { transform: rotate(0); } 64% { transform: rotate(-540deg); } }
+@keyframes tam-company-output-cycle { 0%, 58%, 100% { opacity: 0; transform: translateY(-1.4rem) scale(0.4); } 65%, 70% { opacity: 1; transform: translateY(0) scale(1); } 77%, 92% { opacity: 0; transform: translate(2rem, 0.25rem) scale(0.8); } }
+@keyframes tam-transfer-counter { 0%, 67%, 100% { opacity: 0; transform: translate(0, -0.2rem); } 72% { opacity: 1; } 80% { opacity: 1; transform: translate(4.2rem, 0.15rem) rotate(480deg); } 83%, 92% { opacity: 0; transform: translate(4.2rem, 0.15rem) rotate(480deg); } }
+@keyframes tam-counter-ball-one { 0%, 69%, 100% { opacity: 0; transform: translate(0, -1rem); } 73% { opacity: 1; } 79% { opacity: 1; transform: translate(1rem, 4.9rem) rotate(420deg); } 83%, 95% { opacity: 0; transform: translate(6.2rem, 5.2rem) rotate(900deg); } }
+@keyframes tam-counter-ball-two { 0%, 73%, 100% { opacity: 0; transform: translate(0, -1rem); } 77% { opacity: 1; } 83% { opacity: 1; transform: translate(2.7rem, 4.9rem) rotate(420deg); } 87%, 95% { opacity: 0; transform: translate(6.2rem, 5.2rem) rotate(900deg); } }
+@keyframes tam-counter-ball-three { 0%, 77%, 100% { opacity: 0; transform: translate(0, -1rem); } 81% { opacity: 1; } 87% { opacity: 1; transform: translate(4.4rem, 4.9rem) rotate(420deg); } 91%, 95% { opacity: 0; transform: translate(6.2rem, 5.2rem) rotate(900deg); } }
+@keyframes tam-counter-paddle-one { 0%, 78%, 84%, 100% { transform: rotate(0); } 81% { transform: rotate(28deg); } }
+@keyframes tam-counter-paddle-two { 0%, 82%, 88%, 100% { transform: rotate(0); } 85% { transform: rotate(28deg); } }
+@keyframes tam-counter-paddle-three { 0%, 86%, 92%, 100% { transform: rotate(0); } 89% { transform: rotate(28deg); } }
+@keyframes tam-counted-ball-one { 0%, 80%, 100% { opacity: 0; transform: translateY(-1rem) scale(0.5); } 82%, 96% { opacity: 1; transform: none; } }
+@keyframes tam-counted-ball-two { 0%, 84%, 100% { opacity: 0; transform: translateY(-1rem) scale(0.5); } 86%, 96% { opacity: 1; transform: none; } }
+@keyframes tam-counted-ball-three { 0%, 88%, 100% { opacity: 0; transform: translateY(-1rem) scale(0.5); } 90%, 96% { opacity: 1; transform: none; } }
+@keyframes tam-counter-display-cycle { 0%, 79% { transform: translateY(0); } 81%, 83% { transform: translateY(-2.35rem); } 85%, 87% { transform: translateY(-4.7rem); } 89%, 96% { transform: translateY(-7.05rem); } 98%, 100% { transform: translateY(0); } }
 .tam-walkthrough__stage { min-height: 34rem; padding: 1rem; border: 2px solid var(--ink); background: var(--paper); animation: tam-stage-in 360ms cubic-bezier(0.2, 0, 0, 1) both; }
 .tam-walkthrough__stage > header { display: flex; align-items: end; justify-content: space-between; gap: 1rem; padding-bottom: 0.8rem; border-bottom: 1px solid var(--ink); }
 .tam-walkthrough__stage > header span { color: var(--blue); font-size: 0.58rem; text-transform: uppercase; }
@@ -348,6 +392,16 @@
   .tam-walkthrough > header, .tam-join-contract, .tam-filters details > div { grid-template-columns: 1fr; }
   .tam-step-nav { grid-template-columns: repeat(2, 1fr); }
   .tam-step-nav button { min-height: 6rem; }
+  .tam-collapse-gauge { grid-template-columns: 1fr; grid-template-rows: repeat(4, 1fr); height: 42rem; }
+  .tam-collapse-gauge__pipe, .tam-collapse-transfer { display: none; }
+  .tam-collapse-stage { padding: 0.7rem; border-right: 0; border-bottom: 1px dashed var(--soft-line); }
+  .tam-collapse-stage:last-child { border-bottom: 0; }
+  .tam-collapse-stage::after { position: absolute; right: 0.9rem; bottom: -0.72rem; z-index: 4; display: grid; place-items: center; width: 1.25rem; height: 1.25rem; border: 1px solid var(--ink); border-radius: 50%; background: var(--paper); color: var(--red); content: '↓'; font-size: 0.75rem; }
+  .tam-collapse-stage:last-child::after { display: none; }
+  .tam-collapse-stage__label { max-width: 34%; font-size: 0.8rem; }
+  .tam-collapse-feeder, .tam-system-resolver, .tam-company-resolver, .tam-account-counter { right: 0.7rem; bottom: 0.75rem; left: 39%; height: 8rem; }
+  .tam-collapse-feeder__chute { right: 0; }
+  .tam-account-counter__display { right: 0.2rem; }
   .tam-walkthrough__stage { min-height: 0; }
   .tam-facility-grid, .tam-entity-groups--systems, .tam-entity-groups--companies, .tam-final-count, .tam-failures > div, .tam-scoring > div, .tam-hard-part blockquote, .tam-replication ol, .tam-checklist ul { grid-template-columns: 1fr; }
   .tam-final-count > i { transform: rotate(90deg); text-align: center; }
@@ -396,6 +450,6 @@
 @media (forced-colors: active) {
   .tam-step-nav button[aria-current='step'], .tam-final-count > .is-final, .tam-checklist li.is-checked { outline: 2px solid Highlight; outline-offset: -3px; }
   .tam-checklist .is-checked label > span { forced-color-adjust: none; color: Canvas; background: CanvasText; }
-  .tam-collapse-gauge__ball { forced-color-adjust: none; border-color: CanvasText; background: Highlight; box-shadow: none; }
+  .tam-collapse-feeder__rack i, .tam-collapse-feeder__chute::before, .tam-collapse-transfer i, .tam-system-resolver__balls b, .tam-company-resolver__inputs i, .tam-company-resolver__outputs b, .tam-account-counter__balls i, .tam-account-counter__counted b { forced-color-adjust: none; border-color: CanvasText; background: Highlight; box-shadow: none; }
   .tam-score-builder__data-ball, .tam-builder-machine__ball { forced-color-adjust: none; border-color: CanvasText; background: Highlight; box-shadow: none; }
 }
