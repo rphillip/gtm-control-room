@@ -2,7 +2,7 @@ const artifacts = [
   {
     slug: 'hospital-tam',
     eyebrow: 'Entity-resolution walkthrough',
-    title: '5,000 Hospitals Don’t Mean 5,000 Prospects',
+    title: '5,000 Hospitals Doesn’t Mean 5,000 Prospects',
     summary: 'Feel ten facility rows collapse into four health systems and three GTM accounts—then inspect the joins, filters, failure modes, and checklist.',
     action: 'Explore the hospital TAM',
     machine: ['10 facilities', '4 systems', '3 accounts'],

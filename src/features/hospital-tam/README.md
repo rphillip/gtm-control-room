@@ -1,6 +1,6 @@
 # Hospital TAM entity-resolution artifact
 
-“5,000 Hospitals Don’t Mean 5,000 Prospects” is an independent portfolio exercise inspired by a hypothetical provider-side healthcare pricing and payer-contracting motion. It was not performed for, sponsored by, or endorsed by Turquoise Health, CMS, AHRQ, Clay, LinkedIn, or any depicted organization.
+“5,000 Hospitals Doesn’t Mean 5,000 Prospects” is an independent portfolio exercise inspired by a hypothetical provider-side healthcare pricing and payer-contracting motion. It was not performed for, sponsored by, or endorsed by Turquoise Health, CMS, AHRQ, Clay, LinkedIn, or any depicted organization.
 
 The page follows Maya, a fictional seller trying to turn a hospital file into a trustworthy list of potential customers. A recurring hospital → health system → sales account legend establishes the three identity layers, while the red data ball carries one record through joining, grouping, qualification, and counting machines. Every major section begins with Maya’s question and an expandable short answer; motion remains static when reduced motion is requested.
 

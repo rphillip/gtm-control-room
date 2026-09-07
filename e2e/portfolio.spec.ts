@@ -67,7 +67,7 @@ test('Hospital TAM deep link reloads with honest synthetic and source framing', 
   await page.goto(hospitalTamPath)
   await page.reload()
 
-  await expect(page).toHaveTitle(/5,000 Hospitals Don’t Mean 5,000 Prospects/)
+  await expect(page).toHaveTitle(/5,000 Hospitals Doesn’t Mean 5,000 Prospects/)
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', 'https://rphillip.github.io/gtm-control-room/hospital-tam/')
   await expect(page.locator('meta[http-equiv="Content-Security-Policy"]')).toHaveAttribute('content', /default-src 'self';.*object-src 'none';.*form-action 'none'/)
   await expect(page.locator('meta[name="referrer"]')).toHaveAttribute('content', 'same-origin')

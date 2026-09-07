@@ -13,7 +13,7 @@ describe('HospitalTamPage', () => {
   it('frames the project, audience, sources, limitations, and non-endorsement honestly', () => {
     render(<HospitalTamPage />)
 
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('5,000 Hospitals Don’t Mean 5,000 Prospects')
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('5,000 Hospitals Doesn’t Mean 5,000 Prospects')
     expect(screen.getByText(/Independent portfolio exercise/i)).toBeVisible()
     expect(screen.getByText(/Not work performed for, sponsored by, or endorsed/i)).toBeVisible()
     expect(screen.getByText(/CMS lists hospitals registered with Medicare/i)).toBeInTheDocument()

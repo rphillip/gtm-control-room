@@ -107,7 +107,7 @@ export function HospitalTamPage() {
         <section className="hospital-tam-hero" aria-labelledby="hospital-tam-title">
           <div>
             <p className="eyebrow">Provider-market study · Demo / synthetic walkthrough</p>
-            <h1 id="hospital-tam-title"><span>5,000 Hospitals</span> Don’t Mean <span>5,000 Prospects</span></h1>
+            <h1 id="hospital-tam-title"><span>5,000 Hospitals</span> Doesn’t Mean <span>5,000 Prospects</span></h1>
             <p>Imagine selling software to hospital organizations. A public file may list roughly 5,000 hospital locations, but several locations can share the same organization—and the same purchasing decision.</p>
             <ul className="artifact-tags" aria-label="Project tags">{['GTM Engineering', 'Data Engineering', 'Healthcare', 'Entity Resolution', 'TAM Design'].map((tag) => <li key={tag}>{tag}</li>)}</ul>
           </div>
