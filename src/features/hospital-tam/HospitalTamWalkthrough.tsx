@@ -84,11 +84,27 @@ function FinalCount() {
 }
 
 const stepPanels = [<FacilityRows />, <SystemGroups />, <CompanyGroups />, <FinalCount />]
-const machineCaptions = [
-  'Ten hospital-location records enter the feeder as 10 separate inputs.',
-  'The resolver groups locations that share an operator, producing 4 health systems.',
-  'Example Health System and Metro Surgical Network share one commercial parent. Four systems therefore become 3 potential customers.',
-  'Three account balls strike the counter. The machine stops at 03—the organizations a seller can investigate.',
+const machineNarration = [
+  {
+    question: 'What does Maya actually have?',
+    changed: 'Ten hospital-location records enter the feeder as 10 separate inputs.',
+    why: 'Each ball is a place in a file—not yet a potential customer.',
+  },
+  {
+    question: 'Which locations belong together?',
+    changed: 'The joining press groups locations that share an operator, producing 4 health systems.',
+    why: 'Maya can now see which hospitals are managed together.',
+  },
+  {
+    question: 'Do any systems share the same parent?',
+    changed: 'Two operating systems merge into Example Health. Four systems therefore become 3 potential customers.',
+    why: 'The parent organization may control one shared purchasing decision.',
+  },
+  {
+    question: 'How many organizations could Maya approach?',
+    changed: 'Three account balls strike the counter. The machine stops at 03.',
+    why: 'Maya counts potential customers only after the relationships are understood.',
+  },
 ] as const
 
 const facilityBallIds = Array.from({ length: syntheticFacilities.length }, (_, index) => index + 1)
@@ -107,7 +123,7 @@ export function HospitalTamWalkthrough() {
       const nextStep = Math.min(walkthroughSteps.length - 1, step + 1)
       setStep(nextStep)
       if (nextStep === walkthroughSteps.length - 1) setIsPlaying(false)
-    }, 1800)
+    }, 3600)
     return () => window.clearTimeout(timer)
   }, [isPlaying, step])
 
@@ -198,7 +214,14 @@ export function HospitalTamWalkthrough() {
           </div>
         </div>
       </div>
-      <p className="tam-machine-caption" aria-live="polite"><strong>The red ball is data.</strong> {machineCaptions[step]} <span>Use “Next layer” to follow the grouping.</span></p>
+      <aside className="tam-ball-narrator" aria-live="polite">
+        <span className="tam-maya-prompt__portrait" aria-hidden="true"><i /><b /></span>
+        <div><span>Maya follows the red data ball · Step {step + 1}</span><strong>{machineNarration[step].question}</strong></div>
+        <dl>
+          <div><dt>What changed</dt><dd>{machineNarration[step].changed}</dd></div>
+          <div><dt>Why it matters</dt><dd>{machineNarration[step].why}</dd></div>
+        </dl>
+      </aside>
 
       <div className="tam-walkthrough__stage" role="region" aria-labelledby="current-step-title" key={step}>
         <header><span>Step {step + 1} of 4</span><h3 id="current-step-title">{current.title}</h3></header>

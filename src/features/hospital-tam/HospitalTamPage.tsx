@@ -1,5 +1,4 @@
 import { useRef } from 'react'
-import { ArtifactAudienceGuide } from '../../components/ArtifactAudienceGuide'
 import { portfolio } from '../../content/portfolio'
 import { useDataWordHighlight } from '../../hooks/useDataWordHighlight'
 import { FailureChainMachine } from './FailureChainMachine'
@@ -30,6 +29,67 @@ const plainBuildSteps = [
   'Only then build the account list and investigate likely buyers.',
 ] as const
 
+interface MayaPromptProps {
+  question: string
+  answer: string
+  consequence: string
+}
+
+function MayaPrompt({ question, answer, consequence }: MayaPromptProps) {
+  return (
+    <aside className="tam-maya-prompt">
+      <span className="tam-maya-prompt__portrait" aria-hidden="true"><i /><b /></span>
+      <div>
+        <span>Maya’s market puzzle</span>
+        <strong>{question}</strong>
+      </div>
+      <details>
+        <summary>Show the short answer</summary>
+        <p>{answer}</p>
+        <small><b>Why Maya cares:</b> {consequence}</small>
+      </details>
+    </aside>
+  )
+}
+
+function IdentityLegend() {
+  return (
+    <section className="tam-identity-legend" aria-labelledby="identity-legend-title">
+      <header>
+        <div><span className="tam-maya-prompt__portrait" aria-hidden="true"><i /><b /></span></div>
+        <div><p className="eyebrow">Meet Maya</p><h2 id="identity-legend-title">She needs a list of organizations that could buy her product.</h2><p>The red ball is one piece of data. Watch what it means as the machine connects a place to the organizations behind it.</p></div>
+      </header>
+      <div className="tam-identity-legend__machine" aria-label="A hospital location connects to a health system, which connects to a potential customer">
+        <article>
+          <span>01 / A place</span>
+          <i className="tam-identity-icon tam-identity-icon--facility" aria-hidden="true"><b /><b /><b /></i>
+          <strong>Hospital</strong>
+          <small>One physical location</small>
+        </article>
+        <i className="tam-identity-legend__arrow" aria-hidden="true">→</i>
+        <article>
+          <span>02 / An operator</span>
+          <i className="tam-identity-icon tam-identity-icon--system" aria-hidden="true"><b /><b /><b /></i>
+          <strong>Health system</strong>
+          <small>A group that operates locations</small>
+        </article>
+        <i className="tam-identity-legend__arrow" aria-hidden="true">→</i>
+        <article>
+          <span>03 / A potential customer</span>
+          <i className="tam-identity-icon tam-identity-icon--account" aria-hidden="true"><b /></i>
+          <strong>Sales account</strong>
+          <small>The organization Maya may approach</small>
+        </article>
+        <i className="tam-identity-legend__ball" aria-hidden="true" data-artifact-data-ball />
+      </div>
+      <dl className="tam-mini-glossary">
+        <div><dt>TAM</dt><dd>The total revenue opportunity if every suitable organization became a customer.</dd></div>
+        <div><dt>GTM</dt><dd>How a company finds, understands, and reaches potential customers.</dd></div>
+      </dl>
+    </section>
+  )
+}
+
 export function HospitalTamPage() {
   const mainRef = useRef<HTMLElement>(null)
   useDataWordHighlight(mainRef)
@@ -56,17 +116,13 @@ export function HospitalTamPage() {
 
         <p className="tam-disclosure"><strong>Independent portfolio exercise.</strong> Public-data concepts, synthetic examples, and no patient or private company information. Not work performed for, sponsored by, or endorsed by Turquoise Health, CMS, AHRQ, Clay, LinkedIn, or any depicted organization.</p>
 
-        <ArtifactAudienceGuide
-          plainEnglish="A hospital list is like a pile of mailing labels: several labels can belong to one family, and several families can share one parent organization. Follow the red data ball as 10 location records are sorted into the 3 organizations a seller could actually approach. This prevents an inflated market estimate and several sellers contacting the same customer."
-        />
+        <IdentityLegend />
 
-        <dl className="tam-vocabulary" aria-label="Plain-English definitions">
-          <div><dt>TAM</dt><dd>Total addressable market is the potential revenue opportunity. This artifact builds the trustworthy account universe needed before estimating it.</dd></div>
-          <div><dt>GTM</dt><dd>How a company finds, qualifies, and reaches potential customers.</dd></div>
-          <div><dt>Facility</dt><dd>One physical hospital location.</dd></div>
-          <div><dt>Health system</dt><dd>An organization that operates one or more facilities.</dd></div>
-          <div><dt>Sales account</dt><dd>One organization treated as one potential customer.</dd></div>
-        </dl>
+        <MayaPrompt
+          question="If the file contains 10 hospital rows, does Maya have 10 potential customers?"
+          answer="Not necessarily. A row describes a hospital location. Several locations can belong to the same organization and share one purchasing decision."
+          consequence="Counting locations as customers can make her market look much larger than it really is."
+        />
 
         <HospitalTamWalkthrough />
 
@@ -74,6 +130,11 @@ export function HospitalTamPage() {
           <p className="eyebrow">02 / Ce qui casse</p>
           <h2 id="failures-title">What breaks if every hospital row becomes a customer?</h2>
           <p className="tam-section-guide">Run the same data through both paths. Skipping the identity work creates five connected business problems; resolving first produces one stable account.</p>
+          <MayaPrompt
+            question="Why can’t Maya simply email every row in the file?"
+            answer="Several rows may point to the same customer. Treating them separately can create duplicate messages, conflicting ownership, and inflated reports."
+            consequence="A tidy-looking list can still cause a messy customer experience."
+          />
           <FailureChainMachine />
         </section>
 
@@ -81,6 +142,11 @@ export function HospitalTamPage() {
           <p className="eyebrow">03 / La chaîne d'identité</p>
           <h2 id="pipeline-title">How one hospital record becomes one reviewable sales account.</h2>
           <p className="tam-section-guide">Follow Hospital A from a public listing to the organization a seller recognizes. Each station adds evidence; if two sources disagree, the machine stops instead of inventing an answer.</p>
+          <MayaPrompt
+            question="How does Maya know which organization sits behind Hospital A?"
+            answer="She carries the hospital’s identifier through trusted connections: first to its operating system, then to the commercial organization a seller recognizes."
+            consequence="When sources disagree, pausing for a person is safer than silently choosing the wrong owner."
+          />
           <IdentityPassportMachine />
           <p className="tam-pipeline-note"><strong>Why this matters:</strong> matching records that describe the same real-world organization changes the size and meaning of the market. Imperfect matches, acquisitions, stale records, and missing information still need human review.</p>
         </section>
@@ -89,6 +155,11 @@ export function HospitalTamPage() {
           <p className="eyebrow">04 / Qualifier l'univers</p>
           <h2 id="filters-title">The product determines which accounts matter.</h2>
           <p>A GTM thesis is the rule for deciding which organizations are worth investigating for a particular product. In this example, hospitals negotiate payment terms with insurance companies, so commercial-insurer complexity matters more than simply asking, “Is this technically a hospital?” Change the product strategy and the same account can follow a different route.</p>
+          <MayaPrompt
+            question="If an organization is real, does that automatically make it a good prospect?"
+            answer="No. The organization must also have a problem Maya’s particular product can solve. The switches below represent those product-specific rules."
+            consequence="A correct account can still be the wrong customer for this product."
+          />
           <ThesisCalibrationMachine />
         </section>
 
@@ -96,6 +167,11 @@ export function HospitalTamPage() {
           <p className="eyebrow">05 / Le dossier de compte</p>
           <h2 id="scoring-title">Build an account brief you can act on.</h2>
           <p>Once you know who the potential customer is, gather evidence that tells a seller what to investigate next. This produces a research brief—not a universal score or a prediction that the organization will buy.</p>
+          <MayaPrompt
+            question="What should Maya learn before deciding how to approach the account?"
+            answer="She collects clues about the organization’s size, footprint, hospital mix, and likely buying functions—while keeping the source and uncertainty attached."
+            consequence="Evidence gives her a useful next question; it does not pretend to predict a purchase."
+          />
           <ScoreSystemBuilder />
         </section>
 
