@@ -2,57 +2,57 @@ import { useState } from 'react'
 
 const passportStages = [
   {
-    name: 'Public data',
-    action: 'Intake the source row',
-    explanation: 'The machine starts with a public CMS row. It is evidence about a facility—not yet a sales account.',
+    name: 'Hospital record',
+    action: 'Start with one public hospital listing',
+    explanation: 'The public file describes a physical hospital location. It does not yet tell us which organization a seller should approach.',
     field: 'source_table',
     value: 'CMS Hospital General Information',
     kind: 'intake',
   },
   {
-    name: 'Facility',
-    action: 'Preserve the facility identity',
-    explanation: 'The row receives a durable facility key. Leading zeroes and the original source identifier stay intact for lineage.',
+    name: 'Physical facility',
+    action: 'Give the location a stable identity',
+    explanation: 'The machine preserves the hospital’s original identifier so every later decision can be traced back to the source.',
     field: 'facility_id',
     value: 'DEMO01',
     kind: 'label',
   },
   {
-    name: 'System resolution',
-    action: 'Join the facility to a system',
-    explanation: 'A documented crosswalk links the facility to its operating health system. An uncertain or conflicting join must stop here.',
+    name: 'Operating system',
+    action: 'Find the health system that operates it',
+    explanation: 'A documented reference connects the hospital location to its operating health system. If reliable sources disagree, the record stops here for review.',
     field: 'health_sys_id',
     value: 'SYS001',
     kind: 'join',
   },
   {
-    name: 'Company resolution',
-    action: 'Resolve the commercial identity',
-    explanation: 'The system identity resolves to the company and domain that GTM tools and sellers can recognize.',
+    name: 'Sales company',
+    action: 'Find the company a seller recognizes',
+    explanation: 'The operating system is connected to the commercial company name and website used by sales tools.',
     field: 'company_id',
     value: 'CO001',
     kind: 'gear',
   },
   {
-    name: 'Account scoring',
-    action: 'Apply the commercial thesis',
-    explanation: 'Only after resolution does the machine assess system scale, facility mix, and geographic complexity.',
+    name: 'Product fit',
+    action: 'Ask whether the account fits this product',
+    explanation: 'Only after the organization is stable does the machine consider its size, hospital mix, and operating footprint.',
     field: 'fit_tier',
     value: 'INVESTIGATE',
     kind: 'stamp',
   },
   {
-    name: 'Buyer evidence',
-    action: 'Attach evidence—not certainty',
-    explanation: 'Relevant functions suggest where to investigate. A role title does not prove authority, budget, or purchase intent.',
+    name: 'Buyer clues',
+    action: 'Attach clues about the likely buying team',
+    explanation: 'Relevant departments suggest where a seller should investigate. A job title alone does not prove authority, budget, or purchase intent.',
     field: 'buyer_evidence',
     value: 'Managed Care',
     kind: 'clips',
   },
   {
-    name: 'Qualified audience',
-    action: 'Release one reviewable account',
-    explanation: 'The finished passport can enter a GTM audience because its entity lineage and qualification evidence remain inspectable.',
+    name: 'Reviewable account',
+    action: 'Release one account for investigation',
+    explanation: 'The finished record can enter a sales research list because the organization, evidence, and unresolved questions remain inspectable.',
     field: 'audience_status',
     value: 'QUALIFIED FOR REVIEW',
     kind: 'outbox',
@@ -88,7 +88,7 @@ export function IdentityPassportMachine() {
       <header className="tam-passport-machine__header">
         <div><span>Trace one synthetic record</span><strong>Hospital A · DEMO01</strong></div>
         <label className="tam-ambiguity-switch">
-          <span><strong>Introduce ambiguity</strong><small>Conflicting system-parent evidence</small></span>
+          <span><strong>Simulate a disputed match</strong><small>Two sources name different parent systems</small></span>
           <input type="checkbox" role="switch" checked={ambiguous} onChange={(event) => toggleAmbiguity(event.target.checked)} />
           <i aria-hidden="true" />
         </label>
@@ -116,30 +116,33 @@ export function IdentityPassportMachine() {
       </nav>
 
       <div className="tam-passport-workbench">
-        <article className="tam-passport-card" aria-label="Identity passport for Hospital A">
-          <header><span>Identity passport · Synthetic</span><strong>Hospital A</strong><small>One record · complete lineage</small></header>
-          <dl>
-            {passportStages.map((stage, index) => {
-              const acquired = index <= step && !(isHeld && index > 2)
-              const conflict = isHeld && index === 2
-              return (
-                <div key={stage.field} className={acquired ? 'is-acquired' : ''}>
-                  <dt>{stage.field}</dt>
-                  <dd>{conflict ? 'CONFLICT' : acquired ? stage.value : 'Pending'}</dd>
-                </div>
-              )
-            })}
-          </dl>
-          <footer><span>Resolution status</span><strong>{isHeld ? 'HUMAN REVIEW' : step === passportStages.length - 1 ? 'READY' : 'IN PROCESS'}</strong></footer>
-        </article>
-
         <aside className={`tam-passport-inspector${isHeld ? ' is-review' : ''}`} key={`${step}-${ambiguous}`}>
           <span>{isHeld ? 'Exception 01' : `Station 0${step + 1}`}</span>
           <h3>{isHeld ? 'The machine refuses the match.' : current.action}</h3>
           <p>{isHeld ? 'Two plausible health-system parents claim DEMO01. Forcing either value would corrupt every downstream company, score, buyer, and audience field.' : current.explanation}</p>
-          <div><span>Input</span><strong>{step === 0 ? 'Public source row' : passportStages[step - 1].field}</strong><i aria-hidden="true">→</i><span>Output</span><strong>{isHeld ? 'Review queue' : current.field}</strong></div>
-          {isHeld ? <small><strong>Safe behavior:</strong> preserve both candidates, confidence, source lineage, and the unresolved state until a human adjudicates it.</small> : null}
+          <div><span>Before</span><strong>{step === 0 ? 'One hospital listing' : passportStages[step - 1].name}</strong><i aria-hidden="true">→</i><span>After</span><strong>{isHeld ? 'Human review queue' : current.name}</strong></div>
+          {isHeld ? <small><strong>Safe behavior:</strong> keep both possible parents, the supporting sources, and the unresolved state until a person reviews the disagreement.</small> : null}
         </aside>
+
+        <details className="tam-passport-receipt">
+          <summary>View the technical data receipt</summary>
+          <article className="tam-passport-card" aria-label="Identity passport for Hospital A">
+            <header><span>Technical data receipt · Synthetic</span><strong>Hospital A</strong><small>One record · traceable source history</small></header>
+            <dl>
+              {passportStages.map((stage, index) => {
+                const acquired = index <= step && !(isHeld && index > 2)
+                const conflict = isHeld && index === 2
+                return (
+                  <div key={stage.field} className={acquired ? 'is-acquired' : ''}>
+                    <dt>{stage.field}</dt>
+                    <dd>{conflict ? 'CONFLICT' : acquired ? stage.value : 'Pending'}</dd>
+                  </div>
+                )
+              })}
+            </dl>
+            <footer><span>Resolution status</span><strong>{isHeld ? 'HUMAN REVIEW' : step === passportStages.length - 1 ? 'READY' : 'IN PROCESS'}</strong></footer>
+          </article>
+        </details>
       </div>
 
       <div className="tam-passport-controls">

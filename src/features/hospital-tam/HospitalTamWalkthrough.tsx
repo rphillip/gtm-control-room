@@ -9,22 +9,29 @@ import {
 } from './model'
 
 function FacilityRows() {
+  const [showAll, setShowAll] = useState(false)
+  const visibleFacilities = showAll ? syntheticFacilities : syntheticFacilities.slice(0, 3)
+
   return (
-    <div className="tam-facility-grid">
-      {syntheticFacilities.map((facility) => (
-        <article key={facility.facilityId}>
-          <span>CMS facility · Synthetic</span>
-          <strong>{facility.name}</strong>
-          <dl><div><dt>Demo CCN</dt><dd>{facility.facilityId}</dd></div><div><dt>City</dt><dd>{facility.city}</dd></div><div><dt>Type</dt><dd>{facility.type}</dd></div></dl>
-        </article>
-      ))}
-    </div>
+    <>
+      <p className="tam-stage-explainer">Each card is one hospital location—not necessarily one independent customer. Here are 3 representative records from the 10-row example.</p>
+      <div className="tam-facility-grid">
+        {visibleFacilities.map((facility) => (
+          <article key={facility.facilityId}>
+            <span>Hospital location · Synthetic</span>
+            <strong>{facility.name}</strong>
+            <dl><div><dt>Demo ID</dt><dd>{facility.facilityId}</dd></div><div><dt>City</dt><dd>{facility.city}</dd></div><div><dt>Type</dt><dd>{facility.type}</dd></div></dl>
+          </article>
+        ))}
+      </div>
+      <button className="tam-record-disclosure" type="button" aria-expanded={showAll} onClick={() => setShowAll((current) => !current)}>{showAll ? 'Show 3 representative records' : 'Inspect all 10 records'}</button>
+    </>
   )
 }
 
 function SystemGroups() {
   return (
-    <div className="tam-entity-groups tam-entity-groups--systems">
+    <><p className="tam-stage-explainer">Hospitals that share an operating organization are grouped together. Ten separate locations now become 4 health systems.</p><div className="tam-entity-groups tam-entity-groups--systems">
       {syntheticSystems.map((system) => {
         const facilities = facilitiesForSystem(system.systemId)
         return (
@@ -34,13 +41,13 @@ function SystemGroups() {
           </article>
         )
       })}
-    </div>
+    </div></>
   )
 }
 
 function CompanyGroups() {
   return (
-    <div className="tam-entity-groups tam-entity-groups--companies">
+    <><p className="tam-stage-explainer">A health system can still share a commercial parent with another system. Example Health System and Metro Surgical Network both belong to Example Health, so sales should treat them as one account.</p><div className="tam-entity-groups tam-entity-groups--companies">
       {syntheticCompanies.map((company) => {
         const systems = systemsForCompany(company.companyId)
         return (
@@ -50,7 +57,7 @@ function CompanyGroups() {
           </article>
         )
       })}
-    </div>
+    </div></>
   )
 }
 
@@ -62,7 +69,7 @@ function FinalCount() {
       <div><strong>{syntheticSystems.length}</strong><span>Health systems</span></div>
       <i aria-hidden="true">→</i>
       <div className="is-final"><strong>{syntheticCompanies.length}</strong><span>GTM accounts</span></div>
-      <p>If I treated every hospital as a prospect, I would overcount the market and could send multiple reps after the same buying organization.</p>
+      <p>Treating every hospital location as a separate prospect would overcount the market and could send several sellers after the same organization.</p>
       <small><strong>Clean demo result:</strong> 0 unresolved. Production should preserve unmatched, ambiguous, stale, acquired, and conflicting records in a review queue—not force them into the funnel.</small>
     </div>
   )
@@ -70,10 +77,10 @@ function FinalCount() {
 
 const stepPanels = [<FacilityRows />, <SystemGroups />, <CompanyGroups />, <FinalCount />]
 const machineCaptions = [
-  'Ten facility records enter the feeder as ten separate inputs.',
-  'The resolver closes four grouping cups around related facilities, producing four health-system identities.',
-  'The company gears combine two related systems and pass two through, leaving three company identities.',
-  'Three account balls strike the counter paddles one at a time. The machine stops at 03—the sellable account universe.',
+  'Ten hospital-location records enter the feeder as 10 separate inputs.',
+  'The resolver groups locations that share an operator, producing 4 health systems.',
+  'Example Health System and Metro Surgical Network share one commercial parent. Four systems therefore become 3 potential customers.',
+  'Three account balls strike the counter. The machine stops at 03—the organizations a seller can investigate.',
 ] as const
 
 const facilityBallIds = Array.from({ length: syntheticFacilities.length }, (_, index) => index + 1)
@@ -87,7 +94,7 @@ export function HospitalTamWalkthrough() {
   return (
     <section id="walkthrough" className="tam-walkthrough" aria-labelledby="walkthrough-title">
       <header>
-        <div><p className="eyebrow">01 / Le collapseur</p><h2 id="walkthrough-title">Watch ten rows become three accounts.</h2></div>
+        <div><p className="eyebrow">01 / Le collapseur</p><h2 id="walkthrough-title">Watch 10 hospital records become 3 potential customers.</h2></div>
         <p><strong>Demo / synthetic data.</strong> Every name, identifier, relationship, and domain in this walkthrough is invented.</p>
       </header>
 
@@ -152,7 +159,7 @@ export function HospitalTamWalkthrough() {
           </div>
         </div>
       </div>
-      <p className="tam-machine-caption" aria-live="polite"><strong>The red ball is data.</strong> {machineCaptions[step]}</p>
+      <p className="tam-machine-caption" aria-live="polite"><strong>The red ball is data.</strong> {machineCaptions[step]} <span>Use “Next layer” to follow the grouping.</span></p>
 
       <div className="tam-walkthrough__stage" role="region" aria-labelledby="current-step-title" key={step}>
         <header><span>Step {step + 1} of 4</span><h3 id="current-step-title">{current.title}</h3></header>
