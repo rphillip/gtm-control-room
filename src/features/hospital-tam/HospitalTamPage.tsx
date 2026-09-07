@@ -61,7 +61,7 @@ export function HospitalTamPage() {
         />
 
         <dl className="tam-vocabulary" aria-label="Plain-English definitions">
-          <div><dt>TAM</dt><dd>The organizations that could plausibly become customers—not the number of rows in a file.</dd></div>
+          <div><dt>TAM</dt><dd>Total addressable market is the potential revenue opportunity. This artifact builds the trustworthy account universe needed before estimating it.</dd></div>
           <div><dt>GTM</dt><dd>How a company finds, qualifies, and reaches potential customers.</dd></div>
           <div><dt>Facility</dt><dd>One physical hospital location.</dd></div>
           <div><dt>Health system</dt><dd>An organization that operates one or more facilities.</dd></div>

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   facilitiesForSystem,
   syntheticCompanies,
@@ -47,7 +47,15 @@ function SystemGroups() {
 
 function CompanyGroups() {
   return (
-    <><p className="tam-stage-explainer">A health system can still share a commercial parent with another system. Example Health System and Metro Surgical Network both belong to Example Health, so sales should treat them as one account.</p><div className="tam-entity-groups tam-entity-groups--companies">
+    <><p className="tam-stage-explainer">A health system can still share a commercial parent with another system. Example Health System and Metro Surgical Network both belong to Example Health, so sales should treat them as one account.</p>
+    <figure className="tam-rollup-example">
+      <div><span>Operating group 01</span><strong>Example Health System</strong></div>
+      <div><span>Operating group 02</span><strong>Metro Surgical Network</strong></div>
+      <i aria-hidden="true">2 → 1</i>
+      <div className="is-account"><span>One centrally controlled sales relationship</span><strong>Example Health</strong></div>
+      <figcaption>Two operating groups can share one parent organization and one purchasing decision.</figcaption>
+    </figure>
+    <div className="tam-entity-groups tam-entity-groups--companies">
       {syntheticCompanies.map((company) => {
         const systems = systemsForCompany(company.companyId)
         return (
@@ -89,7 +97,33 @@ const companyBallIds = Array.from({ length: syntheticCompanies.length }, (_, ind
 
 export function HospitalTamWalkthrough() {
   const [step, setStep] = useState(0)
+  const [isPlaying, setIsPlaying] = useState(false)
   const current = walkthroughSteps[step]
+
+  useEffect(() => {
+    if (!isPlaying) return undefined
+    if (step === walkthroughSteps.length - 1) return undefined
+    const timer = window.setTimeout(() => {
+      const nextStep = Math.min(walkthroughSteps.length - 1, step + 1)
+      setStep(nextStep)
+      if (nextStep === walkthroughSteps.length - 1) setIsPlaying(false)
+    }, 1800)
+    return () => window.clearTimeout(timer)
+  }, [isPlaying, step])
+
+  const chooseStep = (nextStep: number) => {
+    setIsPlaying(false)
+    setStep(nextStep)
+  }
+
+  const toggleGuidedRun = () => {
+    if (isPlaying) {
+      setIsPlaying(false)
+      return
+    }
+    setStep(0)
+    setIsPlaying(true)
+  }
 
   return (
     <section id="walkthrough" className="tam-walkthrough" aria-labelledby="walkthrough-title">
@@ -98,9 +132,14 @@ export function HospitalTamWalkthrough() {
         <p><strong>Demo / synthetic data.</strong> Every name, identifier, relationship, and domain in this walkthrough is invented.</p>
       </header>
 
+      <div className="tam-guided-tour">
+        <div><span>One-click guided run</span><strong>Let the machine explain itself.</strong><small>It will pause at each transformation from hospital record to sales account.</small></div>
+        <button type="button" aria-pressed={isPlaying} onClick={toggleGuidedRun}>{isPlaying ? 'Pause the guided run' : step === walkthroughSteps.length - 1 ? 'Play the whole story again →' : 'Play the whole story →'}</button>
+      </div>
+
       <nav className="tam-step-nav" aria-label="Entity-resolution walkthrough">
         {walkthroughSteps.map((item, index) => (
-          <button key={item.title} type="button" aria-current={step === index ? 'step' : undefined} onClick={() => setStep(index)}>
+          <button key={item.title} type="button" aria-current={step === index ? 'step' : undefined} onClick={() => chooseStep(index)}>
             <span>0{index + 1}</span><strong>{item.title}</strong><small>{item.shortLabel}</small>
           </button>
         ))}
@@ -168,8 +207,8 @@ export function HospitalTamWalkthrough() {
 
       <p className="visually-hidden" role="status" aria-live="polite">Step {step + 1} of 4: {current.title}. {current.shortLabel}.</p>
       <div className="tam-walkthrough__controls">
-        <button type="button" disabled={step === 0} onClick={() => setStep((currentStep) => Math.max(0, currentStep - 1))}>← Previous layer</button>
-        <button type="button" disabled={step === walkthroughSteps.length - 1} onClick={() => setStep((currentStep) => Math.min(walkthroughSteps.length - 1, currentStep + 1))}>Next layer →</button>
+        <button type="button" disabled={step === 0} onClick={() => chooseStep(Math.max(0, step - 1))}>← Previous layer</button>
+        <button type="button" disabled={step === walkthroughSteps.length - 1} onClick={() => chooseStep(Math.min(walkthroughSteps.length - 1, step + 1))}>Next layer →</button>
       </div>
     </section>
   )

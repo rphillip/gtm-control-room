@@ -1,9 +1,12 @@
-import { cleanup, render, screen } from '@testing-library/react'
+import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { HospitalTamWalkthrough } from './HospitalTamWalkthrough'
 
-afterEach(cleanup)
+afterEach(() => {
+  cleanup()
+  vi.useRealTimers()
+})
 
 describe('HospitalTamWalkthrough', () => {
   it('moves forward and backward through all entity layers', async () => {
@@ -31,7 +34,7 @@ describe('HospitalTamWalkthrough', () => {
 
     await user.click(screen.getByRole('button', { name: /Resolve to GTM companies/i }))
     expect(screen.getByRole('status')).toHaveTextContent('Step 3 of 4')
-    expect(screen.getByText('Example Health')).toBeVisible()
+    expect(screen.getAllByText('Example Health')).toHaveLength(2)
 
     await user.click(next)
     expect(next).toBeDisabled()
@@ -46,5 +49,21 @@ describe('HospitalTamWalkthrough', () => {
   it('marks the current numbered control without relying on color', () => {
     render(<HospitalTamWalkthrough />)
     expect(screen.getByRole('button', { name: /Start with facilities/i })).toHaveAttribute('aria-current', 'step')
+  })
+
+  it('plays the complete four-layer explanation from one control', () => {
+    vi.useFakeTimers()
+    render(<HospitalTamWalkthrough />)
+
+    const play = screen.getByRole('button', { name: /Play the whole story/i })
+    fireEvent.click(play)
+    expect(play).toHaveAttribute('aria-pressed', 'true')
+    act(() => vi.advanceTimersByTime(1800))
+    expect(screen.getByRole('status')).toHaveTextContent('Step 2 of 4')
+    act(() => vi.advanceTimersByTime(1800))
+    expect(screen.getByRole('status')).toHaveTextContent('Step 3 of 4')
+    act(() => vi.advanceTimersByTime(1800))
+    expect(screen.getByRole('status')).toHaveTextContent('Step 4 of 4')
+    expect(screen.getByRole('button', { name: /Play the whole story again/i })).toHaveAttribute('aria-pressed', 'false')
   })
 })

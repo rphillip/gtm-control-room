@@ -10,6 +10,11 @@ const dimensions = [
 const sizeOptions = ['1–2 hospitals', '3–9 hospitals', '10+ hospitals'] as const
 const stateOptions = ['TX', 'LA', 'OK'] as const
 const functionOptions = ['Managed Care', 'Payer Contracting', 'Revenue Cycle', 'Pricing Strategy'] as const
+const evidenceReceipts = [
+  { claim: 'Organization size', source: 'Resolved facility-to-parent crosswalk', verified: 'Sep 6, 2026 · synthetic snapshot', confidence: 'High', question: 'Check for acquisitions after the source date.' },
+  { claim: 'Operating footprint', source: 'Facility addresses grouped by parent', verified: 'Sep 6, 2026 · synthetic snapshot', confidence: 'High', question: 'Confirm recently opened or closed locations.' },
+  { claim: 'Hospital mix', source: 'Hospital-type fields from facility records', verified: 'Sep 6, 2026 · synthetic snapshot', confidence: 'Medium', question: 'Review classifications that changed over time.' },
+] as const
 
 export function ScoreSystemBuilder() {
   const [step, setStep] = useState(0)
@@ -125,6 +130,13 @@ export function ScoreSystemBuilder() {
             <div><dt>Hospital mix</dt><dd>{acuteCount} acute-care {acuteCount === 1 ? 'hospital' : 'hospitals'}</dd></div>
             <div><dt>Buyer clues</dt><dd>{functions.length > 0 ? functions.join(' · ') : 'No department evidence selected'}</dd></div>
           </dl>
+          <section className="tam-evidence-ledger" aria-labelledby="evidence-ledger-title">
+            <header><span>Evidence receipts</span><h4 id="evidence-ledger-title">Why the machine believes this brief</h4><p>Every commercial conclusion keeps its source, freshness, confidence, and open question.</p></header>
+            <div>
+              {evidenceReceipts.map((receipt) => <article key={receipt.claim}><h5>{receipt.claim}</h5><dl><div><dt>Source</dt><dd>{receipt.source}</dd></div><div><dt>Last verified</dt><dd>{receipt.verified}</dd></div><div><dt>Confidence</dt><dd><span className="tam-confidence">{receipt.confidence}</span></dd></div><div><dt>Still unresolved</dt><dd>{receipt.question}</dd></div></dl></article>)}
+              <article><h5>Buyer clues</h5><dl><div><dt>Source</dt><dd>{functions.length > 0 ? 'Observed department evidence' : 'No department evidence selected'}</dd></div><div><dt>Last verified</dt><dd>Sep 6, 2026 · synthetic snapshot</dd></div><div><dt>Confidence</dt><dd><span className="tam-confidence">{functions.length > 0 ? 'Medium' : 'Low'}</span></dd></div><div><dt>Still unresolved</dt><dd>Confirm the person who owns the problem, budget, and decision.</dd></div></dl></article>
+            </div>
+          </section>
           <p><strong>Recommended next step: {recommendation.title}</strong> {recommendation.detail}</p>
           <button type="button" onClick={reset}>Reset the machine</button>
         </section>

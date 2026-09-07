@@ -80,6 +80,8 @@ test('Hospital TAM deep link reloads with honest synthetic and source framing', 
   await expect(page.getByRole('link', { name: /AHRQ 2023 linkage documentation/i })).toHaveAttribute('rel', /noreferrer/)
 
   const machine = page.locator('.tam-collapse-gauge')
+  const guidedRun = page.getByRole('button', { name: /Play the whole story/i })
+  await expect(guidedRun).toHaveAttribute('aria-pressed', 'false')
   await expect(machine.locator('.tam-collapse-feeder__rack i')).toHaveCount(10)
   await expect(machine.locator('.tam-system-resolver__balls b')).toHaveCount(4)
   await expect(machine.locator('.tam-company-resolver__outputs b')).toHaveCount(3)
@@ -127,6 +129,8 @@ test('Hospital TAM deep link reloads with honest synthetic and source framing', 
   await page.getByRole('checkbox', { name: 'Payer Contracting' }).check()
   await page.getByRole('button', { name: /Print the account brief/i }).click()
   await expect(scoreBuilder.getByRole('heading', { name: 'Example Health' })).toBeVisible()
+  await expect(scoreBuilder.getByRole('heading', { name: /Why the machine believes this brief/i })).toBeVisible()
+  await expect(scoreBuilder).toContainText('Resolved facility-to-parent crosswalk')
   await expect(scoreBuilder).toContainText('Managed Care · Payer Contracting')
   await expect(page.locator('body')).not.toContainText(/guaranteed buyer|will convert|real patient/i)
   const pageOrigin = new URL(page.url()).origin

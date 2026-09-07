@@ -20,6 +20,7 @@ describe('HospitalTamPage', () => {
     expect(screen.getByText(/not a universal score or a prediction/i)).toBeVisible()
     expect(screen.getByText('No data background needed.')).toBeVisible()
     expect(screen.getByText(/pile of mailing labels/i)).toBeVisible()
+    expect(screen.getByText(/account universe needed before estimating it/i)).toBeVisible()
     expect(document.querySelector('[data-artifact-data-ball]')).toBeInTheDocument()
     expect(document.querySelectorAll('.tam-score-builder')).toHaveLength(1)
     expect(document.querySelectorAll('.tam-score-builder__data-ball')).toHaveLength(1)
@@ -54,6 +55,9 @@ describe('HospitalTamPage', () => {
     expect(screen.getByRole('heading', { name: 'Example Health' })).toBeVisible()
     expect(screen.getByText('10+ hospitals')).toBeVisible()
     expect(screen.getByText(/Managed Care · Payer Contracting/)).toBeVisible()
+    expect(screen.getByRole('heading', { name: /Why the machine believes this brief/i })).toBeVisible()
+    expect(screen.getAllByText(/Sep 6, 2026 · synthetic snapshot/i)).toHaveLength(4)
+    expect(screen.getByText(/Check for acquisitions after the source date/i)).toBeVisible()
     expect(screen.getAllByText(/Recommended next step: Investigate the account/i)).not.toHaveLength(0)
   })
 
